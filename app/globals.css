@@ -41,3 +41,9 @@ body{
   100% { transform: translateY(220px) scale(1);    opacity: 1; }
 }
 .animate-fall { animation: fall 900ms cubic-bezier(.2,.7,.2,1) forwards; }
+/* Falling fruit animation */
+@keyframes fall {
+  0%   { transform: translateY(-40px) scale(.95); opacity: 0; }
+  100% { transform: translateY(220px) scale(1);    opacity: 1; }
+}
+.animate-fall { animation: fall 900ms cubic-bezier(.2,.7,.2,1) forwards; }
