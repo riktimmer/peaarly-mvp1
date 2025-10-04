@@ -1,33 +1,11 @@
 import "./globals.css";
 import type { Metadata } from "next";
+import { Outfit } from "next/font/google";
+
+const outfit = Outfit({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Peaarly — Character beats credentials",
-  description:
-    "Peaarly is a no-nonsense peer mentoring community. Drop a question, pick a peer, grow together.",
-  openGraph: {
-    title: "Peaarly — Character beats credentials",
-    description:
-      "Drop a question, pick a peer, grow together.",
-    url: "https://peaarly-mvp1.vercel.app",
-    siteName: "Peaarly",
-    images: [
-      {
-        url: "/og-peaarly.png",
-        width: 1200,
-        height: 630,
-        alt: "Peaarly Preview",
-      },
-    ],
-    type: "website",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Peaarly — Character beats credentials",
-    description:
-      "Drop a question, pick a peer, grow together.",
-    images: ["/og-peaarly.png"],
-  },
+  // laat je bestaande metadata hier staan
 };
 
 export default function RootLayout({
@@ -37,7 +15,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="nl">
-      <body>{children}</body>
+      <body className={outfit.className}>{children}</body>
     </html>
   );
 }
