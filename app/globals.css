@@ -1,1 +1,37 @@
 @tailwind base;@tailwind components;@tailwind utilities;
+/* === Peaarly theme === */
+:root{
+  --pear-green:#2F7A3E;
+  --pear-lime:#A3D26F;
+  --leaf:#1C4B2B;
+  --cream:#FAFBEF;
+  --stem:#265C31;
+  --accent:#F59E0B; /* orange */
+  --ink:#2f3e34;
+}
+
+body{
+  background: var(--cream);
+}
+
+/* subtiele fruit-pulp achtergrond */
+.pulp {
+  background:
+    radial-gradient(12px 12px at 20% 20%, rgba(163,210,111,0.15) 0 40%, transparent 41%) 0 0/220px 220px,
+    radial-gradient(10px 10px at 70% 40%, rgba(245,158,11,0.12) 0 40%, transparent 41%) 0 0/260px 260px,
+    linear-gradient(0deg, rgba(255,255,255,0.6), rgba(255,255,255,0.6));
+}
+
+/* Cards & buttons */
+.card { @apply rounded-[24px] bg-white border border-[#E5EEDC] shadow-sm p-5; }
+.btn { @apply inline-flex items-center justify-center rounded-2xl px-5 py-3 font-semibold transition; }
+.btn-primary { @apply text-white; background: var(--pear-green); }
+.btn-primary:hover { filter: brightness(0.95); }
+.btn-secondary { @apply text-[color:var(--leaf)] border border-[#C8D7C2] bg-white; }
+.btn-secondary:hover { background:#F6FBF3; }
+.badge { @apply text-xs px-2 py-1 rounded-full; background:#E7F3E1; color:var(--leaf); }
+
+/* Big titles */
+.h-hero { @apply text-4xl font-extrabold tracking-tight; color:var(--leaf); }
+.h-sec  { @apply text-2xl font-extrabold; color:var(--leaf); }
+.text-muted { color: var(--ink); }
