@@ -1,7 +1,8 @@
 "use client";
+
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Card, Badge, PearIcon } from "@/app/components/ui";
+import { Card, Badge, PearIcon } from "../../components/ui";
 
 const TOPICS = [
   "Time Management","Staying Ahead","Work-life balance","Collaboration",
@@ -13,7 +14,7 @@ export default function SelectPage() {
   const router = useRouter();
 
   function toggle(t: string) {
-    setSelected(s => s.includes(t) ? s.filter(x => x !== t) : [...s, t]);
+    setSelected((s) => (s.includes(t) ? s.filter((x) => x !== t) : [...s, t]));
   }
 
   function startDrop() {
@@ -33,11 +34,15 @@ export default function SelectPage() {
           <p className="mt-1 text-muted">Share your focus areas for the best match</p>
 
           <div className="mt-4 flex flex-wrap gap-2">
-            {TOPICS.map(t => (
+            {TOPICS.map((t) => (
               <button
                 key={t}
                 onClick={() => toggle(t)}
-                className={`badge border transition ${selected.includes(t) ? "bg-[color:var(--pear-green)] text-white border-[color:var(--pear-green)]" : ""}`}
+                className={`badge border transition ${
+                  selected.includes(t)
+                    ? "bg-[color:var(--pear-green)] text-white border-[color:var(--pear-green)]"
+                    : ""
+                }`}
                 aria-pressed={selected.includes(t)}
               >
                 {t}
@@ -46,7 +51,9 @@ export default function SelectPage() {
           </div>
 
           <button
-            className={`btn mt-6 w-full ${selected.length ? "btn-primary" : "btn-secondary opacity-60 cursor-not-allowed"}`}
+            className={`btn mt-6 w-full ${
+              selected.length ? "btn-primary" : "btn-secondary opacity-60 cursor-not-allowed"
+            }`}
             onClick={startDrop}
             disabled={!selected.length}
           >
