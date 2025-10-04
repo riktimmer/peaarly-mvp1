@@ -1,14 +1,17 @@
 "use client";
+
 import React, { useMemo } from "react";
-import { Card, Badge, AvatarFace, PearIcon, OrangeIcon, StrawberryIcon } from "@/app/components/ui";
+import { Card, Badge, AvatarFace, PearIcon, OrangeIcon, StrawberryIcon } from "../../components/ui";
 
 export default function MatchPage() {
   const topics: string[] = useMemo(() => {
-    try { return JSON.parse(sessionStorage.getItem("peaarly.selectedTopics") || "[]"); }
-    catch { return []; }
+    try {
+      return JSON.parse(sessionStorage.getItem("peaarly.selectedTopics") || "[]");
+    } catch {
+      return [];
+    }
   }, []);
 
-  // vaste “Emily” voor jouw design
   const candidate = {
     name: "Emily",
     role: "Product Manager",
@@ -16,7 +19,8 @@ export default function MatchPage() {
     fruit: "pear" as const,
   };
 
-  const Fruit = candidate.fruit === "pear" ? PearIcon : candidate.fruit === "orange" ? OrangeIcon : StrawberryIcon;
+  const Fruit =
+    candidate.fruit === "pear" ? PearIcon : candidate.fruit === "orange" ? OrangeIcon : StrawberryIcon;
 
   function nextDrop() {
     sessionStorage.removeItem("peaarly.selectedTopics");
@@ -37,7 +41,9 @@ export default function MatchPage() {
             <div>
               <p className="text-sm text-muted">{candidate.role}</p>
               <div className="mt-2 flex flex-wrap gap-2">
-                {candidate.tags.map(t => <Badge key={t}>{t}</Badge>)}
+                {candidate.tags.map((t) => (
+                  <Badge key={t}>{t}</Badge>
+                ))}
               </div>
             </div>
             <Fruit />
@@ -47,7 +53,9 @@ export default function MatchPage() {
             <div className="mt-4">
               <p className="text-sm font-semibold mb-2">Based on your interests:</p>
               <div className="flex flex-wrap gap-2">
-                {topics.map(t => <Badge key={t}>{t}</Badge>)}
+                {topics.map((t) => (
+                  <Badge key={t}>{t}</Badge>
+                ))}
               </div>
             </div>
           )}
