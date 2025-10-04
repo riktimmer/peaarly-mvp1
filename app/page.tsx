@@ -162,14 +162,14 @@ function TopNav() {
         <BrandPear small />
         <span className="font-semibold text-[#1C4B2B]">Peaarly</span>
       </div>
-      <div className="text-sm">
-        <a href="#peardrop" className="text-[#1C4B2B] hover:underline">Pear Drop</a>
-        <span className="mx-2 text-[#9fb59a]">•</span>
-        <a href="#fruitpick" className="text-[#1C4B2B] hover:underline">Fruit Pick</a>
+      <div className="text-sm flex items-center gap-3">
+        <a href="/feed" className="text-[#1C4B2B] hover:underline">Feed</a>
+        <a href="/profile" className="text-[#1C4B2B] hover:underline">Profile</a>
       </div>
     </div>
   );
 }
+
 
 function BrandPear({ small = false }: { small?: boolean }) {
   const size = small ? 28 : 48;
