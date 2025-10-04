@@ -1,13 +1,13 @@
 "use client";
+
 import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Card, PearIcon, OrangeIcon, StrawberryIcon } from "@/app/components/ui";
+import { Card, PearIcon, OrangeIcon, StrawberryIcon } from "../../components/ui";
 
 export default function LoadingPage() {
   const router = useRouter();
 
   useEffect(() => {
-    // kleine delay → door naar match
     const t = setTimeout(() => router.push("/drop/match"), 1800);
     return () => clearTimeout(t);
   }, [router]);
@@ -32,7 +32,15 @@ export default function LoadingPage() {
   );
 }
 
-function Falling({ kind, delay = 0, left = "50%" }: { kind: "pear" | "orange" | "straw"; delay?: number; left?: string }) {
+function Falling({
+  kind,
+  delay = 0,
+  left = "50%",
+}: {
+  kind: "pear" | "orange" | "straw";
+  delay?: number;
+  left?: string;
+}) {
   const Icon = kind === "pear" ? PearIcon : kind === "orange" ? OrangeIcon : StrawberryIcon;
   return (
     <div className="absolute -top-10 animate-fall" style={{ animationDelay: `${delay}ms`, left }} aria-hidden>
