@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import Logo from "@/components/Logo"; // ← gebruikt het component hierboven
 
 export default function HomePage() {
   return (
@@ -16,10 +15,8 @@ export default function HomePage() {
       </div>
 
       <div className="relative z-10 max-w-md mx-auto text-center px-5 pt-12 pb-20">
-        {/* Logo – JS-gestuurde switch, werkt 100% in dark mode */}
-        <div className="flex items-center justify-center gap-3 mb-6">
-          <Logo size={180} />
-        </div>
+        {/* LOGO — background-image + dark-mode switch */}
+        <div aria-label="Peear logo" className="peear-logo mx-auto mb-6" />
 
         {/* Titel + tagline */}
         <h1 className="text-4xl font-extrabold mb-2 tracking-tight">Peear</h1>
@@ -68,8 +65,33 @@ export default function HomePage() {
         </footer>
       </div>
 
-      {/* Fruit-animatie styles (blijven zoals je ze had) */}
-      <style jsx>{`
+      {/* Styles: robuuste logo-switch én hard override op blending */}
+      <style jsx global>{`
+        /* Zorg dat ALLE blends/inverts weg zijn, ongeacht eerdere CSS */
+        .peear-logo,
+        img[alt="Peear logo"],
+        #brandLogo {
+          mix-blend-mode: normal !important;
+          filter: none !important;
+        }
+
+        /* Component styles */
+        .peear-logo {
+          width: 180px;
+          height: 180px;
+          background: url('/logo-peear.png?v=9') center / contain no-repeat;
+          border-radius: 12px;
+          filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.06));
+          transition: filter 0.4s ease, transform 0.4s ease;
+        }
+        @media (prefers-color-scheme: dark) {
+          .peear-logo {
+            background-image: url('/logo-peear-dark.png?v=9');
+            filter: drop-shadow(0 1px 1px rgba(255, 255, 255, 0.12));
+          }
+        }
+
+        /* Fruit-animatie (onveranderd) */
         .fruit {
           position: absolute;
           font-size: 2.2rem;
@@ -84,4 +106,3 @@ export default function HomePage() {
     </main>
   );
 }
-
