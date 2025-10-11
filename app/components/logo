@@ -1,0 +1,43 @@
+"use client";
+
+import { useEffect, useState } from "react";
+
+type Props = { size?: number; className?: string };
+
+export default function Logo({ size = 180, className = "" }: Props) {
+  const [src, setSrc] = useState<string>("/logo-peear.png?v=6");
+
+  useEffect(() => {
+    const mq = window.matchMedia("(prefers-color-scheme: dark)");
+
+    const choose = () => {
+      setSrc(mq.matches ? "/logo-peear-dark.png?v=6" : "/logo-peear.png?v=6");
+    };
+
+    // initial pick
+    choose();
+
+    // listen for changes (Safari < 14 fallback included)
+    if (mq.addEventListener) {
+      mq.addEventListener("change", choose);
+      return () => mq.removeEventListener("change", choose);
+    } else {
+      // @ts-ignore
+      mq.addListener(choose);
+      // @ts-ignore
+      return () => mq.removeListener(choose);
+    }
+  }, []);
+
+  return (
+    <img
+      src={src}
+      alt="Peear logo"
+      width={size}
+      height={size}
+      className={`mx-auto drop-shadow-sm bg-transparent rounded-lg transition-all duration-500 ${className}`}
+      decoding="async"
+      loading="eager"
+    />
+  );
+}
