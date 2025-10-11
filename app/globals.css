@@ -68,3 +68,27 @@ body{
 
 /* pressed state */
 .press{transform: translateY(1px)}
+/* --- Fruitier select look --- */
+.fruit-wall{
+  /* warmere, “zonnige” pulp */
+  background:
+    radial-gradient(10px 10px at 20% 15%, rgba(255, 223, 182, .18) 0 40%, transparent 41%) 0 0/220px 220px,
+    radial-gradient(10px 10px at 75% 35%, rgba(252, 211, 77, .14) 0 40%, transparent 41%) 0 0/260px 260px,
+    linear-gradient(0deg, rgba(255,255,255,.66), rgba(255,255,255,.66)),
+    var(--cream);
+}
+
+/* chips */
+.chip{
+  @apply inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-sm border border-[#D6E6CF] bg-white/85 transition;
+  box-shadow: 0 0 0 0 rgba(47,122,62,0);
+}
+.chip:hover{ @apply bg-[#F6FBF3]; }
+.chip--active{
+  color:#fff;
+  background: var(--pear-green);
+  border-color: var(--pear-green);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px -8px rgba(47,122,62,.55);
+}
+
