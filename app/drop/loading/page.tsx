@@ -113,7 +113,7 @@ function LandingPear({ onLand }: { onLand: () => void }) {
 
   return (
     <div className="lp" aria-hidden>
-      <span className="peer-emoji" role="img" aria-label="pear" style={{ fontSize: "180px", display: "block", lineHeight: 1 }}>
+      <span className="peer-emoji" role="img" aria-label="pear" style={{ fontSize: "90px", display: "block", lineHeight: 1 }}>
         🍐
       </span>
       <div className="lp-shadow" />
