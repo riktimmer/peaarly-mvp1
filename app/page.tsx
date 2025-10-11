@@ -15,8 +15,9 @@ export default function HomePage() {
         <span className="fruit" style={{ top: "45%", left: "45%" }}>🍋</span>
       </div>
 
+      {/* Hoofdinhoud */}
       <div className="relative z-10 max-w-md mx-auto text-center px-5 pt-12 pb-20">
-        {/* LOGO als inline SVG — geen PNG's meer nodig */}
+        {/* Inline SVG-logo */}
         <PeearLogo className="mx-auto mb-6 h-44 w-44 text-[color:var(--leaf)] dark:text-white drop-shadow-sm" />
 
         <h1 className="text-4xl font-extrabold mb-2 tracking-tight">Peear</h1>
@@ -24,6 +25,7 @@ export default function HomePage() {
           Grow together. Stay curious. Be fruitful. 🍐
         </p>
 
+        {/* Knoppen */}
         <div className="flex flex-col gap-4 mt-10">
           <Link
             href="/drop/select"
@@ -39,6 +41,7 @@ export default function HomePage() {
           </Link>
         </div>
 
+        {/* Uitleg */}
         <section className="mt-16 space-y-5">
           <h2 className="text-[1.25rem] font-extrabold">Why join Peear?</h2>
           <div className="space-y-3">
@@ -57,12 +60,13 @@ export default function HomePage() {
           </div>
         </section>
 
+        {/* Footer */}
         <footer className="mt-20 text-sm text-muted flex items-center justify-center gap-2 dark:text-gray-400">
           <span>Made with 🍐 🍓 🍊 by Peear</span>
         </footer>
       </div>
 
-      {/* Fruit-animatie styles */}
+      {/* Fruit-animaties */}
       <style jsx global>{`
         .fruit {
           position: absolute;
