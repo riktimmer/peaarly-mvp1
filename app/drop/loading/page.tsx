@@ -3,7 +3,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 
-/* SVG fruits */
+/* ── Fruit SVG's ────────────────────────────────────────────────────────── */
 function Orange({ size = 44 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 64 64" aria-hidden>
@@ -27,11 +27,21 @@ function Strawberry({ size = 42 }: { size?: number }) {
           <stop offset="1" stopColor="#E11D48" />
         </linearGradient>
       </defs>
-      <path d="M32 20c6 0 10-6 10-6s2 6 8 6c-2 6-9 10-18 10S16 26 14 20c6 0 8-6 8-6s4 6 10 6z" fill="#22C55E" />
-      <path d="M16 30c0 10 7 18 16 18s16-8 16-18S16 26 16 30z" fill="url(#sg)" />
+      <path
+        d="M32 20c6 0 10-6 10-6s2 6 8 6c-2 6-9 10-18 10S16 26 14 20c6 0 8-6 8-6s4 6 10 6z"
+        fill="#22C55E"
+      />
+      <path
+        d="M16 30c0 10 7 18 16 18s16-8 16-18S16 26 16 30z"
+        fill="url(#sg)"
+      />
       <g fill="#FEE2E2" opacity=".8">
-        <circle cx="26" cy="35" r="1.2" /><circle cx="32" cy="38" r="1.2" /><circle cx="39" cy="34" r="1.2" />
-        <circle cx="45" cy="39" r="1.2" /><circle cx="21" cy="40" r="1.2" /><circle cx="34" cy="44" r="1.2" />
+        <circle cx="26" cy="35" r="1.2" />
+        <circle cx="32" cy="38" r="1.2" />
+        <circle cx="39" cy="34" r="1.2" />
+        <circle cx="45" cy="39" r="1.2" />
+        <circle cx="21" cy="40" r="1.2" />
+        <circle cx="34" cy="44" r="1.2" />
       </g>
     </svg>
   );
@@ -47,7 +57,10 @@ function Apple({ size = 44 }: { size?: number }) {
       </defs>
       <circle cx="26" cy="34" r="16" fill="url(#ag)" />
       <circle cx="40" cy="34" r="16" fill="#E34D4D" />
-      <path d="M33 17c4-2 7-2 10 0-2 4-5 6-10 6-3-3-3-5 0-6z" fill="#2F7A3E" />
+      <path
+        d="M33 17c4-2 7-2 10 0-2 4-5 6-10 6-3-3-3-5 0-6z"
+        fill="#2F7A3E"
+      />
     </svg>
   );
 }
@@ -55,7 +68,13 @@ function Grape({ size = 42 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 64 64" aria-hidden>
       {[0, 1, 2, 3, 4, 5, 6].map((i) => (
-        <circle key={i} cx={22 + (i % 3) * 10} cy={22 + Math.floor(i / 3) * 10} r="6" fill="#7C3AED" />
+        <circle
+          key={i}
+          cx={22 + (i % 3) * 10}
+          cy={22 + Math.floor(i / 3) * 10}
+          r="6"
+          fill="#7C3AED"
+        />
       ))}
       <rect x="29" y="10" width="4" height="8" rx="2" fill="#265C31" />
     </svg>
@@ -64,13 +83,17 @@ function Grape({ size = 42 }: { size?: number }) {
 function Banana({ size = 46 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 64 64" aria-hidden>
-      <path d="M10 36c10 10 27 12 38 2 3-3 5-6 6-9-2 8-8 15-16 18-12 4-22-1-28-11z"
-        fill="#FCD34D" stroke="#EAB308" strokeWidth="2" />
+      <path
+        d="M10 36c10 10 27 12 38 2 3-3 5-6 6-9-2 8-8 15-16 18-12 4-22-1-28-11z"
+        fill="#FCD34D"
+        stroke="#EAB308"
+        strokeWidth="2"
+      />
     </svg>
   );
 }
 
-/* Types */
+/* ── Typen ──────────────────────────────────────────────────────────────── */
 type Kind = "orange" | "straw" | "apple" | "grape" | "banana";
 type FruitItem = { kind: Kind; left: string; delay: number; dur: number };
 
@@ -84,14 +107,14 @@ function Icon({ kind, size }: { kind: Kind; size?: number }) {
   }
 }
 
-/* Falling fruit */
+/* ── Vallend fruit ──────────────────────────────────────────────────────── */
 function FruitFall({ kind, left, delay, dur, size }: FruitItem & { size?: number }) {
   return (
     <div
       className="ff"
       style={{
         left,
-        // @ts-ignore CSS vars
+        // @ts-ignore
         "--delay": `${delay}ms`,
         "--dur": `${dur}ms`,
         "--sway": `${Math.random() > 0.5 ? 1 : -1}`,
@@ -104,7 +127,7 @@ function FruitFall({ kind, left, delay, dur, size }: FruitItem & { size?: number
   );
 }
 
-/* Landing 🍐 emoji (4x groter) */
+/* ── Grote 🍐 emoji (nu 2× zo groot) ────────────────────────────────────── */
 function LandingPear({ onLand }: { onLand: () => void }) {
   useEffect(() => {
     const t = setTimeout(onLand, 2300);
@@ -113,7 +136,12 @@ function LandingPear({ onLand }: { onLand: () => void }) {
 
   return (
     <div className="lp" aria-hidden>
-      <span className="peer-emoji" role="img" aria-label="pear" style={{ fontSize: "90px", display: "block", lineHeight: 1 }}>
+      <span
+        className="peer-emoji"
+        role="img"
+        aria-label="pear"
+        style={{ fontSize: "90px", display: "block", lineHeight: 1 }}
+      >
         🍐
       </span>
       <div className="lp-shadow" />
@@ -121,7 +149,7 @@ function LandingPear({ onLand }: { onLand: () => void }) {
   );
 }
 
-/* Page */
+/* ── Pagina ─────────────────────────────────────────────────────────────── */
 export default function LoadingPage() {
   const router = useRouter();
   const [hideOthers, setHideOthers] = useState(false);
@@ -131,10 +159,9 @@ export default function LoadingPage() {
     return () => clearTimeout(to);
   }, [router]);
 
-  // ✅ HARD-typed + literal cast per item
   const fruits = useMemo<FruitItem[]>(
     () => [
-      { kind: "orange" as Kind, left: "12%", delay: 0,   dur: 1400 },
+      { kind: "orange" as Kind, left: "12%", delay: 0, dur: 1400 },
       { kind: "grape"  as Kind, left: "26%", delay: 120, dur: 1500 },
       { kind: "apple"  as Kind, left: "38%", delay: 240, dur: 1600 },
       { kind: "banana" as Kind, left: "64%", delay: 320, dur: 1500 },
@@ -155,7 +182,9 @@ export default function LoadingPage() {
             <h1 className="text-[1.6rem] leading-tight font-extrabold">
               We are picking your match based on your interests…
             </h1>
-            <p className="text-muted mt-1 text-[0.95rem]">Hang on tight, your peer is on the way!</p>
+            <p className="text-muted mt-1 text-[0.95rem]">
+              Hang on tight, your peer is on the way!
+            </p>
           </div>
 
           <div className="relative h-72 w-full mt-3">
@@ -163,7 +192,7 @@ export default function LoadingPage() {
               {fruits.map((f, i) => (
                 <FruitFall
                   key={i}
-                  kind={f.kind as Kind}   {/* <- extra safe cast */}
+                  kind={f.kind as Kind}
                   left={f.left}
                   delay={f.delay}
                   dur={f.dur}
