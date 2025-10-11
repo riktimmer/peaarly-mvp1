@@ -3,25 +3,77 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 
-type ChatSummary = { id: string; name: string; avatar: string; lastText: string; lastTs: number; unread: number };
+type ChatSummary = {
+  id: string;         // bv. 'emily', 'liam', ...
+  name: string;       // 'Emily'
+  avatar: string;     // 'E' of emoji
+  lastText: string;
+  lastTs: number;
+  unread: number;
+};
 
 const CHAT_LIST_KEY = "peaarly.chat.summaries";
+
+/** Seed dummy peers als er nog niets in localStorage staat */
+function seedIfEmpty(): ChatSummary[] {
+  let list: ChatSummary[] = [];
+  try {
+    const raw = localStorage.getItem(CHAT_LIST_KEY);
+    list = raw ? (JSON.parse(raw) as ChatSummary[]) : [];
+    if (!Array.isArray(list) || list.length === 0) {
+      list = [
+        {
+          id: "liam",
+          name: "Liam",
+          avatar: "🍊",
+          lastText: "Ik vond die timeboxing tip echt fijn! 🙌",
+          lastTs: Date.now() - 1000 * 60 * 15,
+          unread: 0,
+        },
+        {
+          id: "ava",
+          name: "Ava",
+          avatar: "🍓",
+          lastText: "Wil je morgen samen ideeen sparren?",
+          lastTs: Date.now() - 1000 * 60 * 42,
+          unread: 2,
+        },
+        {
+          id: "noah",
+          name: "Noah",
+          avatar: "🍎",
+          lastText: "Thanks voor je perspectief op mijn pitch!",
+          lastTs: Date.now() - 1000 * 60 * 75,
+          unread: 0,
+        },
+        {
+          id: "sofia",
+          name: "Sofia",
+          avatar: "🍇",
+          lastText: "Ik probeer die 20-minuten regel deze week 👍",
+          lastTs: Date.now() - 1000 * 60 * 110,
+          unread: 1,
+        },
+      ];
+      localStorage.setItem(CHAT_LIST_KEY, JSON.stringify(list));
+    }
+  } catch {
+    // als localStorage niet werkt, laat leeg
+  }
+  return list;
+}
 
 function useChatSummaries() {
   const [chats, setChats] = useState<ChatSummary[]>([]);
   useEffect(() => {
     try {
+      const seeded = seedIfEmpty();
       const raw = localStorage.getItem(CHAT_LIST_KEY);
-      const list = raw ? (JSON.parse(raw) as ChatSummary[]) : [];
+      const list = raw ? (JSON.parse(raw) as ChatSummary[]) : seeded;
       if (Array.isArray(list)) {
-        setChats(
-          list
-            .slice()
-            .sort((a, b) => b.lastTs - a.lastTs)
-            .slice(0, 6)
-        );
+        setChats(list.slice().sort((a, b) => b.lastTs - a.lastTs).slice(0, 8));
       } else {
-        setChats([]);
+        setChats(seeded);
       }
     } catch {
       setChats([]);
@@ -86,7 +138,7 @@ export default function CommunityPage() {
           )}
         </section>
 
-        {/* Suggested topics (speels) */}
+        {/* Suggested topics */}
         <section className="card">
           <h2 className="text-[1.15rem] font-extrabold mb-3">Suggested Topics</h2>
           <div className="flex flex-wrap gap-2">
