@@ -15,20 +15,16 @@ export default function HomePage() {
       </div>
 
       <div className="relative z-10 max-w-md mx-auto text-center px-5 pt-12 pb-20">
-        {/* LOGO – automatische light/dark switch */}
+        {/* LOGO – 1 <img> die via CSS wisselt naar de dark-variant */}
         <div className="flex items-center justify-center gap-3 mb-6">
-          <picture>
-            {/* witte versie voor dark mode */}
-            <source srcSet="/logo-peear-dark.png" media="(prefers-color-scheme: dark)" />
-            {/* groene standaardversie voor light mode */}
-            <img
-              src="/logo-peear.png"
-              alt="Peear logo"
-              width={180}
-              height={180}
-              className="mx-auto drop-shadow-sm bg-transparent rounded-lg transition-all duration-500"
-            />
-          </picture>
+          <img
+            id="brandLogo"
+            src="/logo-peear.png"
+            alt="Peear logo"
+            width={180}
+            height={180}
+            className="mx-auto drop-shadow-sm bg-transparent rounded-lg transition-all duration-500"
+          />
         </div>
 
         {/* Titel + tagline */}
@@ -77,6 +73,15 @@ export default function HomePage() {
           <span>Made with 🍐 🍓 🍊 by Peear</span>
         </footer>
       </div>
+
+      {/* CSS: switch het logo in dark mode zonder JS of Tailwind-trucs */}
+      <style jsx>{`
+        @media (prefers-color-scheme: dark) {
+          #brandLogo {
+            content: url('/logo-peear-dark.png');
+          }
+        }
+      `}</style>
     </main>
   );
 }
