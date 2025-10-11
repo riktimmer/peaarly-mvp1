@@ -324,4 +324,15 @@ body{
   0%, 100% { transform: translateY(0); opacity: .5; }
   50%      { transform: translateY(-4px); opacity: 1; }
 }
+/* fijne subtiele divider */
+.divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(0,0,0,0.06), transparent);
+}
+
+/* optioneel: kleinere icon-knoppen in posts */
+button[aria-label="Like"],
+button[aria-label="Share"] {
+  line-height: 1;
+}
 
