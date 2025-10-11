@@ -32,29 +32,17 @@ function EmilyAvatar({ size = 160 }: { size?: number }) {
       <ellipse cx="100" cy="150" rx="60" ry="24" fill="#2E7D3D" />
       <path
         className="emily-hair"
-        d="
-          M45 120
-          C40 85, 55 55, 100 55
-          C145 55, 160 85, 155 120
-          C150 155, 130 165, 100 165
-          C70 165, 50 155, 45 120
-          Z
-        "
+        d="M45 120 C40 85, 55 55, 100 55 C145 55, 160 85, 155 120 C150 155, 130 165, 100 165 C70 165, 50 155, 45 120 Z"
         fill="#5D3A28"
       />
       <path
-        d="M100 65
-           c-24 0 -40 17 -40 40
-           c0 27 18 42 40 42
-           s40 -15 40 -42
-           c0 -23 -16 -40 -40 -40z"
+        d="M100 65 c-24 0 -40 17 -40 40 c0 27 18 42 40 42 s40 -15 40 -42 c0 -23 -16 -40 -40 -40z"
         fill="#F3C49C"
       />
       <circle cx="70" cy="110" r="7" fill="#F2A7A7" opacity=".55" />
       <circle cx="130" cy="110" r="7" fill="#F2A7A7" opacity=".55" />
       <path
-        d="M62 102c-3-30 16-42 38-42s41 12 38 42
-           c-1 6-3 10-5 13c-4-7-16-17-33-17s-29 10-33 17c-2-3-4-7-5-13z"
+        d="M62 102c-3-30 16-42 38-42s41 12 38 42c-1 6-3 10-5 13c-4-7-16-17-33-17s-29 10-33 17c-2-3-4-7-5-13z"
         fill="#5D3A28"
       />
       <g className="emily-eyes">
@@ -64,13 +52,7 @@ function EmilyAvatar({ size = 160 }: { size?: number }) {
       <path d="M64 100c8-7 18-7 26 0" stroke="#2B2B2B" strokeWidth="4" fill="none" />
       <path d="M110 100c8-7 18-7 26 0" stroke="#2B2B2B" strokeWidth="4" fill="none" />
       <path d="M100 112c0 9-3 12-8 15" stroke="#D09D7B" strokeWidth="3" fill="none" />
-      <path
-        d="M80 132c12 10 28 10 40 0"
-        stroke="#9D533B"
-        strokeWidth="5"
-        strokeLinecap="round"
-        fill="none"
-      />
+      <path d="M80 132c12 10 28 10 40 0" stroke="#9D533B" strokeWidth="5" strokeLinecap="round" fill="none" />
       <circle cx="54" cy="118" r="7" fill="#E9B690" />
       <circle cx="146" cy="118" r="7" fill="#E9B690" />
     </svg>
@@ -86,8 +68,8 @@ const CHAT_KEY = "peaarly.chat.emily";
 const CHAT_LIST_KEY = "peaarly.chat.summaries";
 
 function saveChat(messages: ChatMsg[]) {
+  if (typeof window === "undefined") return;
   localStorage.setItem(CHAT_KEY, JSON.stringify(messages));
-  // samenvatting updaten
   const last = messages[messages.length - 1];
   const summary: ChatSummary = {
     id: "emily",
@@ -106,22 +88,6 @@ function saveChat(messages: ChatMsg[]) {
   }
   const others = list.filter((c) => c.id !== "emily");
   localStorage.setItem(CHAT_LIST_KEY, JSON.stringify([summary, ...others]));
-}
-
-/** Scripted “dummy” dialoog (meerdere rondes) */
-function scriptedReplies(tags: string[]): string[] {
-  const first = tags[0];
-  const second = tags[1];
-  return [
-    `Hey! Thanks for dropping a pear 😄. Leuk om je te ontmoeten!`,
-    tags.length
-      ? `Ik zie dat je focust op ${first}${second ? ` & ${second}` : ""}. Zullen we daar een mini-plan voor maken?`
-      : `Waar wil jij je vooral op richten?`,
-    `Wat ging er afgelopen week al goed? Iets kleins dat je wilt vasthouden?`,
-    `Nice. En één concrete actie voor deze week? Iets dat in 20–30 min kan.`,
-    `Top! Wil je dat ik je vrijdag even ping om te checken hoe het ging?`,
-    `Awesome 🍐. We bouwen zo stap voor stap momentum.`
-  ];
 }
 
 export default function MatchPage() {
@@ -148,53 +114,50 @@ export default function MatchPage() {
 
   // persist chat
   useEffect(() => {
-    if (chatOpen && typeof window !== "undefined") {
-      saveChat(messages);
-    }
+    if (chatOpen) saveChat(messages);
   }, [messages, chatOpen]);
 
-  const pushMsg = (from: ChatMsg["from"], text: string, delay = 0) => {
-    setTimeout(() => {
-      setMessages((m) => [...m, { id: `${Date.now()}-${Math.random()}`, from, text, ts: Date.now() }]);
-    }, delay);
-  };
+  const push = (from: ChatMsg["from"], text: string) =>
+    setMessages((m) => [...m, { id: `${Date.now()}-${Math.random()}`, from, text, ts: Date.now() }]);
 
+  /** Open chat: 1 begroeting, verder geen waterval */
   const openChat = () => {
     if (chatOpen) return;
-    const now = Date.now();
-    const seed: ChatMsg[] = [
-      { id: "s1", from: "System", text: "You're now connected with Emily 🍐", ts: now },
-    ];
-    setMessages(seed);
+    setMessages([
+      { id: "s1", from: "System", text: "You're now connected with Emily 🍐", ts: Date.now() },
+    ]);
     setChatOpen(true);
 
-    const lines = scriptedReplies(tags);
-    let accDelay = 300;
-    lines.forEach((line, idx) => {
-      accDelay += 600 + Math.min(1600, line.length * 15);
-      setTimeout(() => setTyping(true), accDelay - 450);
-      pushMsg("Emily", line, accDelay);
-      setTimeout(() => setTyping(false), accDelay + 50);
-    });
+    const greet = tags.length
+      ? `Hey! Leuk je te spreken 😄 Ik zie ${tags.slice(0, 2).join(" & ")} bij je focus. Waar wil je mee starten?`
+      : `Hey! Waar wil jij je vooral op richten deze week?`;
+    setTyping(true);
+    setTimeout(() => {
+      push("Emily", greet);
+      setTyping(false);
+    }, 700);
   };
 
+  /** Voor elk eigen bericht: 1 antwoord terug */
   const send = () => {
     const txt = input.trim();
     if (!txt) return;
-    pushMsg("You", txt, 0);
+    push("You", txt);
     setInput("");
 
-    // “bot” reageert contextueel
     const followups = [
       "Klinkt goed! Welke eerste stap maakt dit 10% makkelijker?",
-      "Heb je iemand in je omgeving die je even kan ‘accountability pingen’?",
-      "Als je het klein knipt, wat kun je vanmiddag al doen in 15 minuten?",
-      "Love it. Zal ik je volgende week even checken hoe het ging?"
+      "Als je het klein knipt, wat kun je vandaag al doen in 15–20 minuten?",
+      "Top. Zal ik je vrijdag even pingen om te checken hoe het ging?",
+      "Nice. Wie zou je hierbij kunnen betrekken voor accountability?",
+      "Goed plan! Wat ziet ‘klaar’ er precies uit voor jou?"
     ];
     const line = followups[Math.floor(Math.random() * followups.length)];
     setTyping(true);
-    pushMsg("Emily", line, 900);
-    setTimeout(() => setTyping(false), 920);
+    setTimeout(() => {
+      push("Emily", line);
+      setTyping(false);
+    }, 900);
   };
 
   return (
@@ -202,9 +165,7 @@ export default function MatchPage() {
       <div className="max-w-md mx-auto px-5 py-6">
         <section className="card relative overflow-hidden">
           <header className="text-center mb-4">
-            <h1 className="text-[1.35rem] font-extrabold leading-tight">
-              You matched with
-            </h1>
+            <h1 className="text-[1.35rem] font-extrabold leading-tight">You matched with</h1>
             <div className="text-[1.6rem] font-extrabold -mt-1">Emily</div>
           </header>
 
@@ -212,7 +173,7 @@ export default function MatchPage() {
 
           {/* interesses/chips */}
           <div className="mt-4 flex flex-wrap items-center justify-center gap-3">
-            {tags.slice(0, 4).map((t) => (
+            {(interests.length ? interests : fallback).slice(0, 4).map((t) => (
               <span
                 key={t}
                 className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[rgba(46,125,61,0.12)] text-[color:var(--leaf)] font-semibold text-[0.95rem]"
@@ -221,11 +182,6 @@ export default function MatchPage() {
                 {t}
               </span>
             ))}
-            {tags.length > 4 && (
-              <span className="w-6 h-6 rounded-full bg-[rgba(46,125,61,0.12)] grid place-items-center font-bold">
-                +{tags.length - 4}
-              </span>
-            )}
           </div>
 
           {/* CTA's */}
@@ -257,10 +213,7 @@ export default function MatchPage() {
                 <div className="text-muted text-sm">· live</div>
               </div>
 
-              <div
-                ref={scrollRef}
-                className="h-56 overflow-y-auto rounded-xl bg-white/60 p-3 space-y-2"
-              >
+              <div ref={scrollRef} className="h-56 overflow-y-auto rounded-xl bg-white/60 p-3 space-y-2">
                 {messages.map((m) => (
                   <div
                     key={m.id}
@@ -278,9 +231,7 @@ export default function MatchPage() {
 
                 {typing && (
                   <div className="inline-flex items-center gap-2 px-3 py-2 rounded-2xl bg-white border border-[rgba(0,0,0,0.06)]">
-                    <span className="typing">
-                      <span></span><span></span><span></span>
-                    </span>
+                    <span className="typing"><span></span><span></span><span></span></span>
                     <span className="text-muted text-sm">Emily is typing…</span>
                   </div>
                 )}
@@ -306,7 +257,7 @@ export default function MatchPage() {
 
           <p className="text-center text-muted text-sm mt-4">
             Based on your interests:{" "}
-            <span className="font-semibold">{tags.join(" · ")}</span>
+            <span className="font-semibold">{(interests.length ? interests : fallback).join(" · ")}</span>
           </p>
         </section>
       </div>
