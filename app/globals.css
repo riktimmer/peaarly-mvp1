@@ -277,4 +277,33 @@ body{
   0%, 4%, 8%, 100% { transform: scaleY(1) }
   2%, 6%          { transform: scaleY(0.1) }
 }
+/* Emily – zachte float */
+.emily-float {
+  animation: emFloat 3.2s ease-in-out infinite;
+  transform-origin: 50% 60%;
+}
+@keyframes emFloat {
+  0%, 100% { transform: translateY(0) }
+  50%      { transform: translateY(-4px) }
+}
+
+/* Ogen – knipper */
+.emily-eyes ellipse {
+  transform-origin: center;
+  animation: emBlink 4.2s ease-in-out infinite;
+}
+@keyframes emBlink {
+  0%, 4%, 8%, 100% { transform: scaleY(1) }
+  2%, 6%          { transform: scaleY(0.1) }
+}
+
+/* Haar – heel subtiele sway */
+.emily-hair {
+  transform-origin: 50% 60%;
+  animation: hairSway 5.5s ease-in-out infinite;
+}
+@keyframes hairSway {
+  0%, 100% { transform: rotate(0deg) }
+  50%      { transform: rotate(-1.3deg) }
+}
 
