@@ -1,70 +1,76 @@
 "use client";
+
+import Image from "next/image";
 import Link from "next/link";
-import { PearIcon, OrangeIcon, StrawberryIcon } from "./components/ui";
 
-export default function Home() {
+export default function HomePage() {
   return (
-    <main className="min-h-screen pulp text-[color:var(--leaf)]">
-      <div className="max-w-md mx-auto px-6 py-10 space-y-12">
+    <main className="min-h-screen relative overflow-hidden bg-[rgba(255,253,246,1)] text-[color:var(--leaf)]">
+      {/* zwevend fruit op achtergrond */}
+      <div className="absolute inset-0 overflow-hidden fruit-bg select-none pointer-events-none">
+        <span className="fruit" style={{ top: "10%", left: "15%" }}>🍊</span>
+        <span className="fruit" style={{ top: "20%", left: "70%" }}>🍓</span>
+        <span className="fruit" style={{ top: "65%", left: "10%" }}>🍎</span>
+        <span className="fruit" style={{ top: "75%", left: "80%" }}>🍐</span>
+        <span className="fruit" style={{ top: "45%", left: "45%" }}>🍋</span>
+      </div>
 
-        {/* Hero sectie */}
-        <section className="text-center">
-          <div className="flex justify-center mb-4">
-            <PearIcon size={80} />
-          </div>
-          <h1 className="h-hero">Peaarly</h1>
-          <p className="mt-3 text-muted">
-            A no-nonsense peer mentoring community.  
-            Connect with others, grow together, and make learning fruity 🍐
-          </p>
-          <div className="mt-6 flex flex-col gap-3">
-            <Link href="/drop/select" className="btn btn-primary w-full">
-              Go to Pear Drop
-            </Link>
-            <Link href="/feed" className="btn w-full">
-              Go to Community Feed
-            </Link>
-          </div>
-        </section>
+      <div className="relative z-10 max-w-md mx-auto text-center px-5 pt-14 pb-20">
+        {/* Logo */}
+        <Image
+          src="/logo-peear.png"
+          alt="Peear logo"
+          width={160}
+          height={160}
+          className="mx-auto mb-6 drop-shadow-sm"
+          priority
+        />
 
-        {/* Features sectie */}
-        <section>
-          <h2 className="h-sec mb-4">Why join Peaarly?</h2>
-          <ul className="space-y-4">
-            <li className="card flex items-center gap-4">
-              <PearIcon size={48} />
-              <div>
-                <p className="font-semibold">Peer-to-Peer Growth</p>
-                <p className="text-muted text-sm">Real connections, real learning.</p>
-              </div>
-            </li>
-            <li className="card flex items-center gap-4">
-              <OrangeIcon size={48} />
-              <div>
-                <p className="font-semibold">Fresh Perspectives</p>
-                <p className="text-muted text-sm">Bring your ideas, pick new ones.</p>
-              </div>
-            </li>
-            <li className="card flex items-center gap-4">
-              <StrawberryIcon size={48} />
-              <div>
-                <p className="font-semibold">Fun & Fruitful</p>
-                <p className="text-muted text-sm">Serious growth with a playful twist.</p>
-              </div>
-            </li>
-          </ul>
-        </section>
+        <h1 className="text-4xl font-extrabold mb-2 tracking-tight">Peear</h1>
+        <p className="text-[1.05rem] text-muted mb-8">
+          Grow together. Stay curious. Be fruitful. 🍐
+        </p>
 
-        {/* Call to action */}
-        <section className="text-center">
-          <h2 className="h-sec">Ready to start?</h2>
-          <p className="text-muted">Pick your interests and find your match.</p>
-          <Link href="/drop/select" className="btn btn-primary mt-5 px-8">
-            Start a Drop
+        {/* CTA buttons */}
+        <div className="flex flex-col gap-4 mt-10">
+          <Link
+            href="/drop/select"
+            className="btn-primary py-3 rounded-2xl text-lg font-bold shadow-sm"
+          >
+            Go to Pear Drop
           </Link>
+          <Link
+            href="/feed"
+            className="bg-[#F5D48A] text-[color:var(--leaf)] font-bold py-3 rounded-2xl text-lg hover:brightness-95 transition shadow-sm"
+          >
+            Go to Community Feed
+          </Link>
+        </div>
+
+        {/* Why Peear */}
+        <section className="mt-16 space-y-5">
+          <h2 className="text-[1.25rem] font-extrabold">Why join Peear?</h2>
+          <div className="space-y-3">
+            <div className="flex items-center justify-center gap-2">
+              <span className="text-xl">🍐</span>
+              <span className="font-semibold">Peer-to-Peer Growth</span>
+            </div>
+            <div className="flex items-center justify-center gap-2">
+              <span className="text-xl">🍊</span>
+              <span className="font-semibold">Fresh Perspectives</span>
+            </div>
+            <div className="flex items-center justify-center gap-2">
+              <span className="text-xl">🍓</span>
+              <span className="font-semibold">Fun & Fruitful Learning</span>
+            </div>
+          </div>
         </section>
+
+        {/* Footer */}
+        <footer className="mt-20 text-sm text-muted flex items-center justify-center gap-2">
+          <span>Made with 🍐 🍓 🍊 by Peear</span>
+        </footer>
       </div>
     </main>
   );
 }
-
