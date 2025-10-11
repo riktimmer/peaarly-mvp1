@@ -357,4 +357,17 @@ button[aria-label="Share"] {
   0%, 100% { transform: translateY(0) rotate(0deg); }
   50% { transform: translateY(-20px) rotate(8deg); }
 }
+/* Logo fade-in */
+img[alt="Peear logo"] {
+  opacity: 0;
+  transform: translateY(10px);
+  animation: logoIn 0.8s ease-out forwards;
+}
+
+@keyframes logoIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 
