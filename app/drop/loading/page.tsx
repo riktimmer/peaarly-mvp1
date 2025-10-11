@@ -3,45 +3,84 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 
-/* ── Peer (mooie frisse gradient, grotere variant) ──────────────────────── */
+/* ── Peer (strakke frisse variant in lijn met andere fruit) ─────────────── */
 function PearBig({ size = 110 }: { size?: number }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 64 80"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden
+    >
       <defs>
-        <radialGradient id="pearGradient" cx="40%" cy="30%" r="65%">
-          <stop offset="0%" stopColor="#C8EF79" />
-          <stop offset="100%" stopColor="#4CA04C" />
+        <radialGradient id="pearG" cx="42%" cy="30%" r="70%">
+          <stop offset="0%" stopColor="#CDEB83" />
+          <stop offset="100%" stopColor="#4FA45A" />
         </radialGradient>
-        <radialGradient id="highlight" cx="65%" cy="25%" r="25%">
-          <stop offset="0%" stopColor="rgba(255,255,255,0.6)" />
+        <radialGradient id="pearHi" cx="70%" cy="28%" r="24%">
+          <stop offset="0%" stopColor="rgba(255,255,255,0.60)" />
           <stop offset="100%" stopColor="rgba(255,255,255,0)" />
         </radialGradient>
       </defs>
 
-      {/* steel */}
-      <rect x="38" y="8" width="4" height="10" rx="2" fill="#3C6A3C" transform="rotate(-10 40 10)" />
-      {/* blad */}
-      <path d="M40 10c8 0 11 5 9 9-2 3-7 4-12 2-3-1-3-4-1-7 2-3 2-4 4-4z" fill="#63A25F" />
-
-      {/* hoofdvorm */}
-      <path
-        d="M40 18c4-5 9-6 13-3 3 2 4 5 4 9 0 3-1 5-2 7 4 5 6 9 6 15 0 13-9 22-21 22S19 59 19 46c0-6 2-10 6-15-1-2-2-4-2-7 0-4 1-7 4-9 4-3 9-2 13 3z"
-        fill="url(#pearGradient)"
+      <rect
+        x="30.5"
+        y="6"
+        width="3"
+        height="9"
+        rx="1.5"
+        fill="#3A6B3F"
+        transform="rotate(-12 32 10.5)"
       />
-      {/* zachte highlight */}
-      <ellipse cx="52" cy="28" rx="8" ry="10" fill="url(#highlight)" transform="rotate(-10 52 28)" />
-      {/* subtiele rand */}
       <path
-        d="M40 18c4-5 9-6 13-3 3 2 4 5 4 9 0 3-1 5-2 7 4 5 6 9 6 15 0 13-9 22-21 22S19 59 19 46c0-6 2-10 6-15-1-2-2-4-2-7 0-4 1-7 4-9 4-3 9-2 13 3z"
+        d="M33 8c6.8-.6 10.3 2.4 9 6.6-1.2 3.8-6.3 4.7-11 3.2-3-.9-2.8-3.8-.9-6.5 1.3-1.8 1.9-2.9 2.9-3.3z"
+        fill="#66A766"
+      />
+
+      <path
+        d="M32 18
+           c 3.2 -5.8 9.3 -7.6 13.8 -4.6
+           c 3.0 2.0 4.2 5.1 4.2 9.0
+           c 0   3.1 -1.0 5.9 -2.3 8.1
+           c 4.1 5.4 6.1 9.8 6.1 16.0
+           c 0  13.0 -9.7 22.5 -22.8 22.5
+           c -13.1 0 -22.8 -9.5 -22.8 -22.5
+           c 0  -6.2 2.0 -10.6 6.1 -16.0
+           c -1.3 -2.2 -2.3 -5.0 -2.3 -8.1
+           c 0  -3.9 1.2 -7.0 4.2 -9.0
+           C 22.7 10.4 28.8 12.2 32 18 Z"
+        fill="url(#pearG)"
+      />
+      <ellipse
+        cx="46"
+        cy="26"
+        rx="8"
+        ry="10"
+        fill="url(#pearHi)"
+        transform="rotate(-12 46 26)"
+      />
+      <path
+        d="M32 18
+           c 3.2 -5.8 9.3 -7.6 13.8 -4.6
+           c 3.0 2.0 4.2 5.1 4.2 9.0
+           c 0   3.1 -1.0 5.9 -2.3 8.1
+           c 4.1 5.4 6.1 9.8 6.1 16.0
+           c 0  13.0 -9.7 22.5 -22.8 22.5
+           c -13.1 0 -22.8 -9.5 -22.8 -22.5
+           c 0  -6.2 2.0 -10.6 6.1 -16.0
+           c -1.3 -2.2 -2.3 -5.0 -2.3 -8.1
+           c 0  -3.9 1.2 -7.0 4.2 -9.0
+           C 22.7 10.4 28.8 12.2 32 18 Z"
         fill="none"
-        stroke="rgba(0,0,0,0.15)"
-        strokeWidth="1"
+        stroke="rgba(0,0,0,0.12)"
+        strokeWidth="0.9"
       />
     </svg>
   );
 }
 
-/* ── Overige fruitjes (compacte SVG’s) ──────────────────────────────────── */
+/* ── Overige fruitsoorten ───────────────────────────────────────────────── */
 function Orange({ size = 44 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 64 64" aria-hidden>
@@ -115,10 +154,8 @@ function Icon({ kind, size }: { kind: Kind; size?: number }) {
   }
 }
 
-/* ── Eén vallend fruit (curved path + sway + spin via CSS vars) ─────────── */
-function FruitFall({
-  kind, left, delay, dur, size,
-}: { kind: Kind; left: string; delay: number; dur: number; size?: number }) {
+/* ── Eén vallend fruit ─────────────────────────────────────────────────── */
+function FruitFall({ kind, left, delay, dur, size }: { kind: Kind; left: string; delay: number; dur: number; size?: number }) {
   return (
     <div
       className="ff"
@@ -137,13 +174,12 @@ function FruitFall({
   );
 }
 
-/* ── Grote peer (SVG) die landt; na impact: andere fruitjes fade-out ───── */
+/* ── Grote peer die landt ──────────────────────────────────────────────── */
 function LandingPear({ onLand }: { onLand: () => void }) {
   useEffect(() => {
-    const t = setTimeout(onLand, 2300); // impactmoment in CSS
+    const t = setTimeout(onLand, 2300);
     return () => clearTimeout(t);
   }, [onLand]);
-
   return (
     <div className="lp" aria-hidden>
       <PearBig />
@@ -157,25 +193,23 @@ export default function LoadingPage() {
   const router = useRouter();
   const [hideOthers, setHideOthers] = useState(false);
 
-  // langere load (≈ 4.2s), daarna door naar match
   useEffect(() => {
     const to = setTimeout(() => router.push("/drop/match"), 4200);
     return () => clearTimeout(to);
   }, [router]);
 
   const fruits = useMemo(
-    () =>
-      [
-        { kind: "orange", left: "12%", delay: 0,   dur: 1400 },
-        { kind: "grape",  left: "26%", delay: 120, dur: 1500 },
-        { kind: "apple",  left: "38%", delay: 240, dur: 1600 },
-        { kind: "banana", left: "64%", delay: 320, dur: 1500 },
-        { kind: "straw",  left: "78%", delay: 420, dur: 1450 },
-        { kind: "orange", left: "53%", delay: 520, dur: 1550 },
-        { kind: "grape",  left: "86%", delay: 620, dur: 1500 },
-        { kind: "apple",  left: "6%",  delay: 700, dur: 1500 },
-        { kind: "straw",  left: "45%", delay: 820, dur: 1550 },
-      ] as Array<{kind: Kind; left: string; delay: number; dur: number}>,
+    () => [
+      { kind: "orange", left: "12%", delay: 0,   dur: 1400 },
+      { kind: "grape",  left: "26%", delay: 120, dur: 1500 },
+      { kind: "apple",  left: "38%", delay: 240, dur: 1600 },
+      { kind: "banana", left: "64%", delay: 320, dur: 1500 },
+      { kind: "straw",  left: "78%", delay: 420, dur: 1450 },
+      { kind: "orange", left: "53%", delay: 520, dur: 1550 },
+      { kind: "grape",  left: "86%", delay: 620, dur: 1500 },
+      { kind: "apple",  left: "6%",  delay: 700, dur: 1500 },
+      { kind: "straw",  left: "45%", delay: 820, dur: 1550 },
+    ],
     []
   );
 
@@ -183,7 +217,6 @@ export default function LoadingPage() {
     <main className="min-h-screen fruit-wall text-[color:var(--leaf)]">
       <div className="max-w-md mx-auto px-5 py-6">
         <div className="relative overflow-hidden card">
-          {/* Tekst */}
           <div className="text-center px-2 pt-2">
             <h1 className="text-[1.6rem] leading-tight font-extrabold">
               We are picking your match based on your interests…
@@ -193,18 +226,13 @@ export default function LoadingPage() {
             </p>
           </div>
 
-          {/* Animatiezone */}
           <div className="relative h-72 w-full mt-3">
             <div className={`fruits ${hideOthers ? "fade-out" : ""}`}>
               {fruits.map((f, i) => (
                 <FruitFall key={i} kind={f.kind} left={f.left} delay={f.delay} dur={f.dur} />
               ))}
             </div>
-
-            {/* Grote peer die landt */}
             <LandingPear onLand={() => setHideOthers(true)} />
-
-            {/* grond */}
             <div className="ground" />
           </div>
         </div>
