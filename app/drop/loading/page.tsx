@@ -3,7 +3,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 
-/* ── Overige fruitsoorten ───────────────────────────────────────────────── */
+/* SVG fruits */
 function Orange({ size = 44 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 64 64" aria-hidden>
@@ -30,12 +30,8 @@ function Strawberry({ size = 42 }: { size?: number }) {
       <path d="M32 20c6 0 10-6 10-6s2 6 8 6c-2 6-9 10-18 10S16 26 14 20c6 0 8-6 8-6s4 6 10 6z" fill="#22C55E" />
       <path d="M16 30c0 10 7 18 16 18s16-8 16-18S16 26 16 30z" fill="url(#sg)" />
       <g fill="#FEE2E2" opacity=".8">
-        <circle cx="26" cy="35" r="1.2" />
-        <circle cx="32" cy="38" r="1.2" />
-        <circle cx="39" cy="34" r="1.2" />
-        <circle cx="45" cy="39" r="1.2" />
-        <circle cx="21" cy="40" r="1.2" />
-        <circle cx="34" cy="44" r="1.2" />
+        <circle cx="26" cy="35" r="1.2" /><circle cx="32" cy="38" r="1.2" /><circle cx="39" cy="34" r="1.2" />
+        <circle cx="45" cy="39" r="1.2" /><circle cx="21" cy="40" r="1.2" /><circle cx="34" cy="44" r="1.2" />
       </g>
     </svg>
   );
@@ -68,54 +64,34 @@ function Grape({ size = 42 }: { size?: number }) {
 function Banana({ size = 46 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 64 64" aria-hidden>
-      <path
-        d="M10 36c10 10 27 12 38 2 3-3 5-6 6-9-2 8-8 15-16 18-12 4-22-1-28-11z"
-        fill="#FCD34D"
-        stroke="#EAB308"
-        strokeWidth="2"
-      />
+      <path d="M10 36c10 10 27 12 38 2 3-3 5-6 6-9-2 8-8 15-16 18-12 4-22-1-28-11z"
+        fill="#FCD34D" stroke="#EAB308" strokeWidth="2" />
     </svg>
   );
 }
 
-/* ── Types ──────────────────────────────────────────────────────────────── */
+/* Types */
 type Kind = "orange" | "straw" | "apple" | "grape" | "banana";
+type FruitItem = { kind: Kind; left: string; delay: number; dur: number };
 
 function Icon({ kind, size }: { kind: Kind; size?: number }) {
   switch (kind) {
-    case "orange":
-      return <Orange size={size ?? 44} />;
-    case "straw":
-      return <Strawberry size={size ?? 42} />;
-    case "apple":
-      return <Apple size={size ?? 44} />;
-    case "grape":
-      return <Grape size={size ?? 42} />;
-    case "banana":
-      return <Banana size={size ?? 46} />;
+    case "orange": return <Orange size={size ?? 44} />;
+    case "straw":  return <Strawberry size={size ?? 42} />;
+    case "apple":  return <Apple size={size ?? 44} />;
+    case "grape":  return <Grape size={size ?? 42} />;
+    case "banana": return <Banana size={size ?? 46} />;
   }
 }
 
-/* ── Eén vallend fruit ─────────────────────────────────────────────────── */
-function FruitFall({
-  kind,
-  left,
-  delay,
-  dur,
-  size,
-}: {
-  kind: Kind;
-  left: string;
-  delay: number;
-  dur: number;
-  size?: number;
-}) {
+/* Falling fruit */
+function FruitFall({ kind, left, delay, dur, size }: FruitItem & { size?: number }) {
   return (
     <div
       className="ff"
       style={{
         left,
-        // @ts-ignore
+        // @ts-ignore CSS vars
         "--delay": `${delay}ms`,
         "--dur": `${dur}ms`,
         "--sway": `${Math.random() > 0.5 ? 1 : -1}`,
@@ -128,10 +104,10 @@ function FruitFall({
   );
 }
 
-/* ── Grote 🍐 emoji als landende peer ───────────────────────────────────── */
+/* Landing 🍐 emoji (4x groter) */
 function LandingPear({ onLand }: { onLand: () => void }) {
   useEffect(() => {
-    const t = setTimeout(onLand, 2300); // impactmoment
+    const t = setTimeout(onLand, 2300);
     return () => clearTimeout(t);
   }, [onLand]);
 
@@ -145,29 +121,28 @@ function LandingPear({ onLand }: { onLand: () => void }) {
   );
 }
 
-/* ── Pagina ─────────────────────────────────────────────────────────────── */
+/* Page */
 export default function LoadingPage() {
   const router = useRouter();
   const [hideOthers, setHideOthers] = useState(false);
 
-  // iets langere load (≈ 4.2s)
   useEffect(() => {
     const to = setTimeout(() => router.push("/drop/match"), 4200);
     return () => clearTimeout(to);
   }, [router]);
 
-  // ✅ expliciet getype, zodat kind altijd 'Kind' is (geen 'string')
-  const fruits: { kind: Kind; left: string; delay: number; dur: number }[] = useMemo(
+  // ✅ HARD-typed + literal cast per item
+  const fruits = useMemo<FruitItem[]>(
     () => [
-      { kind: "orange", left: "12%", delay: 0, dur: 1400 },
-      { kind: "grape", left: "26%", delay: 120, dur: 1500 },
-      { kind: "apple", left: "38%", delay: 240, dur: 1600 },
-      { kind: "banana", left: "64%", delay: 320, dur: 1500 },
-      { kind: "straw", left: "78%", delay: 420, dur: 1450 },
-      { kind: "orange", left: "53%", delay: 520, dur: 1550 },
-      { kind: "grape", left: "86%", delay: 620, dur: 1500 },
-      { kind: "apple", left: "6%", delay: 700, dur: 1500 },
-      { kind: "straw", left: "45%", delay: 820, dur: 1550 },
+      { kind: "orange" as Kind, left: "12%", delay: 0,   dur: 1400 },
+      { kind: "grape"  as Kind, left: "26%", delay: 120, dur: 1500 },
+      { kind: "apple"  as Kind, left: "38%", delay: 240, dur: 1600 },
+      { kind: "banana" as Kind, left: "64%", delay: 320, dur: 1500 },
+      { kind: "straw"  as Kind, left: "78%", delay: 420, dur: 1450 },
+      { kind: "orange" as Kind, left: "53%", delay: 520, dur: 1550 },
+      { kind: "grape"  as Kind, left: "86%", delay: 620, dur: 1500 },
+      { kind: "apple"  as Kind, left: "6%",  delay: 700, dur: 1500 },
+      { kind: "straw"  as Kind, left: "45%", delay: 820, dur: 1550 },
     ],
     []
   );
@@ -186,7 +161,13 @@ export default function LoadingPage() {
           <div className="relative h-72 w-full mt-3">
             <div className={`fruits ${hideOthers ? "fade-out" : ""}`}>
               {fruits.map((f, i) => (
-                <FruitFall key={i} kind={f.kind} left={f.left} delay={f.delay} dur={f.dur} />
+                <FruitFall
+                  key={i}
+                  kind={f.kind as Kind}   {/* <- extra safe cast */}
+                  left={f.left}
+                  delay={f.delay}
+                  dur={f.dur}
+                />
               ))}
             </div>
 
