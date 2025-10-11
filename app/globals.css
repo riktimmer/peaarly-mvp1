@@ -346,4 +346,15 @@ button[aria-label="Share"] {
   0%, 100% { transform: translateY(0) rotate(0deg); }
   50% { transform: translateY(-20px) rotate(8deg); }
 }
+/* Fruitige achtergrondanimatie */
+.fruit {
+  position: absolute;
+  font-size: 2.2rem;
+  opacity: 0.2;
+  animation: floatFruit 12s ease-in-out infinite;
+}
+@keyframes floatFruit {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-20px) rotate(8deg); }
+}
 
