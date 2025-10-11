@@ -15,7 +15,7 @@ export default function HomePage() {
       </div>
 
       <div className="relative z-10 max-w-md mx-auto text-center px-5 pt-12 pb-20">
-        {/* LOGO — background-image + dark-mode switch (geen imports nodig) */}
+        {/* LOGO — met cache-buster (v=11) */}
         <div aria-label="Peear logo" className="peear-logo mx-auto mb-6" />
 
         <h1 className="text-4xl font-extrabold mb-2 tracking-tight">Peear</h1>
@@ -61,33 +61,23 @@ export default function HomePage() {
         </footer>
       </div>
 
-      {/* Styles: robuuste logo-switch én hard override op blending */}
+      {/* Logo-stijl en fruitanimatie */}
       <style jsx global>{`
-        /* Verwijder elke mogelijke blend/invert die elders toegepast kan zijn */
-        .peear-logo,
-        img[alt="Peear logo"],
-        #brandLogo {
-          mix-blend-mode: normal !important;
-          filter: none !important;
-        }
-
-        /* Logo via background-image (+ cache-buster v=10) */
         .peear-logo {
           width: 180px;
           height: 180px;
-          background: url('/logo-peear.png?v=10') center / contain no-repeat;
+          background: url('/logo-peear.png?v=11') center / contain no-repeat;
           border-radius: 12px;
           filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.06));
           transition: filter 0.4s ease, transform 0.4s ease;
         }
         @media (prefers-color-scheme: dark) {
           .peear-logo {
-            background-image: url('/logo-peear-dark.png?v=10');
+            background-image: url('/logo-peear-dark.png?v=11');
             filter: drop-shadow(0 1px 1px rgba(255, 255, 255, 0.12));
           }
         }
 
-        /* Fruit-animatie */
         .fruit {
           position: absolute;
           font-size: 2.2rem;
