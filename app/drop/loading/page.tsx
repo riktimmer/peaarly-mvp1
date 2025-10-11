@@ -27,14 +27,8 @@ function Strawberry({ size = 42 }: { size?: number }) {
           <stop offset="1" stopColor="#E11D48" />
         </linearGradient>
       </defs>
-      <path
-        d="M32 20c6 0 10-6 10-6s2 6 8 6c-2 6-9 10-18 10S16 26 14 20c6 0 8-6 8-6s4 6 10 6z"
-        fill="#22C55E"
-      />
-      <path
-        d="M16 30c0 10 7 18 16 18s16-8 16-18S16 26 16 30z"
-        fill="url(#sg)"
-      />
+      <path d="M32 20c6 0 10-6 10-6s2 6 8 6c-2 6-9 10-18 10S16 26 14 20c6 0 8-6 8-6s4 6 10 6z" fill="#22C55E" />
+      <path d="M16 30c0 10 7 18 16 18s16-8 16-18S16 26 16 30z" fill="url(#sg)" />
       <g fill="#FEE2E2" opacity=".8">
         <circle cx="26" cy="35" r="1.2" />
         <circle cx="32" cy="38" r="1.2" />
@@ -57,10 +51,7 @@ function Apple({ size = 44 }: { size?: number }) {
       </defs>
       <circle cx="26" cy="34" r="16" fill="url(#ag)" />
       <circle cx="40" cy="34" r="16" fill="#E34D4D" />
-      <path
-        d="M33 17c4-2 7-2 10 0-2 4-5 6-10 6-3-3-3-5 0-6z"
-        fill="#2F7A3E"
-      />
+      <path d="M33 17c4-2 7-2 10 0-2 4-5 6-10 6-3-3-3-5 0-6z" fill="#2F7A3E" />
     </svg>
   );
 }
@@ -68,13 +59,7 @@ function Grape({ size = 42 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 64 64" aria-hidden>
       {[0, 1, 2, 3, 4, 5, 6].map((i) => (
-        <circle
-          key={i}
-          cx={22 + (i % 3) * 10}
-          cy={22 + Math.floor(i / 3) * 10}
-          r="6"
-          fill="#7C3AED"
-        />
+        <circle key={i} cx={22 + (i % 3) * 10} cy={22 + Math.floor(i / 3) * 10} r="6" fill="#7C3AED" />
       ))}
       <rect x="29" y="10" width="4" height="8" rx="2" fill="#265C31" />
     </svg>
@@ -93,7 +78,9 @@ function Banana({ size = 46 }: { size?: number }) {
   );
 }
 
+/* ── Types ──────────────────────────────────────────────────────────────── */
 type Kind = "orange" | "straw" | "apple" | "grape" | "banana";
+
 function Icon({ kind, size }: { kind: Kind; size?: number }) {
   switch (kind) {
     case "orange":
@@ -109,7 +96,7 @@ function Icon({ kind, size }: { kind: Kind; size?: number }) {
   }
 }
 
-/* Eén vallend fruit (curved path + sway + spin via CSS vars) */
+/* ── Eén vallend fruit ─────────────────────────────────────────────────── */
 function FruitFall({
   kind,
   left,
@@ -141,7 +128,7 @@ function FruitFall({
   );
 }
 
-/* Grote 🍐 emoji als landende peer */
+/* ── Grote 🍐 emoji als landende peer ───────────────────────────────────── */
 function LandingPear({ onLand }: { onLand: () => void }) {
   useEffect(() => {
     const t = setTimeout(onLand, 2300); // impactmoment
@@ -150,12 +137,7 @@ function LandingPear({ onLand }: { onLand: () => void }) {
 
   return (
     <div className="lp" aria-hidden>
-      <span
-        className="peer-emoji"
-        role="img"
-        aria-label="pear"
-        style={{ fontSize: "180px", display: "block", lineHeight: 1 }}
-      >
+      <span className="peer-emoji" role="img" aria-label="pear" style={{ fontSize: "180px", display: "block", lineHeight: 1 }}>
         🍐
       </span>
       <div className="lp-shadow" />
@@ -163,7 +145,7 @@ function LandingPear({ onLand }: { onLand: () => void }) {
   );
 }
 
-/* Pagina */
+/* ── Pagina ─────────────────────────────────────────────────────────────── */
 export default function LoadingPage() {
   const router = useRouter();
   const [hideOthers, setHideOthers] = useState(false);
@@ -174,7 +156,8 @@ export default function LoadingPage() {
     return () => clearTimeout(to);
   }, [router]);
 
-  const fruits = useMemo(
+  // ✅ expliciet getype, zodat kind altijd 'Kind' is (geen 'string')
+  const fruits: { kind: Kind; left: string; delay: number; dur: number }[] = useMemo(
     () => [
       { kind: "orange", left: "12%", delay: 0, dur: 1400 },
       { kind: "grape", left: "26%", delay: 120, dur: 1500 },
@@ -197,21 +180,13 @@ export default function LoadingPage() {
             <h1 className="text-[1.6rem] leading-tight font-extrabold">
               We are picking your match based on your interests…
             </h1>
-            <p className="text-muted mt-1 text-[0.95rem]">
-              Hang on tight, your peer is on the way!
-            </p>
+            <p className="text-muted mt-1 text-[0.95rem]">Hang on tight, your peer is on the way!</p>
           </div>
 
           <div className="relative h-72 w-full mt-3">
             <div className={`fruits ${hideOthers ? "fade-out" : ""}`}>
               {fruits.map((f, i) => (
-                <FruitFall
-                  key={i}
-                  kind={f.kind}
-                  left={f.left}
-                  delay={f.delay}
-                  dur={f.dur}
-                />
+                <FruitFall key={i} kind={f.kind} left={f.left} delay={f.delay} dur={f.dur} />
               ))}
             </div>
 
