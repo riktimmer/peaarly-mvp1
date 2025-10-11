@@ -203,4 +203,59 @@ body{
   55%  { transform: translate(calc(var(--x,0)), -110px) rotate(120deg) }
   100% { transform: translate(calc(var(--x,0)), -10px)  rotate(280deg); opacity:.2 }
 }
+/* Fruit fall (curved + sway + spin) */
+.ff{
+  position:absolute; top:-64px;
+  animation: fallCurve var(--dur,1400ms) cubic-bezier(.22,.75,.2,1) var(--delay,0ms) forwards,
+             fruitSpin  var(--dur,1400ms) ease-in-out var(--delay,0ms) forwards;
+  will-change: transform, opacity;
+  filter: drop-shadow(0 6px 10px rgba(0,0,0,.10));
+}
+@keyframes fallCurve{
+  0%   { transform: translate3d(0,-80px,0) rotate(0deg); opacity:0 }
+  10%  { opacity:1 }
+  60%  { transform: translate3d(calc(var(--sway)*-16px), 180px, 0) rotate(var(--rot,12deg)) }
+  100% { transform: translate3d(calc(var(--sway)*-26px), 250px, 0) rotate(0deg); opacity:1 }
+}
+@keyframes fruitSpin{
+  0%{ transform: translate3d(0,-80px,0) rotate(-10deg) }
+  50%{ transform: translate3d(0,110px,0) rotate(10deg) }
+  100%{ transform: translate3d(0,250px,0) rotate(0deg) }
+}
+
+/* Grote peer (SVG) – bounce + shadow */
+.lp{
+  position:absolute; left:48%; top:-90px;
+  animation: pearImpact 2300ms cubic-bezier(.2,.85,.2,1) 600ms forwards;
+  filter: drop-shadow(0 10px 18px rgba(0,0,0,.12));
+}
+@keyframes pearImpact{
+  0%{ transform: translateY(-90px) }
+  70%{ transform: translateY(230px) }  /* impact */
+  84%{ transform: translateY(205px) }  /* bounce */
+  100%{ transform: translateY(230px) } /* settle */
+}
+.lp-shadow{
+  position:absolute; left:50%; bottom:-6px; transform:translateX(-50%);
+  width:10px;height:10px;border-radius:9999px;background:rgba(0,0,0,.10);
+  filter: blur(8px); opacity:0;
+  animation: pearShadow 1200ms ease-out 1100ms forwards;
+}
+@keyframes pearShadow{
+  0%{ width:10px; opacity:0 }
+  60%{ opacity:.6 }
+  100%{ width:120px; opacity:.35 }
+}
+
+/* Ground line */
+.ground{
+  position:absolute; left:24px; right:24px; bottom:18px;
+  height:3px; border-radius:9999px; background:#E5EEDC;
+}
+
+/* Andere fruitjes laten verdwijnen bij landende peer */
+.fruits.fade-out { animation: fruitsFade 300ms ease forwards; }
+@keyframes fruitsFade {
+  to { opacity: 0; transform: translateY(12px); }
+}
 
