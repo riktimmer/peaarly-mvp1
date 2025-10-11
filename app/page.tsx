@@ -15,12 +15,12 @@ export default function HomePage() {
       </div>
 
       <div className="relative z-10 max-w-md mx-auto text-center px-5 pt-12 pb-20">
-        {/* LOGO – wisselt automatisch tussen light & dark */}
+        {/* LOGO – automatische light/dark switch */}
         <div className="flex items-center justify-center gap-3 mb-6">
           <picture>
-            {/* witte variant voor dark mode */}
+            {/* witte versie voor dark mode */}
             <source srcSet="/logo-peear-dark.png" media="(prefers-color-scheme: dark)" />
-            {/* groene variant voor light mode */}
+            {/* groene standaardversie voor light mode */}
             <img
               src="/logo-peear.png"
               alt="Peear logo"
