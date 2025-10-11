@@ -15,10 +15,10 @@ export default function HomePage() {
       </div>
 
       <div className="relative z-10 max-w-md mx-auto text-center px-5 pt-12 pb-20">
-        {/* LOGO met blending fix */}
+        {/* LOGO */}
         <div className="flex items-center justify-center gap-3 mb-6">
           <img
-            src="/logo-peeearr.png"
+            src="/logo-peear.png?v=3" // <-- let op: naam exact gelijk aan wat in /public/ staat
             alt="Peear logo"
             width={180}
             height={180}
