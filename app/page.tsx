@@ -6,7 +6,7 @@ import PeearLogo from "./components/PeearLogo";
 export default function HomePage() {
   return (
     <main className="min-h-screen relative overflow-x-hidden bg-[rgba(255,253,246,1)] text-[color:var(--leaf)] dark:bg-[#0F1A0E] dark:text-white transition-colors duration-500">
-      {/* Fruitige achtergrond */}
+      {/* Achtergrond met fruit */}
       <div className="absolute inset-0 overflow-hidden select-none pointer-events-none">
         <span className="fruit" style={{ top: "10%", left: "15%" }}>🍊</span>
         <span className="fruit" style={{ top: "20%", left: "70%" }}>🍓</span>
@@ -15,17 +15,17 @@ export default function HomePage() {
         <span className="fruit" style={{ top: "45%", left: "45%" }}>🍋</span>
       </div>
 
-      {/* Hoofdinhoud */}
+      {/* Inhoud */}
       <div className="relative z-10 max-w-md mx-auto text-center px-5 pt-12 pb-20">
         {/* Inline SVG-logo */}
-        <PeearLogo className="mx-auto mb-6 h-44 w-44 text-[color:var(--leaf)] dark:text-white drop-shadow-sm" />
+        <PeearLogo className="mx-auto mb-6 h-44 w-44 text-[color:var(--leaf)] dark:text-white drop-shadow-sm transition-colors duration-300" />
 
         <h1 className="text-4xl font-extrabold mb-2 tracking-tight">Peear</h1>
         <p className="text-[1.05rem] text-muted mb-8 dark:text-gray-300">
           Grow together. Stay curious. Be fruitful. 🍐
         </p>
 
-        {/* Knoppen */}
+        {/* CTA-knoppen */}
         <div className="flex flex-col gap-4 mt-10">
           <Link
             href="/drop/select"
@@ -41,7 +41,7 @@ export default function HomePage() {
           </Link>
         </div>
 
-        {/* Uitleg */}
+        {/* Waarom Peear */}
         <section className="mt-16 space-y-5">
           <h2 className="text-[1.25rem] font-extrabold">Why join Peear?</h2>
           <div className="space-y-3">
@@ -66,7 +66,7 @@ export default function HomePage() {
         </footer>
       </div>
 
-      {/* Fruit-animaties */}
+      {/* Stijlen voor fruitanimatie */}
       <style jsx global>{`
         .fruit {
           position: absolute;
