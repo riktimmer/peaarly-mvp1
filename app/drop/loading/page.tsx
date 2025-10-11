@@ -1,10 +1,9 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { Card, PearIcon } from "../../components/ui";
 
-/* Extra fruiticonen (compacte, nette SVG’s) */
+/* Compacte, nette fruit-SVG's voor variatie */
 function Orange({ size = 44 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 64 64" aria-hidden>
@@ -70,10 +69,9 @@ function Banana({ size = 46 }: { size?: number }) {
   );
 }
 
-type Kind = "pear" | "orange" | "straw" | "apple" | "grape" | "banana";
+type Kind = "orange" | "straw" | "apple" | "grape" | "banana";
 function Icon({ kind, size }: { kind: Kind; size?: number }) {
   switch (kind) {
-    case "pear":   return <PearIcon size={size ?? 44} />;
     case "orange": return <Orange size={size ?? 44} />;
     case "straw":  return <Strawberry size={size ?? 42} />;
     case "apple":  return <Apple size={size ?? 44} />;
@@ -82,7 +80,7 @@ function Icon({ kind, size }: { kind: Kind; size?: number }) {
   }
 }
 
-/* Eén vallend fruit met curved path + sway + spin via CSS-variabelen */
+/* Eén vallend fruit (curved path + sway + spin via CSS vars) */
 function FruitFall({
   kind, left, delay, dur, size,
 }: { kind: Kind; left: string; delay: number; dur: number; size?: number }) {
@@ -91,7 +89,6 @@ function FruitFall({
       className="ff"
       style={{
         left,
-        // variabelen voor animatie
         // @ts-ignore
         "--delay": `${delay}ms`,
         "--dur": `${dur}ms`,
@@ -105,50 +102,20 @@ function FruitFall({
   );
 }
 
-/* De peer die zichtbaar op de grond landt (met bounce) */
-function LandingPear({ onLand }: { onLand: () => void }) {
-  // roep onLand net na de “impact”
-  useEffect(() => {
-    const t = setTimeout(onLand, 2300); // gelijk aan impactmoment in CSS
-    return () => clearTimeout(t);
-  }, [onLand]);
-
+/* De peer-emoji die zichtbaar op de grond landt (groter + bounce) */
+function LandingPear() {
   return (
     <div className="lp" aria-hidden>
-      <PearIcon size={58} />
+      <span className="emoji-pear" role="img" aria-label="pear">🍐</span>
       <div className="lp-shadow" />
     </div>
   );
 }
 
-/* Confetti burst */
-function Confetti({ show = false }: { show: boolean }) {
-  if (!show) return null;
-  const pieces = Array.from({ length: 28 }).map((_, i) => {
-    const hue = 20 + (i * 13) % 320;
-    const x = (i - 14) * 6;      // horizontale spreiding
-    const d = 40 + (i % 5) * 60; // verschillende delays
-    return (
-      <div
-        key={i}
-        className="confetti"
-        style={{
-          // @ts-ignore
-          "--x": `${x}px`,
-          "--hue": `${hue}`,
-          "--cdelay": `${d}ms`,
-        }}
-      />
-    );
-  });
-  return <div className="confetti-wrap">{pieces}</div>;
-}
-
 export default function LoadingPage() {
   const router = useRouter();
-  const [boom, setBoom] = useState(false);
 
-  // langere load (≈ 4.2s), confetti eerder bij impact
+  // langere load (≈ 4.2s), daarna door naar match
   useEffect(() => {
     const to = setTimeout(() => router.push("/drop/match"), 4200);
     return () => clearTimeout(to);
@@ -173,7 +140,7 @@ export default function LoadingPage() {
   return (
     <main className="min-h-screen fruit-wall text-[color:var(--leaf)]">
       <div className="max-w-md mx-auto px-5 py-6">
-        <Card className="relative overflow-hidden">
+        <div className="relative overflow-hidden card">
           {/* TEXT — nadrukkelijker */}
           <div className="text-center px-2 pt-2">
             <h1 className="text-[1.6rem] leading-tight font-extrabold">
@@ -189,13 +156,14 @@ export default function LoadingPage() {
             {fruits.map((f, i) => (
               <FruitFall key={i} kind={f.kind} left={f.left} delay={f.delay} dur={f.dur} />
             ))}
-            <LandingPear onLand={() => setBoom(true)} />
+
+            {/* Grote peer-emoji die landt */}
+            <LandingPear />
+
+            {/* grond */}
             <div className="ground" />
           </div>
-
-          {/* CONFETTI */}
-          <Confetti show={boom} />
-        </Card>
+        </div>
       </div>
     </main>
   );
