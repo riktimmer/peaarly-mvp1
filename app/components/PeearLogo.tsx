@@ -5,13 +5,13 @@ type Props = {
 };
 
 /**
- * Peear-logo
- * - Netwerk (hex) met nodes
- * - Speels steeltje dat vanuit het top-node met peer verbindt
- * - Leaf
- * - Peer-vorm verfijnd (minder rond onderkant)
- * - Subtiele extra netwerklijntjes richting peer
- * - Alles in `currentColor` (dark-mode = wit)
+ * Peear-logo (versie met opening bovenin links)
+ * - Bovenste horizontale rand is open (geen lijn tussen (95,35) en (165,35))
+ * - Peer iets naar links/beneden verschoven zodat hij netjes “temidden” valt
+ * - Leaf aan de linkerkant
+ * - Geen steel
+ * - Subtiele, dunne netwerklijntjes naar peer
+ * - Alles gebruikt currentColor (werkt automatisch in dark mode)
  */
 export default function PeearLogo({ className = "h-40 w-40" }: Props) {
   return (
@@ -22,7 +22,18 @@ export default function PeearLogo({ className = "h-40 w-40" }: Props) {
       className={className}
       xmlns="http://www.w3.org/2000/svg"
     >
-      {/* === 1) NETWERK STRUCTUUR (hex) === */}
+      {/* === NODE COORDS (vaste posities) === */}
+      {/*  (x,y):
+          L-top:  (95,35)
+          R-top:  (165,35)
+          R-mid:  (235,95)
+          R-low:  (220,190)
+          Bot:    (130,245)
+          L-low:  (40,190)
+          L-mid:  (25,95)
+      */}
+
+      {/* === 1) NETWERK — randen (met opening aan de bovenkant links) === */}
       <g
         fill="none"
         stroke="currentColor"
@@ -31,26 +42,31 @@ export default function PeearLogo({ className = "h-40 w-40" }: Props) {
         strokeLinejoin="round"
         opacity={0.95}
       >
-        {/* buitenframe */}
-        <path d="M130 245 40 190 25 95 95 35 165 35 235 95 220 190 130 245Z" />
-        {/* middenkolom licht */}
+        {/* van L-mid naar L-top */}
+        <path d="M25 95 L95 35" />
+        {/* OPENING tussen L-top (95,35) en R-top (165,35) → GEEN lijn hier */}
+        {/* van R-top naar R-mid */}
+        <path d="M165 35 L235 95" />
+        {/* rest van de hex */}
+        <path d="M235 95 L220 190 L130 245 L40 190 L25 95" />
+        {/* lichte verticale middenlijn voor structuur */}
         <path d="M130 78v164" opacity={0.45} />
       </g>
 
       {/* === 2) NODES === */}
       {[
-        [130, 245],
-        [40, 190],
-        [25, 95],
-        [95, 35],
-        [165, 35],
-        [235, 95],
-        [220, 190],
+        [130, 245], // bottom
+        [40, 190],  // left-low
+        [25, 95],   // left-mid
+        [95, 35],   // left-top
+        [165, 35],  // right-top
+        [235, 95],  // right-mid
+        [220, 190], // right-low
       ].map(([cx, cy], i) => (
         <circle key={i} cx={cx} cy={cy} r={10} fill="currentColor" />
       ))}
 
-      {/* === 3) SUBTIELE EXTRA NETWERKLIJNTJES naar de peer (dunner/lichter) === */}
+      {/* === 3) SUBTIELE EXTRA NETWERKLIJNTJES NAAR DE PEER (dunner/lichter) === */}
       <g
         fill="none"
         stroke="currentColor"
@@ -59,58 +75,46 @@ export default function PeearLogo({ className = "h-40 w-40" }: Props) {
         opacity={0.45}
       >
         {/* linksboven node -> linkerschouder peer */}
-        <path d="M95 35 C 100 55, 105 70, 118 86" />
+        <path d="M95 35 C 102 56, 110 74, 118 94" />
         {/* rechtsboven node -> rechterschouder peer */}
-        <path d="M165 35 C 160 55, 155 70, 142 86" />
+        <path d="M165 35 C 158 56, 150 74, 142 94" />
         {/* linker zij-node -> onder buik peer */}
-        <path d="M40 190 C 70 182, 90 175, 112 172" />
+        <path d="M40 190 C 70 182, 90 176, 112 170" />
         {/* rechter zij-node -> onder buik peer */}
-        <path d="M220 190 C 190 182, 170 175, 148 172" />
+        <path d="M220 190 C 190 182, 170 176, 148 170" />
       </g>
 
-      {/* === 4) STEEL als speelse verbinding vanuit top-node (gebogen) === */}
-      <path
-        d="
-          M165 35
-          C 155 40, 146 48, 140 59
-          C 136 66, 134 74, 133 84
-        "
-        fill="none"
-        stroke="currentColor"
-        strokeWidth={8}
-        strokeLinecap="round"
-        opacity={0.95}
-      />
+      {/* === 4) PEER — iets naar links/beneden geplaatst via translate === */}
+      <g transform="translate(-10, 10)">
+        {/* Peer-vorm (gepolijst; minder rond onderzijde) */}
+        <path
+          fill="currentColor"
+          d="
+            M120 96
+            c -7 -15 4 -30 16 -34
+            c 10 -3 21 1 26 10
+            c 3 5 3 11 2 16
+            c 18 6 30 21 33 39
+            c 4 24 -10 47 -33 56
+            c -23 9 -50 -1 -61 -22
+            c -11 -21 -6 -46 12 -60
+            c 3 -2 5 -3 5 -5
+            Z
+          "
+        />
 
-      {/* === 5) LEAF (aan steel) === */}
-      <path
-        d="
-          M151 56
-          c 14 -10 28 -12 39 -9
-          c -6 12 -18 20 -32 22
-          c -4 1 -8 -5 -7 -13
-          Z
-        "
-        fill="currentColor"
-      />
-
-      {/* === 6) PEER — verbeterde vorm (minder 'rondje', meer peer) === */}
-      {/* contour: iets smallere hals, zachtere buik, eleganter uiteinde */}
-      <path
-        fill="currentColor"
-        d="
-          M120 96
-          c -7 -15 4 -30 16 -34
-          c 10 -3 21 1 26 10
-          c 3 5 3 11 2 16
-          c 18 6 30 21 33 39
-          c 4 24 -10 47 -33 56
-          c -23 9 -50 -1 -61 -22
-          c -11 -21 -6 -46 12 -60
-          c 3 -2 5 -3 5 -5
-          Z
-        "
-      />
+        {/* Leaf — links i.p.v. rechts */}
+        <path
+          fill="currentColor"
+          d="
+            M114 78
+            c -15 -8 -28 -9 -39 -4
+            c 6 12 18 20 32 22
+            c 4 1 8 -4 7 -10
+            Z
+          "
+        />
+      </g>
     </svg>
   );
 }
