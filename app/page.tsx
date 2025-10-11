@@ -4,7 +4,7 @@ import Link from "next/link";
 
 export default function HomePage() {
   return (
-    <main className="min-h-screen relative overflow-x-hidden bg-[rgba(255,253,246,1)] text-[color:var(--leaf)]">
+    <main className="min-h-screen relative overflow-x-hidden bg-[rgba(255,253,246,1)] text-[color:var(--leaf)] dark:bg-[#0F1A0E] dark:text-white transition-colors duration-500">
       {/* Zwevend fruit op achtergrond */}
       <div className="absolute inset-0 overflow-hidden fruit-bg select-none pointer-events-none">
         <span className="fruit" style={{ top: "10%", left: "15%" }}>🍊</span>
@@ -15,20 +15,25 @@ export default function HomePage() {
       </div>
 
       <div className="relative z-10 max-w-md mx-auto text-center px-5 pt-12 pb-20">
-        {/* LOGO */}
+        {/* LOGO – wisselt automatisch tussen light & dark */}
         <div className="flex items-center justify-center gap-3 mb-6">
-          <img
-            src="/logo-peear.png?v=3" // <-- let op: naam exact gelijk aan wat in /public/ staat
-            alt="Peear logo"
-            width={180}
-            height={180}
-            className="mx-auto drop-shadow-sm bg-transparent mix-blend-multiply rounded-lg"
-          />
+          <picture>
+            {/* witte variant voor dark mode */}
+            <source srcSet="/logo-peear-dark.png" media="(prefers-color-scheme: dark)" />
+            {/* groene variant voor light mode */}
+            <img
+              src="/logo-peear.png"
+              alt="Peear logo"
+              width={180}
+              height={180}
+              className="mx-auto drop-shadow-sm bg-transparent rounded-lg transition-all duration-500"
+            />
+          </picture>
         </div>
 
         {/* Titel + tagline */}
         <h1 className="text-4xl font-extrabold mb-2 tracking-tight">Peear</h1>
-        <p className="text-[1.05rem] text-muted mb-8">
+        <p className="text-[1.05rem] text-muted mb-8 dark:text-gray-300">
           Grow together. Stay curious. Be fruitful. 🍐
         </p>
 
@@ -42,7 +47,7 @@ export default function HomePage() {
           </Link>
           <Link
             href="/feed"
-            className="bg-[#F5D48A] text-[color:var(--leaf)] font-bold py-3 rounded-2xl text-lg hover:brightness-95 transition shadow-sm"
+            className="bg-[#F5D48A] text-[color:var(--leaf)] font-bold py-3 rounded-2xl text-lg hover:brightness-95 transition shadow-sm dark:bg-[#FFD26E] dark:text-[#0F1A0E]"
           >
             Go to Community Feed
           </Link>
@@ -68,7 +73,7 @@ export default function HomePage() {
         </section>
 
         {/* Footer */}
-        <footer className="mt-20 text-sm text-muted flex items-center justify-center gap-2">
+        <footer className="mt-20 text-sm text-muted flex items-center justify-center gap-2 dark:text-gray-400">
           <span>Made with 🍐 🍓 🍊 by Peear</span>
         </footer>
       </div>
