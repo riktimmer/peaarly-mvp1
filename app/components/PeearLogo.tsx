@@ -7,8 +7,7 @@ type Props = {
 
 /**
  * Inline SVG logo van Peear
- * - gebruikt `currentColor`, dus volgt tekstkleur
- * - geen upload of PNG nodig
+ * - gebruikt `currentColor`, dus volgt tekstkleur (light: var(--leaf), dark: white)
  */
 export default function PeearLogo({ className = "h-40 w-40" }: Props) {
   return (
@@ -19,7 +18,6 @@ export default function PeearLogo({ className = "h-40 w-40" }: Props) {
       className={className}
       xmlns="http://www.w3.org/2000/svg"
     >
-      {/* Netwerk / verbindingen */}
       <g
         fill="none"
         stroke="currentColor"
@@ -31,8 +29,6 @@ export default function PeearLogo({ className = "h-40 w-40" }: Props) {
         <path d="M128 230 38 188 24 98 96 38 160 38 232 98 218 188 128 230" />
         <path d="M128 72v158" opacity={0.5} />
       </g>
-
-      {/* Verbinding nodes */}
       {[
         [128, 230],
         [38, 188],
@@ -44,8 +40,6 @@ export default function PeearLogo({ className = "h-40 w-40" }: Props) {
       ].map(([cx, cy], i) => (
         <circle key={i} cx={cx} cy={cy} r={11} fill="currentColor" />
       ))}
-
-      {/* Peer-vorm */}
       <path
         fill="currentColor"
         d="
@@ -60,8 +54,6 @@ export default function PeearLogo({ className = "h-40 w-40" }: Props) {
           c 4 -1 7 -2 10 -4
         "
       />
-
-      {/* Blaadje */}
       <path
         d="
           M154 45
