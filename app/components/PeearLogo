@@ -2,13 +2,13 @@
 import * as React from "react";
 
 type Props = {
-  className?: string; // gebruik Tailwind voor kleur/afmeting, bijv. "h-44 w-44 text-[var(--leaf)] dark:text-white"
+  className?: string;
 };
 
 /**
- * PeearLogo
- * - Inline SVG met `currentColor` (dus kleur volgt CSS)
- * - Werkt direct in dark mode met bijvoorbeeld: `text-[var(--leaf)] dark:text-white`
+ * Inline SVG logo van Peear
+ * - gebruikt `currentColor`, dus volgt tekstkleur
+ * - geen upload of PNG nodig
  */
 export default function PeearLogo({ className = "h-40 w-40" }: Props) {
   return (
@@ -28,13 +28,11 @@ export default function PeearLogo({ className = "h-40 w-40" }: Props) {
         strokeLinejoin="round"
         opacity={0.95}
       >
-        {/* Pentagon-verbindingen */}
         <path d="M128 230 38 188 24 98 96 38 160 38 232 98 218 188 128 230" />
-        {/* Verticale centerlijn (subtiel) */}
         <path d="M128 72v158" opacity={0.5} />
       </g>
 
-      {/* Nodes */}
+      {/* Verbinding nodes */}
       {[
         [128, 230],
         [38, 188],
@@ -47,7 +45,7 @@ export default function PeearLogo({ className = "h-40 w-40" }: Props) {
         <circle key={i} cx={cx} cy={cy} r={11} fill="currentColor" />
       ))}
 
-      {/* De peer (fill volgt currentColor) */}
+      {/* Peer-vorm */}
       <path
         fill="currentColor"
         d="
@@ -63,7 +61,7 @@ export default function PeearLogo({ className = "h-40 w-40" }: Props) {
         "
       />
 
-      {/* Blaadje bovenop */}
+      {/* Blaadje */}
       <path
         d="
           M154 45
