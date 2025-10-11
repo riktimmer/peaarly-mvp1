@@ -6,32 +6,31 @@ import {
   Card,
   Badge,
   PearIcon,
-  OrangeIcon,
-  StrawberryIcon,
   AnimatedFruit,
 } from "../../components/ui";
 
-const TOPICS = [
-  "Time Management",
-  "Staying Ahead",
-  "Work-life balance",
-  "Collaboration",
-  "Leadership",
-  "Problem solving",
-  "Focus",
-  "Delivery",
-];
+// Unieke fruit-emoji per thema (ongekozen staat)
+const FRUIT_MAP: Record<string, string> = {
+  "Time Management": "🍋",
+  "Staying Ahead": "🍊",
+  "Work-life balance": "🍎",
+  "Collaboration": "🍇",
+  "Leadership": "🍍",
+  "Problem solving": "🍓",
+  "Focus": "🍈",
+  "Delivery": "🍌",
+};
+
+const TOPICS = Object.keys(FRUIT_MAP);
 
 export default function SelectPage() {
   const [selected, setSelected] = useState<string[]>([]);
   const router = useRouter();
 
-  const total = TOPICS.length;
   const count = selected.length;
-  const pct = Math.round((count / total) * 100);
 
-  function toggle(t: string) {
-    setSelected((s) => (s.includes(t) ? s.filter((x) => x !== t) : [...s, t]));
+  function toggle(topic: string) {
+    setSelected((s) => (s.includes(topic) ? s.filter((x) => x !== topic) : [...s, topic]));
   }
 
   function startDrop() {
@@ -40,7 +39,7 @@ export default function SelectPage() {
     router.push("/drop/loading");
   }
 
-  // voor de “fruitige” vibe – kies willekeurig een setje dat mee zweeft
+  // zwevende fruitjes voor sfeer
   const floaters = useMemo(
     () => [
       { kind: "pear" as const, left: "6%", delay: 0 },
@@ -52,7 +51,7 @@ export default function SelectPage() {
 
   return (
     <main className="min-h-screen fruit-wall relative text-[color:var(--leaf)]">
-      {/* zwevende fruitjes */}
+      {/* floating fruit */}
       {floaters.map((f, i) => (
         <div key={i} className="hidden sm:block absolute top-10">
           <AnimatedFruit kind={f.kind} motion="float" size={42} delay={f.delay} left={f.left} />
@@ -70,24 +69,17 @@ export default function SelectPage() {
             Share your <strong>focus areas</strong> for the best match
           </p>
 
-          {/* progress / teller */}
+          {/* teller */}
           <div className="mt-3 flex items-center justify-between text-sm">
-            <span className="inline-flex items-center gap-2">
-              <Badge className="!bg-[#E7F3E1]">Selected: {count}</Badge>
-            </span>
-            <span className="opacity-70">{pct}%</span>
-          </div>
-          <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-[#EEF5EA]">
-            <div
-              className="h-full rounded-full bg-[color:var(--pear-green)] transition-all duration-300"
-              style={{ width: `${pct}%` }}
-            />
+            <Badge className="!bg-[#E7F3E1]">Selected: {count}</Badge>
+            {/* percentage & progressbalk zijn bewust verwijderd */}
           </div>
 
           {/* chips */}
           <div className="mt-4 flex flex-wrap gap-2">
             {TOPICS.map((t) => {
               const active = selected.includes(t);
+              const fruit = active ? "🍐" : FRUIT_MAP[t] || "🍊";
               return (
                 <button
                   key={t}
@@ -95,10 +87,7 @@ export default function SelectPage() {
                   className={`chip ${active ? "chip--active" : ""}`}
                   aria-pressed={active}
                 >
-                  {/* mini fruit-icoon links in de chip */}
-                  <span className="mr-1 inline-block translate-y-[1px]">
-                    {active ? "🍐" : "🍊"}
-                  </span>
+                  <span className="mr-1 inline-block translate-y-[1px]">{fruit}</span>
                   {t}
                   {active && (
                     <span className="ml-1 inline-block rounded-full bg-white/30 px-1.5 text-[10px]">
