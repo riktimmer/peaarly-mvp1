@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 
-/** Kleine helper om interesses uit localStorage te halen */
+/** Interesses uit localStorage ophalen (zoals bij Select-stap opgeslagen) */
 function useSelectedInterests() {
   const [interests, setInterests] = useState<string[]>([]);
   useEffect(() => {
@@ -18,59 +18,152 @@ function useSelectedInterests() {
   return interests;
 }
 
-/** Emily avatar – SVG met subtiele float + knipper animatie via CSS */
-function EmilyAvatar({ size = 140 }: { size?: number }) {
+/** Emily avatar – vrolijk, lang haar + animaties (blink/float/hair sway) */
+function EmilyAvatar({ size = 160 }: { size?: number }) {
   return (
     <svg
       width={size}
       height={size}
-      viewBox="0 0 160 160"
+      viewBox="0 0 200 200"
       className="mx-auto emily-float"
       aria-hidden
     >
       {/* achtergrondcirkel */}
-      <circle cx="80" cy="80" r="72" fill="#F5D48A" />
-      {/* nek/borst */}
-      <ellipse cx="80" cy="120" rx="48" ry="18" fill="#2E7D3D" />
-      {/* hoofdvorm */}
+      <circle cx="100" cy="100" r="92" fill="#F8E1A6" />
+      {/* bust / shirt */}
+      <ellipse cx="100" cy="150" rx="60" ry="24" fill="#2E7D3D" />
+
+      {/* LANG HAAR */}
       <path
-        d="M80 38c-20 0-34 14-34 34 0 23 15 36 34 36s34-13 34-36c0-20-14-34-34-34z"
+        className="emily-hair"
+        d="
+          M45 120
+          C40 85, 55 55, 100 55
+          C145 55, 160 85, 155 120
+          C150 155, 130 165, 100 165
+          C70 165, 50 155, 45 120
+          Z
+        "
+        fill="#5D3A28"
+      />
+
+      {/* hoofd / gezicht */}
+      <path
+        d="M100 65
+           c-24 0 -40 17 -40 40
+           c0 27 18 42 40 42
+           s40 -15 40 -42
+           c0 -23 -16 -40 -40 -40z"
         fill="#F3C49C"
       />
-      {/* haar */}
+
+      {/* blosjes */}
+      <circle cx="70" cy="110" r="7" fill="#F2A7A7" opacity=".55" />
+      <circle cx="130" cy="110" r="7" fill="#F2A7A7" opacity=".55" />
+
+      {/* pony/haar bovenop voor diepte */}
       <path
-        d="M52 74c-3-25 8-34 28-34 19 0 31 9 28 34-3 15-6 18-6 18s-6-10-22-10-22 10-22 10-3-3-6-18z"
-        fill="#643B23"
+        d="M62 102c-3-30 16-42 38-42s41 12 38 42
+           c-1 6-3 10-5 13c-4-7-16-17-33-17s-29 10-33 17c-2-3-4-7-5-13z"
+        fill="#5D3A28"
       />
-      {/* ogen (knipper animatie met mask) */}
+
+      {/* ogen */}
       <g className="emily-eyes">
-        <ellipse cx="62" cy="78" rx="6" ry="4" fill="#2B2B2B" />
-        <ellipse cx="98" cy="78" rx="6" ry="4" fill="#2B2B2B" />
+        <ellipse cx="78" cy="110" rx="7" ry="4.2" fill="#2B2B2B" />
+        <ellipse cx="122" cy="110" rx="7" ry="4.2" fill="#2B2B2B" />
       </g>
+
       {/* wenkbrauwen */}
-      <path d="M54 70c6-6 14-6 20 0" stroke="#2B2B2B" strokeWidth="3" fill="none" />
-      <path d="M86 70c6-6 14-6 20 0" stroke="#2B2B2B" strokeWidth="3" fill="none" />
+      <path d="M64 100c8-7 18-7 26 0" stroke="#2B2B2B" strokeWidth="4" fill="none" />
+      <path d="M110 100c8-7 18-7 26 0" stroke="#2B2B2B" strokeWidth="4" fill="none" />
+
       {/* neus */}
-      <path d="M80 78c0 7-2 10-6 12" stroke="#CC9F7E" strokeWidth="3" fill="none" />
-      {/* mondje */}
-      <path d="M66 102c9 6 19 6 28 0" stroke="#9D533B" strokeWidth="4" fill="none" strokeLinecap="round" />
-      {/* oor(tjes) */}
-      <circle cx="44" cy="86" r="6" fill="#E9B690" />
-      <circle cx="116" cy="86" r="6" fill="#E9B690" />
+      <path d="M100 112c0 9-3 12-8 15" stroke="#D09D7B" strokeWidth="3" fill="none" />
+
+      {/* SMILE :) */}
+      <path
+        d="M80 132c12 10 28 10 40 0"
+        stroke="#9D533B"
+        strokeWidth="5"
+        strokeLinecap="round"
+        fill="none"
+      />
+
+      {/* oortjes, klein */}
+      <circle cx="54" cy="118" r="7" fill="#E9B690" />
+      <circle cx="146" cy="118" r="7" fill="#E9B690" />
     </svg>
   );
 }
 
+/** Dummy chat types */
+type ChatMsg = { id: string; from: "Emily" | "You" | "System"; text: string; ts: number };
+
 export default function MatchPage() {
   const interests = useSelectedInterests();
-
-  // dummy terugval als iemand direct navigeert naar /drop/match
   const fallback = useMemo(
     () => ["Creative", "Funny", "Leadership", "Problem solving"],
     []
   );
-
   const tags = interests.length ? interests : fallback;
+
+  const [chatOpen, setChatOpen] = useState(false);
+  const [messages, setMessages] = useState<ChatMsg[]>([]);
+  const [input, setInput] = useState("");
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  /** Open chat met dummy seed en mini-typing delay */
+  const openChat = () => {
+    if (chatOpen) return;
+    const seed: ChatMsg[] = [
+      { id: "s1", from: "System", text: "You're now connected with Emily 🍐", ts: Date.now() },
+      {
+        id: "e1",
+        from: "Emily",
+        text: "Hey! Thanks for dropping a pear 😄. Leuk om je te ontmoeten!",
+        ts: Date.now() + 400,
+      },
+      {
+        id: "e2",
+        from: "Emily",
+        text:
+          tags.length
+            ? `Ik zie dat je focust op ${tags.slice(0, 2).join(" & ")}. Zullen we daar eens induiken?`
+            : "Waar wil jij je vooral op richten?",
+        ts: Date.now() + 1400,
+      },
+    ];
+    setMessages(seed);
+    setChatOpen(true);
+  };
+
+  /** auto scroll naar onder in chat */
+  useEffect(() => {
+    if (!chatOpen) return;
+    const el = scrollRef.current;
+    if (!el) return;
+    el.scrollTop = el.scrollHeight;
+  }, [chatOpen, messages]);
+
+  const send = () => {
+    const txt = input.trim();
+    if (!txt) return;
+    const mine: ChatMsg = { id: `${Date.now()}-you`, from: "You", text: txt, ts: Date.now() };
+    setMessages((m) => [...m, mine]);
+    setInput("");
+
+    // kleine bot-reply voor leven
+    setTimeout(() => {
+      const reply: ChatMsg = {
+        id: `${Date.now()}-em`,
+        from: "Emily",
+        text: "Nice! Vertel eens iets concreets dat je wilt aanpakken deze week?",
+        ts: Date.now(),
+      };
+      setMessages((m) => [...m, reply]);
+    }, 900);
+  };
 
   return (
     <main className="min-h-screen fruit-wall text-[color:var(--leaf)]">
@@ -92,12 +185,10 @@ export default function MatchPage() {
                 key={t}
                 className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[rgba(46,125,61,0.12)] text-[color:var(--leaf)] font-semibold text-[0.95rem]"
               >
-                {/* klein fruit-icoon per tag voor playful feel */}
                 <span aria-hidden>🍐</span>
                 {t}
               </span>
             ))}
-            {/* klein rond “+” bubble als er meer is */}
             {tags.length > 4 && (
               <span className="w-6 h-6 rounded-full bg-[rgba(46,125,61,0.12)] grid place-items-center font-bold">
                 +{tags.length - 4}
@@ -105,12 +196,12 @@ export default function MatchPage() {
             )}
           </div>
 
-          {/* call-to-actions */}
+          {/* CTA's */}
           <div className="mt-6 space-y-3 px-2">
             <button
               type="button"
-              className="btn-primary w-full text-[1.15rem] py-3 rounded-2xl"
-              onClick={() => alert("Opening chat with Emily… (stub)")}
+              className="btn-primary w-full text-[1.05rem] py-3 rounded-2xl"
+              onClick={openChat}
             >
               Start Chat
             </button>
@@ -123,12 +214,59 @@ export default function MatchPage() {
             </Link>
           </div>
 
-          {/* subtiele footnote */}
+          {/* Chat panel */}
+          {chatOpen && (
+            <div className="mt-5 rounded-2xl border border-[rgba(0,0,0,0.08)] bg-white/70 p-3">
+              <div className="flex items-center gap-2 mb-2">
+                <div className="w-8 h-8 rounded-full bg-[#5D3A28] text-white grid place-items-center">
+                  E
+                </div>
+                <div className="font-semibold">Emily</div>
+                <div className="text-muted text-sm">· live</div>
+              </div>
+
+              <div
+                ref={scrollRef}
+                className="h-56 overflow-y-auto rounded-xl bg-white/60 p-3 space-y-2"
+              >
+                {messages.map((m) => (
+                  <div
+                    key={m.id}
+                    className={`max-w-[85%] px-3 py-2 rounded-2xl text-[0.95rem] ${
+                      m.from === "You"
+                        ? "ml-auto bg-[rgba(46,125,61,0.12)]"
+                        : m.from === "Emily"
+                        ? "bg-white border border-[rgba(0,0,0,0.06)]"
+                        : "mx-auto bg-[rgba(0,0,0,0.04)] text-muted"
+                    }`}
+                  >
+                    {m.text}
+                  </div>
+                ))}
+              </div>
+
+              <div className="mt-3 flex gap-2">
+                <input
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && send()}
+                  placeholder="Type a message…"
+                  className="flex-1 rounded-xl border border-[rgba(0,0,0,0.08)] bg-white/80 px-3 py-2 outline-none focus:ring-2 focus:ring-[rgba(46,125,61,0.25)]"
+                />
+                <button
+                  onClick={send}
+                  className="px-4 py-2 rounded-xl bg-[color:var(--pear-green)] text-white font-semibold hover:brightness-95 transition"
+                >
+                  Send
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* voetnoot */}
           <p className="text-center text-muted text-sm mt-4">
             Based on your interests:{" "}
-            <span className="font-semibold">
-              {tags.join(" · ")}
-            </span>
+            <span className="font-semibold">{tags.join(" · ")}</span>
           </p>
         </section>
       </div>
