@@ -1,12 +1,13 @@
 "use client";
 
 import Link from "next/link";
+import PeearLogo from "./components/PeearLogo";
 
 export default function HomePage() {
   return (
     <main className="min-h-screen relative overflow-x-hidden bg-[rgba(255,253,246,1)] text-[color:var(--leaf)] dark:bg-[#0F1A0E] dark:text-white transition-colors duration-500">
       {/* Fruitige achtergrond */}
-      <div className="absolute inset-0 overflow-hidden fruit-bg select-none pointer-events-none">
+      <div className="absolute inset-0 overflow-hidden select-none pointer-events-none">
         <span className="fruit" style={{ top: "10%", left: "15%" }}>🍊</span>
         <span className="fruit" style={{ top: "20%", left: "70%" }}>🍓</span>
         <span className="fruit" style={{ top: "65%", left: "10%" }}>🍎</span>
@@ -15,8 +16,8 @@ export default function HomePage() {
       </div>
 
       <div className="relative z-10 max-w-md mx-auto text-center px-5 pt-12 pb-20">
-        {/* LOGO — met cache-buster (v=11) */}
-        <div aria-label="Peear logo" className="peear-logo mx-auto mb-6" />
+        {/* LOGO als inline SVG — geen PNG's meer nodig */}
+        <PeearLogo className="mx-auto mb-6 h-44 w-44 text-[color:var(--leaf)] dark:text-white drop-shadow-sm" />
 
         <h1 className="text-4xl font-extrabold mb-2 tracking-tight">Peear</h1>
         <p className="text-[1.05rem] text-muted mb-8 dark:text-gray-300">
@@ -61,23 +62,8 @@ export default function HomePage() {
         </footer>
       </div>
 
-      {/* Logo-stijl en fruitanimatie */}
+      {/* Fruit-animatie styles */}
       <style jsx global>{`
-        .peear-logo {
-          width: 180px;
-          height: 180px;
-          background: url('/logo-peear.png?v=11') center / contain no-repeat;
-          border-radius: 12px;
-          filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.06));
-          transition: filter 0.4s ease, transform 0.4s ease;
-        }
-        @media (prefers-color-scheme: dark) {
-          .peear-logo {
-            background-image: url('/logo-peear-dark.png?v=11');
-            filter: drop-shadow(0 1px 1px rgba(255, 255, 255, 0.12));
-          }
-        }
-
         .fruit {
           position: absolute;
           font-size: 2.2rem;
