@@ -3,31 +3,51 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 
-/* ── Fruit SVG's ─────────────────────────────────────────────────────────── */
+/* ── Peer (mooie frisse gradient, grotere variant) ──────────────────────── */
 function PearBig({ size = 110 }: { size?: number }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 64 64" aria-hidden>
+    <svg width={size} height={size} viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" aria-hidden>
       <defs>
-        <radialGradient id="pg" cx="45%" cy="35%" r="70%">
-          <stop offset="0%" stopColor="#B8E08A"/>
-          <stop offset="100%" stopColor="#2F7A3E"/>
+        <radialGradient id="pearGradient" cx="40%" cy="30%" r="65%">
+          <stop offset="0%" stopColor="#C8EF79" />
+          <stop offset="100%" stopColor="#4CA04C" />
+        </radialGradient>
+        <radialGradient id="highlight" cx="65%" cy="25%" r="25%">
+          <stop offset="0%" stopColor="rgba(255,255,255,0.6)" />
+          <stop offset="100%" stopColor="rgba(255,255,255,0)" />
         </radialGradient>
       </defs>
+
+      {/* steel */}
+      <rect x="38" y="8" width="4" height="10" rx="2" fill="#3C6A3C" transform="rotate(-10 40 10)" />
+      {/* blad */}
+      <path d="M40 10c8 0 11 5 9 9-2 3-7 4-12 2-3-1-3-4-1-7 2-3 2-4 4-4z" fill="#63A25F" />
+
+      {/* hoofdvorm */}
       <path
-        d="M32 20c2-5 6.5-7 9.7-7-1 3.5-1 6 .5 8.3 1.8 2.8 2.7 5.1 2.7 8.3 0 7.2-5.7 12.9-12.9 12.9S19 37 19 29.6c0-3.2.9-5.5 2.7-8.3 1.5-2.3 1.5-4.8.5-8.3 3.2 0 7.7 2 9.8 7z"
-        fill="url(#pg)"
+        d="M40 18c4-5 9-6 13-3 3 2 4 5 4 9 0 3-1 5-2 7 4 5 6 9 6 15 0 13-9 22-21 22S19 59 19 46c0-6 2-10 6-15-1-2-2-4-2-7 0-4 1-7 4-9 4-3 9-2 13 3z"
+        fill="url(#pearGradient)"
       />
-      <circle cx="43.5" cy="12.8" r="2.4" fill="#2F7A3E"/>
+      {/* zachte highlight */}
+      <ellipse cx="52" cy="28" rx="8" ry="10" fill="url(#highlight)" transform="rotate(-10 52 28)" />
+      {/* subtiele rand */}
+      <path
+        d="M40 18c4-5 9-6 13-3 3 2 4 5 4 9 0 3-1 5-2 7 4 5 6 9 6 15 0 13-9 22-21 22S19 59 19 46c0-6 2-10 6-15-1-2-2-4-2-7 0-4 1-7 4-9 4-3 9-2 13 3z"
+        fill="none"
+        stroke="rgba(0,0,0,0.15)"
+        strokeWidth="1"
+      />
     </svg>
   );
 }
 
+/* ── Overige fruitjes (compacte SVG’s) ──────────────────────────────────── */
 function Orange({ size = 44 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 64 64" aria-hidden>
       <defs>
         <radialGradient id="og" cx="50%" cy="40%" r="60%">
-          <stop offset="0%" stopColor="#FFB547"/><stop offset="100%" stopColor="#F59E0B"/>
+          <stop offset="0%" stopColor="#FFB547" /><stop offset="100%" stopColor="#F59E0B" />
         </radialGradient>
       </defs>
       <circle cx="32" cy="34" r="18" fill="url(#og)" />
@@ -117,10 +137,10 @@ function FruitFall({
   );
 }
 
-/* ── Grote peer (SVG) die landt; na impact: andere fruit laten verdwijnen ─ */
+/* ── Grote peer (SVG) die landt; na impact: andere fruitjes fade-out ───── */
 function LandingPear({ onLand }: { onLand: () => void }) {
   useEffect(() => {
-    const t = setTimeout(onLand, 2300); // gelijk aan impactmoment in CSS
+    const t = setTimeout(onLand, 2300); // impactmoment in CSS
     return () => clearTimeout(t);
   }, [onLand]);
 
