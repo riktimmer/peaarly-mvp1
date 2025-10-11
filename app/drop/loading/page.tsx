@@ -1,16 +1,33 @@
 "use client";
 
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 
-/* Compacte, nette fruit-SVG's voor variatie */
+/* ── Fruit SVG's ─────────────────────────────────────────────────────────── */
+function PearBig({ size = 110 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 64 64" aria-hidden>
+      <defs>
+        <radialGradient id="pg" cx="45%" cy="35%" r="70%">
+          <stop offset="0%" stopColor="#B8E08A"/>
+          <stop offset="100%" stopColor="#2F7A3E"/>
+        </radialGradient>
+      </defs>
+      <path
+        d="M32 20c2-5 6.5-7 9.7-7-1 3.5-1 6 .5 8.3 1.8 2.8 2.7 5.1 2.7 8.3 0 7.2-5.7 12.9-12.9 12.9S19 37 19 29.6c0-3.2.9-5.5 2.7-8.3 1.5-2.3 1.5-4.8.5-8.3 3.2 0 7.7 2 9.8 7z"
+        fill="url(#pg)"
+      />
+      <circle cx="43.5" cy="12.8" r="2.4" fill="#2F7A3E"/>
+    </svg>
+  );
+}
+
 function Orange({ size = 44 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 64 64" aria-hidden>
       <defs>
         <radialGradient id="og" cx="50%" cy="40%" r="60%">
-          <stop offset="0%" stopColor="#FFB547"/>
-          <stop offset="100%" stopColor="#F59E0B"/>
+          <stop offset="0%" stopColor="#FFB547"/><stop offset="100%" stopColor="#F59E0B"/>
         </radialGradient>
       </defs>
       <circle cx="32" cy="34" r="18" fill="url(#og)" />
@@ -23,8 +40,7 @@ function Strawberry({ size = 42 }: { size?: number }) {
     <svg width={size} height={size} viewBox="0 0 64 64" aria-hidden>
       <defs>
         <linearGradient id="sg" x1="0" x2="1">
-          <stop offset="0" stopColor="#F43F5E" />
-          <stop offset="1" stopColor="#E11D48" />
+          <stop offset="0" stopColor="#F43F5E" /><stop offset="1" stopColor="#E11D48" />
         </linearGradient>
       </defs>
       <path d="M32 20c6 0 10-6 10-6s2 6 8 6c-2 6-9 10-18 10S16 26 14 20c6 0 8-6 8-6s4 6 10 6z" fill="#22C55E"/>
@@ -41,8 +57,7 @@ function Apple({ size = 44 }: { size?: number }) {
     <svg width={size} height={size} viewBox="0 0 64 64" aria-hidden>
       <defs>
         <radialGradient id="ag" cx="40%" cy="35%" r="60%">
-          <stop offset="0" stopColor="#FF8A8A"/>
-          <stop offset="1" stopColor="#EB5757"/>
+          <stop offset="0" stopColor="#FF8A8A"/><stop offset="1" stopColor="#EB5757"/>
         </radialGradient>
       </defs>
       <circle cx="26" cy="34" r="16" fill="url(#ag)"/>
@@ -80,7 +95,7 @@ function Icon({ kind, size }: { kind: Kind; size?: number }) {
   }
 }
 
-/* Eén vallend fruit (curved path + sway + spin via CSS vars) */
+/* ── Eén vallend fruit (curved path + sway + spin via CSS vars) ─────────── */
 function FruitFall({
   kind, left, delay, dur, size,
 }: { kind: Kind; left: string; delay: number; dur: number; size?: number }) {
@@ -102,18 +117,25 @@ function FruitFall({
   );
 }
 
-/* De peer-emoji die zichtbaar op de grond landt (groter + bounce) */
-function LandingPear() {
+/* ── Grote peer (SVG) die landt; na impact: andere fruit laten verdwijnen ─ */
+function LandingPear({ onLand }: { onLand: () => void }) {
+  useEffect(() => {
+    const t = setTimeout(onLand, 2300); // gelijk aan impactmoment in CSS
+    return () => clearTimeout(t);
+  }, [onLand]);
+
   return (
     <div className="lp" aria-hidden>
-      <span className="emoji-pear" role="img" aria-label="pear">🍐</span>
+      <PearBig />
       <div className="lp-shadow" />
     </div>
   );
 }
 
+/* ── Pagina ─────────────────────────────────────────────────────────────── */
 export default function LoadingPage() {
   const router = useRouter();
+  const [hideOthers, setHideOthers] = useState(false);
 
   // langere load (≈ 4.2s), daarna door naar match
   useEffect(() => {
@@ -141,7 +163,7 @@ export default function LoadingPage() {
     <main className="min-h-screen fruit-wall text-[color:var(--leaf)]">
       <div className="max-w-md mx-auto px-5 py-6">
         <div className="relative overflow-hidden card">
-          {/* TEXT — nadrukkelijker */}
+          {/* Tekst */}
           <div className="text-center px-2 pt-2">
             <h1 className="text-[1.6rem] leading-tight font-extrabold">
               We are picking your match based on your interests…
@@ -151,14 +173,16 @@ export default function LoadingPage() {
             </p>
           </div>
 
-          {/* ANIMATIE ZONE */}
+          {/* Animatiezone */}
           <div className="relative h-72 w-full mt-3">
-            {fruits.map((f, i) => (
-              <FruitFall key={i} kind={f.kind} left={f.left} delay={f.delay} dur={f.dur} />
-            ))}
+            <div className={`fruits ${hideOthers ? "fade-out" : ""}`}>
+              {fruits.map((f, i) => (
+                <FruitFall key={i} kind={f.kind} left={f.left} delay={f.delay} dur={f.dur} />
+              ))}
+            </div>
 
-            {/* Grote peer-emoji die landt */}
-            <LandingPear />
+            {/* Grote peer die landt */}
+            <LandingPear onLand={() => setHideOthers(true)} />
 
             {/* grond */}
             <div className="ground" />
