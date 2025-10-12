@@ -14,32 +14,24 @@ type FruitSprite = {
 
 const EMOJIS = ["🍐", "🍓", "🍇", "🍎", "🍊", "🍌", "🍍", "🍏"];
 
-function makeSprites(count = 40): FruitSprite[] {
-  const arr: FruitSprite[] = [];
-  for (let i = 0; i < count; i++) {
-    arr.push({
-      emoji: EMOJIS[Math.floor(Math.random() * EMOJIS.length)],
-      top: Math.random() * 100,
-      left: Math.random() * 100,
-      size: 28 + Math.random() * 28,
-      rotate: Math.random() * 50 - 25,
-      opacity: 0.8 + Math.random() * 0.2,
-    });
-  }
-  return arr;
+function createSprites(n = 46): FruitSprite[] {
+  return Array.from({ length: n }, () => ({
+    emoji: EMOJIS[Math.floor(Math.random() * EMOJIS.length)],
+    top: Math.random() * 100,
+    left: Math.random() * 100,
+    size: 26 + Math.random() * 28,
+    rotate: Math.random() * 50 - 25,
+    opacity: 0.85 + Math.random() * 0.15,
+  }));
 }
 
 export default function FruitPickSelectPage() {
   const router = useRouter();
-  const [sprites] = React.useState(() => makeSprites(46));
-
-  const start = () => {
-    router.push("/fruitpick/loading");
-  };
+  const [sprites] = React.useState(() => createSprites());
 
   return (
-    <div className="relative min-h-screen bg-[var(--cream)] flex flex-col justify-end overflow-hidden">
-      {/* fruit achtergrond */}
+    <div className="relative min-h-screen bg-[var(--cream)] overflow-hidden">
+      {/* Fruit-achtergrond */}
       <div className="absolute inset-0 pointer-events-none">
         {sprites.map((s, i) => (
           <span
@@ -59,11 +51,11 @@ export default function FruitPickSelectPage() {
         ))}
       </div>
 
-      {/* knop onderaan */}
-      <div className="relative z-10 p-8 bg-gradient-to-t from-[rgba(255,247,230,0.95)] to-transparent">
+      {/* CTA - net onder het midden */}
+      <div className="relative z-10 min-h-screen flex items-center justify-center">
         <button
-          onClick={start}
-          className="w-full max-w-md mx-auto rounded-2xl bg-[var(--pear-green)] text-white font-extrabold py-4 text-lg shadow-md hover:brightness-95 transition"
+          onClick={() => router.push("/fruitpick/loading")}
+          className="translate-y-10 w-full max-w-md mx-auto rounded-2xl bg-[var(--pear-green)] text-white font-extrabold py-4 text-lg shadow-md hover:brightness-95 transition"
         >
           Start Fruit Pick
         </button>
