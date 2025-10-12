@@ -9,7 +9,6 @@ type Person = {
   blurb: string;
 };
 
-// Dummy match
 const MATCH: Person = {
   name: "David",
   interests: ["Marketing", "Problem-solving"],
@@ -46,41 +45,98 @@ export default function FruitPickMatchPage() {
   const [dx, setDx] = React.useState(0);
   const [dy, setDy] = React.useState(0);
   const [dragging, setDragging] = React.useState(false);
+  const [leaving, setLeaving] = React.useState<null | "left" | "right">(null);
 
-  const start = React.useRef<{ x: number; y: number } | null>(null);
+  // Waar we begonnen + tijdstip (voor velocity)
+  const start = React.useRef<{ x: number; y: number; t: number } | null>(null);
+  const cardRef = React.useRef<HTMLDivElement | null>(null);
+
+  // thresholds
+  const DIST_THRESHOLD = 120; // px
+  const VEL_THRESHOLD = 0.6;  // px/ms
+
+  const schedule = () => router.push("/profile");
+  const keepSwiping = () => router.push("/fruitpick/select");
 
   const onPointerDown = (e: React.PointerEvent) => {
-    start.current = { x: e.clientX, y: e.clientY };
+    // voorkom tekstselectie/scroll tijdens drag
+    e.currentTarget.setPointerCapture(e.pointerId);
+    start.current = { x: e.clientX, y: e.clientY, t: performance.now() };
     setDragging(true);
-    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
   };
 
   const onPointerMove = (e: React.PointerEvent) => {
     if (!dragging || !start.current) return;
-    setDx(e.clientX - start.current.x);
-    setDy(e.clientY - start.current.y);
+    // horizontaal swipen prioriteren → kleine verticale beweging negeren
+    const ndx = e.clientX - start.current.x;
+    const ndy = e.clientY - start.current.y;
+    setDx(ndx);
+    setDy(ndy * 0.25); // demp verticale beweging
   };
 
-  const RESET = () => {
-    setDx(0);
-    setDy(0);
-    setDragging(false);
+  const animateOut = (dir: "left" | "right", onDone: () => void) => {
+    setLeaving(dir);
+    // laat de kaart “uit beeld” glijden
+    const node = cardRef.current;
+    if (!node) {
+      onDone();
+      return;
+    }
+    const sign = dir === "right" ? 1 : -1;
+    node.style.transition = "transform 220ms ease-out, opacity 220ms ease-out";
+    node.style.transform = `translate(${sign * 1000}px, ${dy}px) rotate(${sign * 22}deg)`;
+    node.style.opacity = "0";
+
+    window.setTimeout(onDone, 230);
   };
 
   const onPointerUp = () => {
-    const threshold = 120; // hoeveel px om te ‘beslissen’
-    if (dx > threshold) {
-      // Swipe rechts => Schedule
-      router.push("/profile"); // placeholder voor echte scheduling
+    if (!start.current) return RESET();
+
+    const dt = Math.max(1, performance.now() - start.current.t); // ms
+    const vx = dx / dt; // px/ms
+
+    if (dx > DIST_THRESHOLD || vx > VEL_THRESHOLD) {
+      animateOut("right", schedule);
       return;
     }
-    if (dx < -threshold) {
-      // Swipe links => Keep swiping
-      router.push("/fruitpick/select");
+    if (dx < -DIST_THRESHOLD || vx < -VEL_THRESHOLD) {
+      animateOut("left", keepSwiping);
       return;
     }
-    RESET(); // niet ver genoeg → spring terug
+    RESET();
   };
+
+  const RESET = () => {
+    setDragging(false);
+    setLeaving(null);
+    setDx(0);
+    setDy(0);
+    // reset eventuele inline styles na animatie
+    if (cardRef.current) {
+      const n = cardRef.current;
+      n.style.transition = "transform 180ms ease";
+      n.style.transform = "translate(0px, 0px)";
+      n.style.opacity = "1";
+      // na de korte reset-transition terug naar none
+      setTimeout(() => {
+        if (n) n.style.transition = "none";
+      }, 190);
+    }
+  };
+
+  // Keyboard fallback
+  React.useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "ArrowRight") {
+        animateOut("right", schedule);
+      } else if (e.key === "ArrowLeft") {
+        animateOut("left", keepSwiping);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
 
   const rotate = Math.max(-18, Math.min(18, dx * 0.08));
   const likeOpacity = Math.max(0, Math.min(1, (dx - 40) / 120));
@@ -99,10 +155,7 @@ export default function FruitPickMatchPage() {
       <div className="mt-6 flex justify-center">
         <div
           className="relative w-full max-w-sm"
-          onPointerDown={onPointerDown}
-          onPointerMove={onPointerMove}
-          onPointerUp={onPointerUp}
-          onPointerCancel={onPointerUp}
+          // de container hoeft geen handlers; we zetten ze op de kaart zelf
         >
           {/* Overlays */}
           <div
@@ -124,11 +177,21 @@ export default function FruitPickMatchPage() {
 
           {/* Kaart */}
           <div
+            ref={cardRef}
             className="bg-white rounded-3xl shadow-md p-6 select-none cursor-grab active:cursor-grabbing"
             style={{
-              transform: `translate(${dx}px, ${dy}px) rotate(${rotate}deg)`,
+              willChange: "transform",
+              touchAction: "none", // belangrijk voor mobiel swipen!
+              transform:
+                leaving === null
+                  ? `translate(${dx}px, ${dy}px) rotate(${rotate}deg)`
+                  : undefined,
               transition: dragging ? "none" : "transform 180ms ease",
             }}
+            onPointerDown={onPointerDown}
+            onPointerMove={onPointerMove}
+            onPointerUp={onPointerUp}
+            onPointerCancel={onPointerUp}
           >
             <div className="flex flex-col items-center">
               <Avatar />
