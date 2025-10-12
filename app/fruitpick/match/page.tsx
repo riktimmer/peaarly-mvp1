@@ -35,19 +35,17 @@ const shuffle = <T,>(arr: T[]) => {
   return a;
 };
 
-/* ────────────────────────────────────────────────────────────
-   SVG Avatar-basis
-   - Alle avatars delen dezelfde compositie (achtergrond/nek),
-     maar hebben andere haar/baard/kleuren/hoofddoek etc.
-   - Formaat: 160x160, zachte kleuren passend bij je UI.
-────────────────────────────────────────────────────────────── */
 const Badge = ({ children }: { children: React.ReactNode }) => (
   <span className="px-3 py-1 rounded-full bg-[#F7F0DD] text-[var(--ink)] text-sm font-semibold">
     {children}
   </span>
 );
 
-/* 1) Man – bruin haar + baard (bestond al, iets opgepoetst) */
+/* ────────────────────────────────────────────────────────────
+   SVG Avatars (7 varianten)
+────────────────────────────────────────────────────────────── */
+
+/* 1) Man – bruin haar + baard */
 function MaleAvatar() {
   return (
     <svg viewBox="0 0 160 160" className="w-40 h-40 drop-shadow-sm" aria-hidden>
@@ -66,7 +64,7 @@ function MaleAvatar() {
   );
 }
 
-/* 2) Vrouw – donkere huidskleur, bun (bestond, gepolijst) */
+/* 2) Vrouw – donkere huidskleur, bun */
 function FemaleAvatar() {
   return (
     <svg viewBox="0 0 160 160" className="w-40 h-40 drop-shadow-sm" aria-hidden>
@@ -94,9 +92,7 @@ function MaleCurlyAvatar() {
       <circle cx="80" cy="80" r="75" fill="#F9EFD5" />
       <rect x="55" y="100" width="50" height="20" rx="10" fill="#2F7C57" />
       <circle cx="80" cy="85" r="32" fill="#EBC69B" />
-      {/* krullen */}
       <path d="M46 75c0-18 16-32 34-32 15 0 24 6 30 17-3-1-5-2-8-2-6 0-10 3-12 6-3-3-6-5-10-5-7 0-13 4-16 10-3-1-6-1-9 0s-6 3-9 6z" fill="#3D2B1F"/>
-      {/* snor/baardje licht */}
       <path d="M60 92c3 8 9 14 20 14s16-6 19-14c-3 2-5 3-8 3-3 0-6-2-8-4-2 2-5 4-8 4-3 0-5-1-7-3-3 2-5 3-8 0z" fill="#3D2B1F"/>
       <circle cx="68" cy="82" r="4" fill="#1E1E1E"/>
       <circle cx="92" cy="82" r="4" fill="#1E1E1E"/>
@@ -115,9 +111,7 @@ function MaleBaldBeardAvatar() {
       <circle cx="80" cy="80" r="75" fill="#F9EFD5" />
       <rect x="55" y="100" width="50" height="20" rx="10" fill="#2F7C57" />
       <circle cx="80" cy="85" r="32" fill="#B57949" />
-      {/* kaal hoofd */}
       <path d="M48 76c0-20 14-30 32-30s32 10 32 30" fill="#B57949"/>
-      {/* volle baard */}
       <path d="M50 92c4 14 15 24 30 24s26-10 30-24c-4 4-8 6-12 6-5 0-9-2-12-6-3 4-7 6-11 6-5 0-9-2-13-6-3 4-7 6-12 6-4 0-7-2-10-6z" fill="#2B1D13"/>
       <circle cx="68" cy="83" r="4" fill="#1E1E1E"/>
       <circle cx="92" cy="83" r="4" fill="#1E1E1E"/>
@@ -135,7 +129,6 @@ function FemaleBobAvatar() {
       <circle cx="80" cy="80" r="75" fill="#F9EFD5" />
       <rect x="55" y="100" width="50" height="20" rx="10" fill="#2F7C57" />
       <circle cx="80" cy="86" r="31" fill="#F2CFB4" />
-      {/* bob kapsel */}
       <path d="M50 86c0-18 12-30 30-30s30 10 30 28c-5-3-9-5-14-5-6 0-10 2-14 6-4-4-8-6-14-6-5 0-9 2-18 7z" fill="#493326"/>
       <circle cx="68" cy="88" r="3.8" fill="#1E1E1E" />
       <circle cx="92" cy="88" r="3.8" fill="#1E1E1E" />
@@ -154,7 +147,6 @@ function FemaleCurlyAvatar() {
       <circle cx="80" cy="80" r="75" fill="#F9EFD5" />
       <rect x="55" y="100" width="50" height="20" rx="10" fill="#2F7C57" />
       <circle cx="80" cy="86" r="31" fill="#AE7649" />
-      {/* krullen */}
       <path d="M48 82c0-18 14-30 32-30s28 8 32 23c-3-2-6-3-10-3-6 0-11 3-14 7-3-3-7-5-12-5-7 0-12 4-15 9-3-2-6-2-13-1z" fill="#3A281D"/>
       <circle cx="68" cy="88" r="3.8" fill="#1E1E1E" />
       <circle cx="92" cy="88" r="3.8" fill="#1E1E1E" />
@@ -171,13 +163,10 @@ function FemaleHijabAvatar() {
   return (
     <svg viewBox="0 0 160 160" className="w-40 h-40 drop-shadow-sm" aria-hidden>
       <circle cx="80" cy="80" r="75" fill="#F9EFD5" />
-      {/* hijab */}
       <path d="M38 108c4-28 20-50 42-50s38 22 42 50c-12 8-27 13-42 13s-30-5-42-13z" fill="#2E6D64"/>
       <rect x="55" y="102" width="50" height="18" rx="9" fill="#2F7C57" />
       <circle cx="80" cy="86" r="26" fill="#D9AE82"/>
-      {/* rand hijab */}
       <path d="M52 92c8-10 18-16 28-16s20 6 28 16" stroke="#234F4A" strokeWidth="6" fill="none" strokeLinecap="round"/>
-      {/* ogen/neus/mond */}
       <circle cx="69" cy="92" r="3.5" fill="#1E1E1E"/>
       <circle cx="91" cy="92" r="3.5" fill="#1E1E1E"/>
       <path d="M80 94c1 2 1.6 4 1.6 6.2S81 103 80 103" stroke="#8C5B33" strokeWidth="2" fill="none" strokeLinecap="round"/>
@@ -186,7 +175,6 @@ function FemaleHijabAvatar() {
   );
 }
 
-/* Mapje voor makkelijk renderen op basis van key */
 const AVATARS: Record<AvatarKey, React.FC> = {
   male: MaleAvatar,
   maleCurly: MaleCurlyAvatar,
@@ -198,7 +186,7 @@ const AVATARS: Record<AvatarKey, React.FC> = {
 };
 
 /* ────────────────────────────────────────────────────────────
-   Kandidaten-POOL  (wordt geshuffled bij laden)
+   Kandidaten-POOL  (wordt geshuffled bij mount)
 ────────────────────────────────────────────────────────────── */
 const POOL: Person[] = [
   {
@@ -282,9 +270,271 @@ export default function FruitPickMatchPage() {
   const [idx, setIdx] = React.useState(0);
   const person = list[idx];
 
-  // swipe+anim
+  // swipe & anim
   const [dx, setDx] = React.useState(0);
   const [dy, setDy] = React.useState(0);
   const [dragging, setDragging] = React.useState(false);
   const [leaving, setLeaving] = React.useState<null | "left" | "right">(null);
-  const start
+  const start = React.useRef<{ x: number; y: number; t: number } | null>(null);
+  const cardRef = React.useRef<HTMLDivElement | null>(null);
+
+  const DIST_THRESHOLD = 120;
+  const VEL_THRESHOLD = 0.6;
+
+  // chat op dezelfde pagina
+  const [showChat, setShowChat] = React.useState(false);
+  const [messages, setMessages] = React.useState<Message[]>(person.messages);
+  const [input, setInput] = React.useState("");
+  const chatEndRef = React.useRef<HTMLDivElement | null>(null);
+
+  // als kandidaat wisselt → reset chat & posities
+  React.useEffect(() => {
+    setShowChat(false);
+    setMessages(list[idx].messages);
+    setInput("");
+    RESET(true);
+  }, [idx, list]);
+
+  // autoscroll chat
+  React.useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages, showChat]);
+
+  const scheduleHere = () => {
+    setShowChat(true); // rechts swipe → chat openen
+  };
+
+  const keepSwiping = () => {
+    setIdx((i) => (i + 1) % list.length); // links swipe → volgende
+  };
+
+  // pointer handlers
+  const onPointerDown = (e: React.PointerEvent) => {
+    if (showChat) return;
+    e.currentTarget.setPointerCapture(e.pointerId);
+    start.current = { x: e.clientX, y: e.clientY, t: performance.now() };
+    setDragging(true);
+  };
+
+  const onPointerMove = (e: React.PointerEvent) => {
+    if (!dragging || !start.current || showChat) return;
+    const ndx = e.clientX - start.current.x;
+    const ndy = e.clientY - start.current.y;
+    setDx(ndx);
+    setDy(ndy * 0.25); // verticale demping
+  };
+
+  const animateOut = (dir: "left" | "right", onDone: () => void) => {
+    setLeaving(dir);
+    const node = cardRef.current;
+    if (!node) {
+      onDone();
+      return;
+    }
+    const sign = dir === "right" ? 1 : -1;
+    node.style.transition = "transform 220ms ease-out, opacity 220ms ease-out";
+    node.style.transform = `translate(${sign * 1000}px, ${dy}px) rotate(${sign * 22}deg)`;
+    node.style.opacity = "0";
+    window.setTimeout(onDone, 230);
+  };
+
+  const onPointerUp = () => {
+    if (!start.current || showChat) return RESET();
+    const dt = Math.max(1, performance.now() - start.current.t);
+    const vx = dx / dt;
+    if (dx > DIST_THRESHOLD || vx > VEL_THRESHOLD) {
+      animateOut("right", scheduleHere);
+      return;
+    }
+    if (dx < -DIST_THRESHOLD || vx < -VEL_THRESHOLD) {
+      animateOut("left", keepSwiping);
+      return;
+    }
+    RESET();
+  };
+
+  const RESET = (instant = false) => {
+    setDragging(false);
+    setLeaving(null);
+    setDx(0);
+    setDy(0);
+    if (cardRef.current) {
+      const n = cardRef.current;
+      n.style.transition = instant ? "none" : "transform 180ms ease";
+      n.style.transform = "translate(0px, 0px)";
+      n.style.opacity = "1";
+      if (!instant) {
+        setTimeout(() => {
+          if (n) n.style.transition = "none";
+        }, 190);
+      }
+    }
+  };
+
+  // toetsenbord fallback (uit als chat open is)
+  React.useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (showChat) return;
+      if (e.key === "ArrowRight") animateOut("right", scheduleHere);
+      if (e.key === "ArrowLeft") animateOut("left", keepSwiping);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [showChat]);
+
+  const rotate = Math.max(-18, Math.min(18, dx * 0.08));
+  const likeOpacity = Math.max(0, Math.min(1, (dx - 40) / 120));
+  const nopeOpacity = Math.max(0, Math.min(1, (-dx - 40) / 120));
+
+  // chat: bericht sturen
+  const genId = () =>
+    typeof crypto !== "undefined" && "randomUUID" in crypto
+      ? crypto.randomUUID()
+      : Math.random().toString(36).slice(2);
+
+  const sendMsg = () => {
+    const text = input.trim();
+    if (!text) return;
+    setMessages((prev) => [...prev, { id: genId(), author: "me", text }]);
+    setInput("");
+    setTimeout(() => {
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: genId(),
+          author: "them",
+          text: "Klinkt goed! Zullen we morgenmiddag even bellen?",
+        },
+      ]);
+    }, 600);
+  };
+
+  // kies de juiste avatarcomponent
+  const AvatarComp = AVATARS[person.avatar];
+
+  return (
+    <div className="min-h-screen bg-[var(--cream)] pt-8 pb-14 px-5">
+      <h1 className="text-center text-2xl sm:text-3xl font-extrabold text-[var(--pear-green)]">
+        You matched with
+      </h1>
+      <h2 className="text-center text-3xl sm:text-4xl font-extrabold text-[var(--pear-green)] mt-1">
+        {person.name}
+      </h2>
+
+      <div className="mt-6 flex justify-center">
+        <div className="relative w-full max-w-sm">
+          {/* Overlays alleen als chat nog niet open is */}
+          {!showChat && (
+            <>
+              <div
+                className="absolute -left-2 top-6 z-20 select-none pointer-events-none"
+                style={{ opacity: nopeOpacity }}
+              >
+                <span className="border-4 border-[#E65B4F] text-[#E65B4F] font-extrabold px-3 py-1 rounded-md rotate-[-12deg]">
+                  SKIP
+                </span>
+              </div>
+              <div
+                className="absolute -right-2 top-6 z-20 select-none pointer-events-none"
+                style={{ opacity: likeOpacity }}
+              >
+                <span className="border-4 border-[#2E7D32] text-[#2E7D32] font-extrabold px-3 py-1 rounded-md rotate-[12deg]">
+                  CHAT
+                </span>
+              </div>
+            </>
+          )}
+
+          {/* Kaart */}
+          <div
+            ref={cardRef}
+            className={`bg-white rounded-3xl shadow-md p-6 select-none ${
+              showChat ? "cursor-default" : "cursor-grab active:cursor-grabbing"
+            }`}
+            style={{
+              willChange: "transform",
+              touchAction: "none",
+              transform:
+                leaving === null && !showChat
+                  ? `translate(${dx}px, ${dy}px) rotate(${rotate}deg)`
+                  : undefined,
+              transition: dragging ? "none" : "transform 180ms ease",
+            }}
+            onPointerDown={onPointerDown}
+            onPointerMove={onPointerMove}
+            onPointerUp={onPointerUp}
+            onPointerCancel={onPointerUp}
+          >
+            {/* Profiel */}
+            <div className="flex flex-col items-center">
+              <AvatarComp />
+              <div className="mt-4 flex gap-2 flex-wrap justify-center">
+                {person.interests.map((tag) => (
+                  <Badge key={tag}>{tag}</Badge>
+                ))}
+              </div>
+              <p className="mt-4 text-center text-[var(--ink)]/85 text-sm leading-snug">
+                {person.blurb}
+              </p>
+            </div>
+
+            {/* Chat inline (na rechts-swipe) */}
+            {showChat && (
+              <div className="mt-6">
+                <h3 className="text-center font-semibold text-[var(--pear-green)] mb-2">
+                  Chat with {person.name}
+                </h3>
+                <div className="bg-[var(--cream)] rounded-2xl p-3 border border-[#E7E2D5] max-h-64 overflow-y-auto">
+                  {messages.map((m) => (
+                    <div
+                      key={m.id}
+                      className={`my-1 flex ${
+                        m.author === "me" ? "justify-end" : "justify-start"
+                      }`}
+                    >
+                      <span
+                        className={`px-3 py-2 rounded-2xl text-sm leading-snug whitespace-pre-wrap ${
+                          m.author === "me"
+                            ? "bg-[var(--pear-green)] text-white"
+                            : "bg-white text-[var(--ink)] border border-[#E7E2D5]"
+                        }`}
+                      >
+                        {m.text}
+                      </span>
+                    </div>
+                  ))}
+                  <div ref={chatEndRef} />
+                </div>
+
+                <div className="mt-2 flex gap-2">
+                  <input
+                    value={input}
+                    onChange={(e) => setInput(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") sendMsg();
+                    }}
+                    placeholder="Type a message…"
+                    className="flex-1 rounded-xl border border-[#E7E2D5] bg-white px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--leaf)]/40"
+                  />
+                  <button
+                    onClick={sendMsg}
+                    className="rounded-xl bg-[var(--pear-green)] text-white px-4 py-2 text-sm font-semibold hover:brightness-95 active:translate-y-px"
+                  >
+                    Send
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {!showChat && (
+            <p className="mt-3 text-center text-[var(--ink)]/60 text-sm">
+              Swipe <span className="font-semibold">left</span> to keep searching •{" "}
+              Swipe <span className="font-semibold">right</span> to open chat
+            </p>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
