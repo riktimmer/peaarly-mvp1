@@ -1,4 +1,3 @@
-// app/fruitpick/select/page.tsx
 "use client";
 
 import React from "react";
@@ -6,10 +5,10 @@ import { useRouter } from "next/navigation";
 
 type FruitSprite = {
   emoji: string;
-  top: number; // %
-  left: number; // %
-  size: number; // px
-  rotate: number; // deg
+  top: number;
+  left: number;
+  size: number;
+  rotate: number;
   opacity: number;
 };
 
@@ -40,9 +39,9 @@ export default function FruitPickSelectPage() {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-[var(--cream)] px-3 py-8">
-      {/* mobiele kaart */}
+      {/* Telefoon-achtig frame */}
       <div className="relative w-full max-w-[420px] aspect-[9/16] bg-[var(--cream)] rounded-[36px] overflow-hidden shadow-lg">
-        {/* fruit achtergrond */}
+        {/* Fruit achtergrond */}
         <div className="absolute inset-0 pointer-events-none">
           {sprites.map((s, i) => (
             <span
@@ -62,8 +61,8 @@ export default function FruitPickSelectPage() {
           ))}
         </div>
 
-        {/* knop onderaan */}
-        <div className="absolute bottom-0 left-0 right-0 p-6 pb-8 bg-gradient-to-t from-[rgba(255,247,230,0.95)] to-transparent">
+        {/* Knop met hogere positie */}
+        <div className="absolute bottom-0 left-0 right-0 px-6 pb-14 pt-16 bg-gradient-to-t from-[rgba(255,247,230,0.95)] to-transparent">
           <button
             onClick={start}
             className="w-full rounded-2xl bg-[var(--pear-green)] text-white font-extrabold py-4 text-lg shadow-md hover:brightness-95 transition"
