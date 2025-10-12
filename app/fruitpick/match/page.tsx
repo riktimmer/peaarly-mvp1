@@ -31,10 +31,13 @@ const Badge = ({ children }: { children: React.ReactNode }) => (
   </span>
 );
 
+/* avatars accepteren nu className voor grootte */
+type AvatarProps = { className?: string };
+
 /* ─────────────── Avatars (7 varianten) ─────────────── */
-function MaleAvatar() {
+function MaleAvatar({ className = "w-40 h-40" }: AvatarProps) {
   return (
-    <svg viewBox="0 0 160 160" className="w-40 h-40 drop-shadow-sm" aria-hidden>
+    <svg viewBox="0 0 160 160" className={`${className} drop-shadow-sm`} aria-hidden>
       <circle cx="80" cy="80" r="75" fill="#F9EFD5" />
       <rect x="55" y="100" width="50" height="20" rx="10" fill="#2F7C57" />
       <circle cx="80" cy="85" r="32" fill="#F4CDA5" />
@@ -49,9 +52,9 @@ function MaleAvatar() {
     </svg>
   );
 }
-function FemaleAvatar() {
+function FemaleAvatar({ className = "w-40 h-40" }: AvatarProps) {
   return (
-    <svg viewBox="0 0 160 160" className="w-40 h-40 drop-shadow-sm" aria-hidden>
+    <svg viewBox="0 0 160 160" className={`${className} drop-shadow-sm`} aria-hidden>
       <circle cx="80" cy="80" r="75" fill="#F9EFD5" />
       <rect x="55" y="100" width="50" height="20" rx="10" fill="#2F7C57" />
       <circle cx="80" cy="86" r="31" fill="#C89058" />
@@ -68,9 +71,9 @@ function FemaleAvatar() {
     </svg>
   );
 }
-function MaleCurlyAvatar() {
+function MaleCurlyAvatar({ className = "w-40 h-40" }: AvatarProps) {
   return (
-    <svg viewBox="0 0 160 160" className="w-40 h-40 drop-shadow-sm" aria-hidden>
+    <svg viewBox="0 0 160 160" className={`${className} drop-shadow-sm`} aria-hidden>
       <circle cx="80" cy="80" r="75" fill="#F9EFD5" />
       <rect x="55" y="100" width="50" height="20" rx="10" fill="#2F7C57" />
       <circle cx="80" cy="85" r="32" fill="#EBC69B" />
@@ -85,9 +88,9 @@ function MaleCurlyAvatar() {
     </svg>
   );
 }
-function MaleBaldBeardAvatar() {
+function MaleBaldBeardAvatar({ className = "w-40 h-40" }: AvatarProps) {
   return (
-    <svg viewBox="0 0 160 160" className="w-40 h-40 drop-shadow-sm" aria-hidden>
+    <svg viewBox="0 0 160 160" className={`${className} drop-shadow-sm`} aria-hidden>
       <circle cx="80" cy="80" r="75" fill="#F9EFD5" />
       <rect x="55" y="100" width="50" height="20" rx="10" fill="#2F7C57" />
       <circle cx="80" cy="85" r="32" fill="#B57949" />
@@ -101,9 +104,9 @@ function MaleBaldBeardAvatar() {
     </svg>
   );
 }
-function FemaleBobAvatar() {
+function FemaleBobAvatar({ className = "w-40 h-40" }: AvatarProps) {
   return (
-    <svg viewBox="0 0 160 160" className="w-40 h-40 drop-shadow-sm" aria-hidden>
+    <svg viewBox="0 0 160 160" className={`${className} drop-shadow-sm`} aria-hidden>
       <circle cx="80" cy="80" r="75" fill="#F9EFD5" />
       <rect x="55" y="100" width="50" height="20" rx="10" fill="#2F7C57" />
       <circle cx="80" cy="86" r="31" fill="#F2CFB4" />
@@ -117,9 +120,9 @@ function FemaleBobAvatar() {
     </svg>
   );
 }
-function FemaleCurlyAvatar() {
+function FemaleCurlyAvatar({ className = "w-40 h-40" }: AvatarProps) {
   return (
-    <svg viewBox="0 0 160 160" className="w-40 h-40 drop-shadow-sm" aria-hidden>
+    <svg viewBox="0 0 160 160" className={`${className} drop-shadow-sm`} aria-hidden>
       <circle cx="80" cy="80" r="75" fill="#F9EFD5" />
       <rect x="55" y="100" width="50" height="20" rx="10" fill="#2F7C57" />
       <circle cx="80" cy="86" r="31" fill="#AE7649" />
@@ -133,9 +136,9 @@ function FemaleCurlyAvatar() {
     </svg>
   );
 }
-function FemaleHijabAvatar() {
+function FemaleHijabAvatar({ className = "w-40 h-40" }: AvatarProps) {
   return (
-    <svg viewBox="0 0 160 160" className="w-40 h-40 drop-shadow-sm" aria-hidden>
+    <svg viewBox="0 0 160 160" className={`${className} drop-shadow-sm`} aria-hidden>
       <circle cx="80" cy="80" r="75" fill="#F9EFD5" />
       <path d="M38 108c4-28 20-50 42-50s38 22 42 50c-12 8-27 13-42 13s-30-5-42-13z" fill="#2E6D64"/>
       <rect x="55" y="102" width="50" height="18" rx="9" fill="#2F7C57" />
@@ -149,7 +152,7 @@ function FemaleHijabAvatar() {
   );
 }
 
-const AVATARS: Record<AvatarKey, React.FC> = {
+const AVATARS: Record<AvatarKey, React.FC<AvatarProps>> = {
   male: MaleAvatar,
   maleCurly: MaleCurlyAvatar,
   maleBaldBeard: MaleBaldBeardAvatar,
@@ -212,10 +215,8 @@ export default function FruitPickMatchPage() {
   // focus & autoscroll wanneer chat opent
   React.useEffect(() => {
     if (showChat) {
-      // body niet scrollen wanneer sheet open is
       const prev = document.body.style.overflow;
       document.body.style.overflow = "hidden";
-      // focus input + scroll naar onderin chat
       setTimeout(() => {
         inputRef.current?.focus();
         chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -226,12 +227,12 @@ export default function FruitPickMatchPage() {
     }
   }, [showChat]);
 
-  // autoscroll chat bij nieuw bericht
+  // autoscroll bij nieuw bericht
   React.useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const scheduleHere = () => setShowChat(true);        // rechts → open sheet
+  const scheduleHere = () => setShowChat(true);                 // rechts → open sheet
   const keepSwiping = () => setIdx((i) => (i + 1) % list.length); // links → volgende
 
   // pointer handlers
@@ -379,19 +380,24 @@ export default function FruitPickMatchPage() {
         </div>
       </div>
 
-      {/* ───────── Bottom Sheet Chat (altijd zichtbaar bij openen) ───────── */}
+      {/* ───────── Bottom Sheet Chat met avatar-header ───────── */}
       {showChat && (
         <div className="fixed inset-x-0 bottom-0 z-40 flex justify-center px-4 pb-5">
           <div className="w-full max-w-sm bg-white rounded-t-3xl shadow-xl border border-[#E7E2D5] h-[65vh] flex flex-col">
-            {/* drag-handle + header */}
-            <div className="pt-3 pb-2 px-4">
+            {/* header met mini avatar + naam */}
+            <div className="pt-3 pb-2 px-4 sticky top-0 bg-white z-10">
               <div className="mx-auto h-1.5 w-10 rounded-full bg-black/10 mb-3" />
-              <h3 className="text-center font-semibold text-[var(--pear-green)]">
-                Chat with {person.name}
-              </h3>
+              <div className="flex items-center justify-center gap-2">
+                <div className="shrink-0 rounded-full ring-2 ring-[var(--pear-green)]/20 overflow-hidden">
+                  <AvatarComp className="w-10 h-10" />
+                </div>
+                <h3 className="text-center font-semibold text-[var(--pear-green)]">
+                  Chat with {person.name}
+                </h3>
+              </div>
             </div>
 
-            {/* messages */}
+            {/* berichten */}
             <div className="flex-1 overflow-y-auto px-3 pb-2">
               <div className="space-y-1">
                 {messages.map((m) => (
