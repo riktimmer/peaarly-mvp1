@@ -1,84 +1,57 @@
-"use client";
-
 import Link from "next/link";
-import PeearLogo from "./components/PeearLogo";
 
-export default function HomePage() {
+export default function Home() {
   return (
-    <main className="min-h-screen relative overflow-x-hidden bg-[rgba(255,253,246,1)] text-[color:var(--leaf)] dark:bg-[#0F1A0E] dark:text-white transition-colors duration-500">
-      {/* Achtergrond met fruit */}
-      <div className="absolute inset-0 overflow-hidden select-none pointer-events-none">
-        <span className="fruit" style={{ top: "10%", left: "15%" }}>🍊</span>
-        <span className="fruit" style={{ top: "20%", left: "70%" }}>🍓</span>
-        <span className="fruit" style={{ top: "65%", left: "10%" }}>🍎</span>
-        <span className="fruit" style={{ top: "75%", left: "80%" }}>🍐</span>
-        <span className="fruit" style={{ top: "45%", left: "45%" }}>🍋</span>
+    <main className="flex flex-col items-center justify-center min-h-screen bg-cream text-[var(--ink)] dark:bg-[#0d1c0f] dark:text-white">
+      {/* Logo */}
+      <img
+        src="/logo-peear.png"
+        alt="Peear logo"
+        className="h-32 w-auto mb-6 dark:hidden"
+      />
+      <img
+        src="/logo-peear-dark.png"
+        alt="Peear logo dark"
+        className="h-32 w-auto mb-6 hidden dark:block"
+      />
+
+      {/* Title */}
+      <h1 className="text-4xl font-bold mb-2">Peear</h1>
+      <p className="mb-10 text-center text-lg">
+        Grow together. Stay curious. Be fruitful. 🍐
+      </p>
+
+      {/* Buttons */}
+      <div className="flex flex-col gap-4 w-72">
+        <Link
+          href="/drop/select"
+          className="bg-[var(--pear-green)] text-white rounded-2xl py-4 font-semibold text-center hover:brightness-95 transition"
+        >
+          Go to Pear Drop
+        </Link>
+
+        <Link
+          href="/feed"
+          className="bg-[#F8DA90] text-[var(--ink)] rounded-2xl py-4 font-semibold text-center hover:brightness-95 transition"
+        >
+          Go to Community Feed
+        </Link>
+
+        {/* Nieuwe knop: FRUIT PICK 🍓 */}
+        <Link
+          href="/fruitpick"
+          className="bg-[#F6C85C] text-[var(--ink)] rounded-2xl py-4 font-semibold text-center hover:brightness-95 transition"
+        >
+          Go to Fruit Pick 🍓
+        </Link>
       </div>
 
-      {/* Inhoud */}
-      <div className="relative z-10 max-w-md mx-auto text-center px-5 pt-12 pb-20">
-        {/* Inline SVG-logo */}
-        <PeearLogo className="mx-auto mb-6 h-44 w-44 text-[color:var(--leaf)] dark:text-white drop-shadow-sm transition-colors duration-300" />
-
-        <h1 className="text-4xl font-extrabold mb-2 tracking-tight">Peear</h1>
-        <p className="text-[1.05rem] text-muted mb-8 dark:text-gray-300">
-          Grow together. Stay curious. Be fruitful. 🍐
-        </p>
-
-        {/* CTA-knoppen */}
-        <div className="flex flex-col gap-4 mt-10">
-          <Link
-            href="/drop/select"
-            className="btn-primary py-3 rounded-2xl text-lg font-bold shadow-sm"
-          >
-            Go to Pear Drop
-          </Link>
-          <Link
-            href="/feed"
-            className="bg-[#F5D48A] text-[color:var(--leaf)] font-bold py-3 rounded-2xl text-lg hover:brightness-95 transition shadow-sm dark:bg-[#FFD26E] dark:text-[#0F1A0E]"
-          >
-            Go to Community Feed
-          </Link>
-        </div>
-
-        {/* Waarom Peear */}
-        <section className="mt-16 space-y-5">
-          <h2 className="text-[1.25rem] font-extrabold">Why join Peear?</h2>
-          <div className="space-y-3">
-            <div className="flex items-center justify-center gap-2">
-              <span className="text-xl">🍐</span>
-              <span className="font-semibold">Peer-to-Peer Growth</span>
-            </div>
-            <div className="flex items-center justify-center gap-2">
-              <span className="text-xl">🍊</span>
-              <span className="font-semibold">Fresh Perspectives</span>
-            </div>
-            <div className="flex items-center justify-center gap-2">
-              <span className="text-xl">🍓</span>
-              <span className="font-semibold">Fun & Fruitful Learning</span>
-            </div>
-          </div>
-        </section>
-
-        {/* Footer */}
-        <footer className="mt-20 text-sm text-muted flex items-center justify-center gap-2 dark:text-gray-400">
-          <span>Made with 🍐 🍓 🍊 by Peear</span>
-        </footer>
+      <div className="mt-12 text-center space-y-3">
+        <h2 className="text-2xl font-semibold">Why join Peear?</h2>
+        <p>🍐 Peer-to-Peer Growth</p>
+        <p>🍊 Fresh Perspectives</p>
+        <p>🍓 Fun & Fruitful Learning</p>
       </div>
-
-      {/* Stijlen voor fruitanimatie */}
-      <style jsx global>{`
-        .fruit {
-          position: absolute;
-          font-size: 2.2rem;
-          opacity: 0.2;
-          animation: floatFruit 12s ease-in-out infinite;
-        }
-        @keyframes floatFruit {
-          0%, 100% { transform: translateY(0) rotate(0deg); }
-          50% { transform: translateY(-20px) rotate(8deg); }
-        }
-      `}</style>
     </main>
   );
 }
