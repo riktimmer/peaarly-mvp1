@@ -42,7 +42,7 @@ export default function Home() {
           href="/fruitpick"
           className="bg-[#F6C85C] text-[var(--ink)] rounded-2xl py-4 font-semibold text-center hover:brightness-95 transition"
         >
-          Go to Fruit Pick 🍓
+          Go to Fruit Pick 
         </Link>
       </div>
 
