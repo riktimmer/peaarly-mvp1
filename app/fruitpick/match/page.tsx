@@ -2,18 +2,11 @@
 
 import * as React from "react";
 
-/* ────────────────────────────────────────────────────────────
-   Types
-────────────────────────────────────────────────────────────── */
+/* ───────────────── Types ───────────────── */
 type Message = { id: string; author: "me" | "them"; text: string; time?: string };
 type AvatarKey =
-  | "male"
-  | "maleCurly"
-  | "maleBaldBeard"
-  | "female"
-  | "femaleBob"
-  | "femaleCurly"
-  | "femaleHijab";
+  | "male" | "maleCurly" | "maleBaldBeard"
+  | "female" | "femaleBob" | "femaleCurly" | "femaleHijab";
 
 type Person = {
   name: string;
@@ -23,9 +16,7 @@ type Person = {
   messages: Message[];
 };
 
-/* ────────────────────────────────────────────────────────────
-   Helpers
-────────────────────────────────────────────────────────────── */
+/* ─────────────── Helpers ─────────────── */
 const shuffle = <T,>(arr: T[]) => {
   const a = arr.slice();
   for (let i = a.length - 1; i > 0; i--) {
@@ -34,18 +25,13 @@ const shuffle = <T,>(arr: T[]) => {
   }
   return a;
 };
-
 const Badge = ({ children }: { children: React.ReactNode }) => (
   <span className="px-3 py-1 rounded-full bg-[#F7F0DD] text-[var(--ink)] text-sm font-semibold">
     {children}
   </span>
 );
 
-/* ────────────────────────────────────────────────────────────
-   SVG Avatars (7 varianten)
-────────────────────────────────────────────────────────────── */
-
-/* 1) Man – bruin haar + baard */
+/* ─────────────── Avatars (7 varianten) ─────────────── */
 function MaleAvatar() {
   return (
     <svg viewBox="0 0 160 160" className="w-40 h-40 drop-shadow-sm" aria-hidden>
@@ -63,8 +49,6 @@ function MaleAvatar() {
     </svg>
   );
 }
-
-/* 2) Vrouw – donkere huidskleur, bun */
 function FemaleAvatar() {
   return (
     <svg viewBox="0 0 160 160" className="w-40 h-40 drop-shadow-sm" aria-hidden>
@@ -84,8 +68,6 @@ function FemaleAvatar() {
     </svg>
   );
 }
-
-/* 3) Man – krullen, tan */
 function MaleCurlyAvatar() {
   return (
     <svg viewBox="0 0 160 160" className="w-40 h-40 drop-shadow-sm" aria-hidden>
@@ -103,8 +85,6 @@ function MaleCurlyAvatar() {
     </svg>
   );
 }
-
-/* 4) Man – kaal + volle baard (donkere huid) */
 function MaleBaldBeardAvatar() {
   return (
     <svg viewBox="0 0 160 160" className="w-40 h-40 drop-shadow-sm" aria-hidden>
@@ -121,8 +101,6 @@ function MaleBaldBeardAvatar() {
     </svg>
   );
 }
-
-/* 5) Vrouw – bob kapsel, lichte huid */
 function FemaleBobAvatar() {
   return (
     <svg viewBox="0 0 160 160" className="w-40 h-40 drop-shadow-sm" aria-hidden>
@@ -139,8 +117,6 @@ function FemaleBobAvatar() {
     </svg>
   );
 }
-
-/* 6) Vrouw – krullend haar, donkere huid */
 function FemaleCurlyAvatar() {
   return (
     <svg viewBox="0 0 160 160" className="w-40 h-40 drop-shadow-sm" aria-hidden>
@@ -157,8 +133,6 @@ function FemaleCurlyAvatar() {
     </svg>
   );
 }
-
-/* 7) Vrouw – hijab */
 function FemaleHijabAvatar() {
   return (
     <svg viewBox="0 0 160 160" className="w-40 h-40 drop-shadow-sm" aria-hidden>
@@ -185,87 +159,26 @@ const AVATARS: Record<AvatarKey, React.FC> = {
   femaleHijab: FemaleHijabAvatar,
 };
 
-/* ────────────────────────────────────────────────────────────
-   Kandidaten-POOL  (wordt geshuffled bij mount)
-────────────────────────────────────────────────────────────── */
+/* ─────────────── Pool (geshuffled) ─────────────── */
 const POOL: Person[] = [
-  {
-    name: "David",
-    interests: ["Marketing", "Problem-solving"],
-    blurb: "Interested in exploring best practices for customer retention.",
-    avatar: "male",
-    messages: [
-      { id: "d1", author: "them", text: "Hey 👋 Leuk je te matchen!" },
-      { id: "d2", author: "them", text: "Zin om over klantretentie te sparren?" },
-      { id: "d3", author: "me", text: "Altijd! Ik heb net een leuke case." },
-    ],
-  },
-  {
-    name: "Amina",
-    interests: ["Leadership", "Creativity"],
-    blurb: "Exploring playful ways to grow teams and spark new ideas.",
-    avatar: "female",
-    messages: [
-      { id: "a1", author: "them", text: "Hoi! 😊 Peer-to-peer fan hier." },
-      { id: "a2", author: "me", text: "Same! Welke onderwerpen vind jij leuk?" },
-    ],
-  },
-  {
-    name: "Lucas",
-    interests: ["Product", "Data"],
-    blurb: "Loves A/B tests and pragmatic product thinking.",
-    avatar: "maleCurly",
-    messages: [
-      { id: "l1", author: "them", text: "Hi! Testen + meten = ❤️" },
-      { id: "l2", author: "me", text: "Helemaal mee eens!" },
-    ],
-  },
-  {
-    name: "Noah",
-    interests: ["Engineering", "Mentoring"],
-    blurb: "Enjoys pair programming and clean design.",
-    avatar: "maleBaldBeard",
-    messages: [
-      { id: "n1", author: "them", text: "Hoi! Zin in een korte tech jam?" },
-    ],
-  },
-  {
-    name: "Sofia",
-    interests: ["UX", "Growth"],
-    blurb: "Mixes research with playful experiments.",
-    avatar: "femaleBob",
-    messages: [
-      { id: "s1", author: "them", text: "Hoi! Ik ben benieuwd naar jouw UX-cases." },
-    ],
-  },
-  {
-    name: "Maya",
-    interests: ["Community", "Storytelling"],
-    blurb: "Building spaces where ideas can grow.",
-    avatar: "femaleCurly",
-    messages: [
-      { id: "m1", author: "them", text: "Hee! Werk je veel met communities?" },
-    ],
-  },
-  {
-    name: "Samira",
-    interests: ["Leadership", "Ops"],
-    blurb: "Calm ops, clear teams, kind leadership.",
-    avatar: "femaleHijab",
-    messages: [
-      { id: "sm1", author: "them", text: "Hi! Ik ben fan van rustige processen." },
-    ],
-  },
+  { name: "David", interests: ["Marketing", "Problem-solving"], blurb: "Interested in exploring best practices for customer retention.", avatar: "male",
+    messages: [{ id: "d1", author: "them", text: "Hey 👋 Leuk je te matchen!" }, { id: "d2", author: "them", text: "Zin om over klantretentie te sparren?" }, { id: "d3", author: "me", text: "Altijd! Ik heb net een leuke case." }] },
+  { name: "Amina", interests: ["Leadership", "Creativity"], blurb: "Exploring playful ways to grow teams and spark new ideas.", avatar: "female",
+    messages: [{ id: "a1", author: "them", text: "Hoi! 😊 Peer-to-peer fan hier." }, { id: "a2", author: "me", text: "Same! Welke onderwerpen vind jij leuk?" }] },
+  { name: "Lucas", interests: ["Product", "Data"], blurb: "Loves A/B tests and pragmatic product thinking.", avatar: "maleCurly",
+    messages: [{ id: "l1", author: "them", text: "Hi! Testen + meten = ❤️" }, { id: "l2", author: "me", text: "Helemaal mee eens!" }] },
+  { name: "Noah", interests: ["Engineering", "Mentoring"], blurb: "Enjoys pair programming and clean design.", avatar: "maleBaldBeard",
+    messages: [{ id: "n1", author: "them", text: "Hoi! Zin in een korte tech jam?" }] },
+  { name: "Sofia", interests: ["UX", "Growth"], blurb: "Mixes research with playful experiments.", avatar: "femaleBob",
+    messages: [{ id: "s1", author: "them", text: "Hoi! Ik ben benieuwd naar jouw UX-cases." }] },
+  { name: "Maya", interests: ["Community", "Storytelling"], blurb: "Building spaces where ideas can grow.", avatar: "femaleCurly",
+    messages: [{ id: "m1", author: "them", text: "Hee! Werk je veel met communities?" }] },
+  { name: "Samira", interests: ["Leadership", "Ops"], blurb: "Calm ops, clear teams, kind leadership.", avatar: "femaleHijab",
+    messages: [{ id: "sm1", author: "them", text: "Hi! Ik ben fan van rustige processen." }] },
 ];
 
-/* ────────────────────────────────────────────────────────────
-   Page component
-   - Randomize pool bij mount
-   - Swipe: links = skip, rechts = chat
-   - Chat inline met dummy data
-────────────────────────────────────────────────────────────── */
+/* ─────────────── Page ─────────────── */
 export default function FruitPickMatchPage() {
-  // random lijst
   const [list] = React.useState<Person[]>(() => shuffle(POOL));
   const [idx, setIdx] = React.useState(0);
   const person = list[idx];
@@ -281,13 +194,14 @@ export default function FruitPickMatchPage() {
   const DIST_THRESHOLD = 120;
   const VEL_THRESHOLD = 0.6;
 
-  // chat op dezelfde pagina
+  // chat bottom sheet
   const [showChat, setShowChat] = React.useState(false);
   const [messages, setMessages] = React.useState<Message[]>(person.messages);
   const [input, setInput] = React.useState("");
   const chatEndRef = React.useRef<HTMLDivElement | null>(null);
+  const inputRef = React.useRef<HTMLInputElement | null>(null);
 
-  // als kandidaat wisselt → reset chat & posities
+  // candidate change → reset
   React.useEffect(() => {
     setShowChat(false);
     setMessages(list[idx].messages);
@@ -295,18 +209,30 @@ export default function FruitPickMatchPage() {
     RESET(true);
   }, [idx, list]);
 
-  // autoscroll chat
+  // focus & autoscroll wanneer chat opent
+  React.useEffect(() => {
+    if (showChat) {
+      // body niet scrollen wanneer sheet open is
+      const prev = document.body.style.overflow;
+      document.body.style.overflow = "hidden";
+      // focus input + scroll naar onderin chat
+      setTimeout(() => {
+        inputRef.current?.focus();
+        chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+      }, 50);
+      return () => {
+        document.body.style.overflow = prev;
+      };
+    }
+  }, [showChat]);
+
+  // autoscroll chat bij nieuw bericht
   React.useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, showChat]);
+  }, [messages]);
 
-  const scheduleHere = () => {
-    setShowChat(true); // rechts swipe → chat openen
-  };
-
-  const keepSwiping = () => {
-    setIdx((i) => (i + 1) % list.length); // links swipe → volgende
-  };
+  const scheduleHere = () => setShowChat(true);        // rechts → open sheet
+  const keepSwiping = () => setIdx((i) => (i + 1) % list.length); // links → volgende
 
   // pointer handlers
   const onPointerDown = (e: React.PointerEvent) => {
@@ -315,63 +241,42 @@ export default function FruitPickMatchPage() {
     start.current = { x: e.clientX, y: e.clientY, t: performance.now() };
     setDragging(true);
   };
-
   const onPointerMove = (e: React.PointerEvent) => {
     if (!dragging || !start.current || showChat) return;
     const ndx = e.clientX - start.current.x;
     const ndy = e.clientY - start.current.y;
     setDx(ndx);
-    setDy(ndy * 0.25); // verticale demping
+    setDy(ndy * 0.25);
   };
-
   const animateOut = (dir: "left" | "right", onDone: () => void) => {
     setLeaving(dir);
     const node = cardRef.current;
-    if (!node) {
-      onDone();
-      return;
-    }
+    if (!node) { onDone(); return; }
     const sign = dir === "right" ? 1 : -1;
     node.style.transition = "transform 220ms ease-out, opacity 220ms ease-out";
     node.style.transform = `translate(${sign * 1000}px, ${dy}px) rotate(${sign * 22}deg)`;
     node.style.opacity = "0";
     window.setTimeout(onDone, 230);
   };
-
   const onPointerUp = () => {
     if (!start.current || showChat) return RESET();
     const dt = Math.max(1, performance.now() - start.current.t);
     const vx = dx / dt;
-    if (dx > DIST_THRESHOLD || vx > VEL_THRESHOLD) {
-      animateOut("right", scheduleHere);
-      return;
-    }
-    if (dx < -DIST_THRESHOLD || vx < -VEL_THRESHOLD) {
-      animateOut("left", keepSwiping);
-      return;
-    }
+    if (dx > DIST_THRESHOLD || vx > VEL_THRESHOLD) { animateOut("right", scheduleHere); return; }
+    if (dx < -DIST_THRESHOLD || vx < -VEL_THRESHOLD) { animateOut("left", keepSwiping); return; }
     RESET();
   };
-
   const RESET = (instant = false) => {
-    setDragging(false);
-    setLeaving(null);
-    setDx(0);
-    setDy(0);
+    setDragging(false); setLeaving(null); setDx(0); setDy(0);
     if (cardRef.current) {
       const n = cardRef.current;
       n.style.transition = instant ? "none" : "transform 180ms ease";
-      n.style.transform = "translate(0px, 0px)";
-      n.style.opacity = "1";
-      if (!instant) {
-        setTimeout(() => {
-          if (n) n.style.transition = "none";
-        }, 190);
-      }
+      n.style.transform = "translate(0px, 0px)"; n.style.opacity = "1";
+      if (!instant) setTimeout(() => { if (n) n.style.transition = "none"; }, 190);
     }
   };
 
-  // toetsenbord fallback (uit als chat open is)
+  // keyboard fallback (uit als chat open is)
   React.useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (showChat) return;
@@ -386,12 +291,11 @@ export default function FruitPickMatchPage() {
   const likeOpacity = Math.max(0, Math.min(1, (dx - 40) / 120));
   const nopeOpacity = Math.max(0, Math.min(1, (-dx - 40) / 120));
 
-  // chat: bericht sturen
+  // chat send
   const genId = () =>
     typeof crypto !== "undefined" && "randomUUID" in crypto
       ? crypto.randomUUID()
       : Math.random().toString(36).slice(2);
-
   const sendMsg = () => {
     const text = input.trim();
     if (!text) return;
@@ -400,16 +304,11 @@ export default function FruitPickMatchPage() {
     setTimeout(() => {
       setMessages((prev) => [
         ...prev,
-        {
-          id: genId(),
-          author: "them",
-          text: "Klinkt goed! Zullen we morgenmiddag even bellen?",
-        },
+        { id: genId(), author: "them", text: "Klinkt goed! Morgenmiddag even bellen?" },
       ]);
     }, 600);
   };
 
-  // kies de juiste avatarcomponent
   const AvatarComp = AVATARS[person.avatar];
 
   return (
@@ -423,21 +322,14 @@ export default function FruitPickMatchPage() {
 
       <div className="mt-6 flex justify-center">
         <div className="relative w-full max-w-sm">
-          {/* Overlays alleen als chat nog niet open is */}
           {!showChat && (
             <>
-              <div
-                className="absolute -left-2 top-6 z-20 select-none pointer-events-none"
-                style={{ opacity: nopeOpacity }}
-              >
+              <div className="absolute -left-2 top-6 z-20 select-none pointer-events-none" style={{ opacity: nopeOpacity }}>
                 <span className="border-4 border-[#E65B4F] text-[#E65B4F] font-extrabold px-3 py-1 rounded-md rotate-[-12deg]">
                   SKIP
                 </span>
               </div>
-              <div
-                className="absolute -right-2 top-6 z-20 select-none pointer-events-none"
-                style={{ opacity: likeOpacity }}
-              >
+              <div className="absolute -right-2 top-6 z-20 select-none pointer-events-none" style={{ opacity: likeOpacity }}>
                 <span className="border-4 border-[#2E7D32] text-[#2E7D32] font-extrabold px-3 py-1 rounded-md rotate-[12deg]">
                   CHAT
                 </span>
@@ -445,7 +337,6 @@ export default function FruitPickMatchPage() {
             </>
           )}
 
-          {/* Kaart */}
           <div
             ref={cardRef}
             className={`bg-white rounded-3xl shadow-md p-6 select-none ${
@@ -477,54 +368,6 @@ export default function FruitPickMatchPage() {
                 {person.blurb}
               </p>
             </div>
-
-            {/* Chat inline (na rechts-swipe) */}
-            {showChat && (
-              <div className="mt-6">
-                <h3 className="text-center font-semibold text-[var(--pear-green)] mb-2">
-                  Chat with {person.name}
-                </h3>
-                <div className="bg-[var(--cream)] rounded-2xl p-3 border border-[#E7E2D5] max-h-64 overflow-y-auto">
-                  {messages.map((m) => (
-                    <div
-                      key={m.id}
-                      className={`my-1 flex ${
-                        m.author === "me" ? "justify-end" : "justify-start"
-                      }`}
-                    >
-                      <span
-                        className={`px-3 py-2 rounded-2xl text-sm leading-snug whitespace-pre-wrap ${
-                          m.author === "me"
-                            ? "bg-[var(--pear-green)] text-white"
-                            : "bg-white text-[var(--ink)] border border-[#E7E2D5]"
-                        }`}
-                      >
-                        {m.text}
-                      </span>
-                    </div>
-                  ))}
-                  <div ref={chatEndRef} />
-                </div>
-
-                <div className="mt-2 flex gap-2">
-                  <input
-                    value={input}
-                    onChange={(e) => setInput(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") sendMsg();
-                    }}
-                    placeholder="Type a message…"
-                    className="flex-1 rounded-xl border border-[#E7E2D5] bg-white px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--leaf)]/40"
-                  />
-                  <button
-                    onClick={sendMsg}
-                    className="rounded-xl bg-[var(--pear-green)] text-white px-4 py-2 text-sm font-semibold hover:brightness-95 active:translate-y-px"
-                  >
-                    Send
-                  </button>
-                </div>
-              </div>
-            )}
           </div>
 
           {!showChat && (
@@ -535,6 +378,59 @@ export default function FruitPickMatchPage() {
           )}
         </div>
       </div>
+
+      {/* ───────── Bottom Sheet Chat (altijd zichtbaar bij openen) ───────── */}
+      {showChat && (
+        <div className="fixed inset-x-0 bottom-0 z-40 flex justify-center px-4 pb-5">
+          <div className="w-full max-w-sm bg-white rounded-t-3xl shadow-xl border border-[#E7E2D5] h-[65vh] flex flex-col">
+            {/* drag-handle + header */}
+            <div className="pt-3 pb-2 px-4">
+              <div className="mx-auto h-1.5 w-10 rounded-full bg-black/10 mb-3" />
+              <h3 className="text-center font-semibold text-[var(--pear-green)]">
+                Chat with {person.name}
+              </h3>
+            </div>
+
+            {/* messages */}
+            <div className="flex-1 overflow-y-auto px-3 pb-2">
+              <div className="space-y-1">
+                {messages.map((m) => (
+                  <div key={m.id} className={`flex ${m.author === "me" ? "justify-end" : "justify-start"}`}>
+                    <span
+                      className={`px-3 py-2 rounded-2xl text-sm leading-snug whitespace-pre-wrap ${
+                        m.author === "me"
+                          ? "bg-[var(--pear-green)] text-white"
+                          : "bg-[var(--cream)] text-[var(--ink)] border border-[#E7E2D5]"
+                      }`}
+                    >
+                      {m.text}
+                    </span>
+                  </div>
+                ))}
+                <div ref={chatEndRef} />
+              </div>
+            </div>
+
+            {/* input */}
+            <div className="p-3 border-t border-[#E7E2D5] flex gap-2">
+              <input
+                ref={inputRef}
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && sendMsg()}
+                placeholder={`Message ${person.name}…`}
+                className="flex-1 rounded-xl border border-[#E7E2D5] bg-white px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--leaf)]/40"
+              />
+              <button
+                onClick={sendMsg}
+                className="rounded-xl bg-[var(--pear-green)] text-white px-4 py-2 text-sm font-semibold hover:brightness-95 active:translate-y-px"
+              >
+                Send
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
