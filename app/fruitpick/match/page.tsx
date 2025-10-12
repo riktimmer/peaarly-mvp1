@@ -12,26 +12,51 @@ type Person = {
 const MATCH: Person = {
   name: "David",
   interests: ["Marketing", "Problem-solving"],
-  blurb:
-    "Interested in exploring best practices for customer retention.",
+  blurb: "Interested in exploring best practices for customer retention.",
 };
 
-// Simpele avatar (SVG gezicht)
+// --- 🎨 NIEUWE AVATAR ---
 function Avatar() {
   return (
-    <svg viewBox="0 0 120 120" className="w-40 h-40">
-      <circle cx="60" cy="60" r="56" fill="#F7E9C6" />
-      <circle cx="60" cy="68" r="28" fill="#174A2F" />
-      <circle cx="60" cy="48" r="22" fill="#F1C48D" />
-      <rect x="44" y="70" width="32" height="8" rx="4" fill="#F1C48D" />
-      <circle cx="49" cy="50" r="3.2" fill="#1E1E1E" />
-      <circle cx="71" cy="50" r="3.2" fill="#1E1E1E" />
-      <path d="M51 41c6-8 22-8 28 0" stroke="#1E1E1E" strokeWidth="4" />
-      <path d="M46 60c7 6 21 6 28 0" stroke="#1E1E1E" strokeWidth="3" />
+    <svg
+      viewBox="0 0 160 160"
+      xmlns="http://www.w3.org/2000/svg"
+      className="w-40 h-40 drop-shadow-sm"
+    >
+      <circle cx="80" cy="80" r="75" fill="#F9EFD5" />
+      {/* nek + schouders */}
+      <rect x="55" y="100" width="50" height="20" rx="10" fill="#2F7C57" />
+      <circle cx="80" cy="85" r="32" fill="#F4CDA5" />
+      {/* haar */}
       <path
-        d="M34 62c2-12 11-21 26-21s24 9 26 21"
-        stroke="#174A2F"
-        strokeWidth="16"
+        d="M48 74c0-24 16-40 32-40s32 12 32 34c-3-2-6-3-9-3s-7 2-9 4c-2-2-5-3-8-3-7 0-13 5-15 11-2-2-6-3-9-3-5 0-9 3-14 7z"
+        fill="#603F26"
+      />
+      {/* baard */}
+      <path
+        d="M54 90c3 12 11 22 26 22s23-10 26-22c-2 3-5 6-9 6-4 0-7-2-9-5-2 3-5 5-8 5-4 0-7-2-10-6-3 3-5 5-8 5-3 0-6-2-8-5z"
+        fill="#603F26"
+      />
+      {/* ogen */}
+      <circle cx="68" cy="82" r="4" fill="#1E1E1E" />
+      <circle cx="92" cy="82" r="4" fill="#1E1E1E" />
+      {/* wenkbrauwen */}
+      <rect x="61" y="74" width="14" height="2.5" rx="1.25" fill="#3B2A18" />
+      <rect x="85" y="74" width="14" height="2.5" rx="1.25" fill="#3B2A18" />
+      {/* neus */}
+      <path
+        d="M78 82c1 2 2 4 2 7s-1 4-2 4"
+        stroke="#C68642"
+        strokeWidth="2"
+        fill="none"
+        strokeLinecap="round"
+      />
+      {/* glimlach */}
+      <path
+        d="M70 97c3 3 8 3 12 0"
+        stroke="#A45B27"
+        strokeWidth="2.5"
+        fill="none"
         strokeLinecap="round"
       />
     </svg>
@@ -40,26 +65,20 @@ function Avatar() {
 
 export default function FruitPickMatchPage() {
   const router = useRouter();
-
-  // Drag state
   const [dx, setDx] = React.useState(0);
   const [dy, setDy] = React.useState(0);
   const [dragging, setDragging] = React.useState(false);
   const [leaving, setLeaving] = React.useState<null | "left" | "right">(null);
-
-  // Waar we begonnen + tijdstip (voor velocity)
   const start = React.useRef<{ x: number; y: number; t: number } | null>(null);
   const cardRef = React.useRef<HTMLDivElement | null>(null);
 
-  // thresholds
-  const DIST_THRESHOLD = 120; // px
-  const VEL_THRESHOLD = 0.6;  // px/ms
+  const DIST_THRESHOLD = 120;
+  const VEL_THRESHOLD = 0.6;
 
   const schedule = () => router.push("/profile");
   const keepSwiping = () => router.push("/fruitpick/select");
 
   const onPointerDown = (e: React.PointerEvent) => {
-    // voorkom tekstselectie/scroll tijdens drag
     e.currentTarget.setPointerCapture(e.pointerId);
     start.current = { x: e.clientX, y: e.clientY, t: performance.now() };
     setDragging(true);
@@ -67,16 +86,14 @@ export default function FruitPickMatchPage() {
 
   const onPointerMove = (e: React.PointerEvent) => {
     if (!dragging || !start.current) return;
-    // horizontaal swipen prioriteren → kleine verticale beweging negeren
     const ndx = e.clientX - start.current.x;
     const ndy = e.clientY - start.current.y;
     setDx(ndx);
-    setDy(ndy * 0.25); // demp verticale beweging
+    setDy(ndy * 0.25);
   };
 
   const animateOut = (dir: "left" | "right", onDone: () => void) => {
     setLeaving(dir);
-    // laat de kaart “uit beeld” glijden
     const node = cardRef.current;
     if (!node) {
       onDone();
@@ -84,18 +101,17 @@ export default function FruitPickMatchPage() {
     }
     const sign = dir === "right" ? 1 : -1;
     node.style.transition = "transform 220ms ease-out, opacity 220ms ease-out";
-    node.style.transform = `translate(${sign * 1000}px, ${dy}px) rotate(${sign * 22}deg)`;
+    node.style.transform = `translate(${sign * 1000}px, ${dy}px) rotate(${
+      sign * 22
+    }deg)`;
     node.style.opacity = "0";
-
     window.setTimeout(onDone, 230);
   };
 
   const onPointerUp = () => {
     if (!start.current) return RESET();
-
-    const dt = Math.max(1, performance.now() - start.current.t); // ms
-    const vx = dx / dt; // px/ms
-
+    const dt = Math.max(1, performance.now() - start.current.t);
+    const vx = dx / dt;
     if (dx > DIST_THRESHOLD || vx > VEL_THRESHOLD) {
       animateOut("right", schedule);
       return;
@@ -112,27 +128,22 @@ export default function FruitPickMatchPage() {
     setLeaving(null);
     setDx(0);
     setDy(0);
-    // reset eventuele inline styles na animatie
     if (cardRef.current) {
       const n = cardRef.current;
       n.style.transition = "transform 180ms ease";
       n.style.transform = "translate(0px, 0px)";
       n.style.opacity = "1";
-      // na de korte reset-transition terug naar none
       setTimeout(() => {
         if (n) n.style.transition = "none";
       }, 190);
     }
   };
 
-  // Keyboard fallback
+  // toetsenbord fallback
   React.useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "ArrowRight") {
-        animateOut("right", schedule);
-      } else if (e.key === "ArrowLeft") {
-        animateOut("left", keepSwiping);
-      }
+      if (e.key === "ArrowRight") animateOut("right", schedule);
+      if (e.key === "ArrowLeft") animateOut("left", keepSwiping);
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
@@ -151,13 +162,9 @@ export default function FruitPickMatchPage() {
         {MATCH.name}
       </h2>
 
-      {/* Swipe card */}
       <div className="mt-6 flex justify-center">
-        <div
-          className="relative w-full max-w-sm"
-          // de container hoeft geen handlers; we zetten ze op de kaart zelf
-        >
-          {/* Overlays */}
+        <div className="relative w-full max-w-sm">
+          {/* overlays */}
           <div
             className="absolute -left-2 top-6 z-20 select-none pointer-events-none"
             style={{ opacity: nopeOpacity }}
@@ -175,13 +182,13 @@ export default function FruitPickMatchPage() {
             </span>
           </div>
 
-          {/* Kaart */}
+          {/* kaart */}
           <div
             ref={cardRef}
             className="bg-white rounded-3xl shadow-md p-6 select-none cursor-grab active:cursor-grabbing"
             style={{
               willChange: "transform",
-              touchAction: "none", // belangrijk voor mobiel swipen!
+              touchAction: "none",
               transform:
                 leaving === null
                   ? `translate(${dx}px, ${dy}px) rotate(${rotate}deg)`
@@ -195,7 +202,6 @@ export default function FruitPickMatchPage() {
           >
             <div className="flex flex-col items-center">
               <Avatar />
-
               <div className="mt-4 flex gap-2 flex-wrap justify-center">
                 {MATCH.interests.map((tag) => (
                   <span
@@ -206,7 +212,6 @@ export default function FruitPickMatchPage() {
                   </span>
                 ))}
               </div>
-
               <p className="mt-4 text-center text-[var(--ink)]/85 text-sm leading-snug">
                 {MATCH.blurb}
               </p>
