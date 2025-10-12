@@ -51,11 +51,11 @@ export default function FruitPickSelectPage() {
         ))}
       </div>
 
-      {/* CTA - net onder het midden */}
+      {/* CTA - compact & gecentreerd, net onder midden */}
       <div className="relative z-10 min-h-screen flex items-center justify-center">
         <button
           onClick={() => router.push("/fruitpick/loading")}
-          className="translate-y-10 w-full max-w-md mx-auto rounded-2xl bg-[var(--pear-green)] text-white font-extrabold py-4 text-lg shadow-md hover:brightness-95 transition"
+          className="translate-y-8 inline-flex items-center justify-center rounded-full bg-[var(--pear-green)] text-white font-extrabold px-7 py-4 text-lg shadow-md hover:brightness-95 transition"
         >
           Start Fruit Pick
         </button>
