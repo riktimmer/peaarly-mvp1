@@ -1,57 +1,61 @@
+"use client";
+
 import Link from "next/link";
+import Image from "next/image";
+import React from "react";
 
 export default function Home() {
   return (
-    <main className="flex flex-col items-center justify-center min-h-screen bg-cream text-[var(--ink)] dark:bg-[#0d1c0f] dark:text-white">
+    <main className="min-h-screen flex flex-col items-center justify-center bg-[#FAFAF2] text-center p-6">
       {/* Logo */}
-      <img
-        src="/logo-peear.png"
-        alt="Peear logo"
-        className="h-32 w-auto mb-6 dark:hidden"
-      />
-      <img
-        src="/logo-peear-dark.png"
-        alt="Peear logo dark"
-        className="h-32 w-auto mb-6 hidden dark:block"
-      />
+      <div className="mb-8">
+        <Image
+          src="/peear_logo.svg" // <-- vervang door je echte logo-pad
+          alt="Peear Logo"
+          width={120}
+          height={120}
+        />
+      </div>
 
-      {/* Title */}
-      <h1 className="text-4xl font-bold mb-2">Peear</h1>
-      <p className="mb-10 text-center text-lg">
+      {/* Titel en tagline */}
+      <h1 className="text-4xl font-bold text-green-900 mb-2">Peear</h1>
+      <p className="text-lg text-green-800 mb-10">
         Grow together. Stay curious. Be fruitful. 🍐
       </p>
 
-      {/* Buttons */}
-      <div className="flex flex-col gap-4 w-72">
+      {/* Drie knoppen */}
+      <div className="flex flex-col gap-4 w-full max-w-xs">
         <Link
-          href="/drop/select"
-          className="bg-[var(--pear-green)] text-white rounded-2xl py-4 font-semibold text-center hover:brightness-95 transition"
+          href="/about"
+          className="bg-green-700 hover:bg-green-800 text-white font-semibold py-3 rounded-2xl transition"
         >
-          Go to Pear Drop
+          About Peear
         </Link>
 
         <Link
-          href="/feed"
-          className="bg-[#F8DA90] text-[var(--ink)] rounded-2xl py-4 font-semibold text-center hover:brightness-95 transition"
+          href="/drop"
+          className="bg-yellow-500 hover:bg-yellow-600 text-green-900 font-semibold py-3 rounded-2xl transition"
         >
-          Go to Community Feed
+          Drop Now 🍐
         </Link>
 
-        {/* Nieuwe knop: FRUIT PICK 🍓 */}
         <Link
           href="/fruitpick"
-          className="bg-[#F6C85C] text-[var(--ink)] rounded-2xl py-4 font-semibold text-center hover:brightness-95 transition"
+          className="bg-orange-400 hover:bg-orange-500 text-green-900 font-semibold py-3 rounded-2xl transition"
         >
-          Go to Fruit Pick 
+          Fruit Pick 🍊
         </Link>
       </div>
 
-      <div className="mt-12 text-center space-y-3">
-        <h2 className="text-2xl font-semibold">Why join Peear?</h2>
-        <p>🍐 Peer-to-Peer Growth</p>
-        <p>🍊 Fresh Perspectives</p>
-        <p>🍓 Fun & Fruitful Learning</p>
-      </div>
+      {/* Why join sectie */}
+      <section className="mt-12 max-w-md text-green-900">
+        <h2 className="text-2xl font-semibold mb-4">Why join Peear?</h2>
+        <ul className="space-y-2 text-left">
+          <li>🍐 Peer-to-Peer Growth</li>
+          <li>🍊 Fresh Perspectives</li>
+          <li>🌱 Earn credits by helping others</li>
+        </ul>
+      </section>
     </main>
   );
 }
