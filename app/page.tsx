@@ -1,20 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import React from "react";
+import PeeearLogo from "./components/PeeearLogo"; // import de logo-component
 
 export default function Home() {
   return (
     <main className="min-h-screen flex flex-col items-center justify-center bg-[#FAFAF2] text-center p-6">
       {/* Logo */}
       <div className="mb-8">
-        <Image
-          src="/peear_logo.svg" // <-- vervang door je echte logo-pad
-          alt="Peear Logo"
-          width={120}
-          height={120}
-        />
+        <PeeearLogo width={120} height={120} /> {/* gebruik de component */}
       </div>
 
       {/* Titel en tagline */}
