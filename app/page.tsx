@@ -2,9 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-
-// LET OP: dit is de juiste bestandsnaam in je repo (PeearLogo.tsx)
-import PeearLogo from "./components/PeearLogo";
+import PeearLogo from "./components/PeearLogo"; // let op: exacte bestandsnaam
 
 export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -86,14 +84,12 @@ export default function Home() {
         >
           About Peear.io
         </Link>
-
         <Link
           href="/drop"
           className="bg-yellow-500 hover:bg-yellow-600 text-green-900 font-semibold py-3 rounded-2xl transition shadow-sm"
         >
           Start Peear Drop
         </Link>
-
         <Link
           href="/fruitpick"
           className="bg-orange-400 hover:bg-orange-500 text-green-900 font-semibold py-3 rounded-2xl transition shadow-sm"
@@ -106,3 +102,11 @@ export default function Home() {
       <section className="mt-12 max-w-md text-green-900">
         <h2 className="text-2xl font-semibold mb-4">Why join Peear?</h2>
         <ul className="space-y-2 text-left">
+          <li>🍐 Peer-to-Peer Growth</li>
+          <li>🍊 Fresh Perspectives</li>
+          <li>🌱 Earn credits by helping others</li>
+        </ul>
+      </section>
+    </main>
+  );
+}
