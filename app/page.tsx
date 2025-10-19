@@ -2,14 +2,13 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import PeearLogo from "./components/PeearLogo"; // let op: exacte bestandsnaam
+import PeearLogo from "./components/PeearLogo";
 
-export default function Home() {
+export default function Home(): JSX.Element {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
     <main className="min-h-screen relative flex flex-col items-center justify-center bg-[#FAFAF2] text-center p-6">
-      {/* Menu tab rechtsboven */}
       <div className="absolute top-4 right-4">
         <div className="relative">
           <button
@@ -20,7 +19,6 @@ export default function Home() {
           >
             Menu
           </button>
-
           {menuOpen && (
             <nav
               className="absolute right-0 mt-2 w-56 rounded-2xl bg-white shadow-lg ring-1 ring-black/5 overflow-hidden"
@@ -63,12 +61,10 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Logo */}
       <div className="mb-8">
         <PeearLogo width={120} height={120} />
       </div>
 
-      {/* Titel en tagline */}
       <h1 className="text-4xl md:text-5xl font-bold text-green-900 mb-2 tracking-tight">
         Peear
       </h1>
@@ -76,7 +72,6 @@ export default function Home() {
         Grow together. Stay curious. Be fruitful. 🍐
       </p>
 
-      {/* Drie knoppen */}
       <div className="flex flex-col gap-4 w-full max-w-sm">
         <Link
           href="/about"
@@ -98,7 +93,6 @@ export default function Home() {
         </Link>
       </div>
 
-      {/* Why join sectie */}
       <section className="mt-12 max-w-md text-green-900">
         <h2 className="text-2xl font-semibold mb-4">Why join Peear?</h2>
         <ul className="space-y-2 text-left">
