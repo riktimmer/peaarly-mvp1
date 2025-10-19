@@ -3,7 +3,7 @@ import * as React from "react";
 export type PeearLogoProps = {
   width?: number;
   height?: number;
-  color?: string;        // hoofdkleur voor peer + netwerk
+  color?: string;        // hoofdkleur peer + netwerk
   className?: string;
   showWordmark?: boolean;
 };
@@ -15,10 +15,8 @@ const PeearLogo: React.FC<PeearLogoProps> = ({
   className,
   showWordmark = false,
 }) => {
-  const stroke = color;
-  const node = color;
-  const soft = "0.55";                     // transparantie diagonalen
-  const stem = shade(color, -18);          // iets donkerder voor steel/blad
+  const soft = 0.55;                 // transparantie diagonalen
+  const stem = shade(color, -18);    // iets donkerder voor steel/blad
 
   return (
     <div className={className} style={{ width, height, lineHeight: 0 }}>
@@ -29,66 +27,56 @@ const PeearLogo: React.FC<PeearLogoProps> = ({
         role="img"
         aria-label="Peear logo"
       >
-        {/* ===== NETWERK / HEXAGON ===== */}
+        {/* NETWERK / HEXAGON */}
         <g transform="translate(20,14)">
           <polygon
             points="90,0 180,52 180,150 90,202 0,150 0,52"
             fill="none"
-            stroke={stroke}
+            stroke={color}
             strokeWidth="6"
             strokeLinejoin="round"
           />
           {[ [90,0],[180,52],[180,150],[90,202],[0,150],[0,52] ].map(([x,y],i)=>(
-            <circle key={i} cx={x} cy={y} r="7" fill={node} />
+            <circle key={i} cx={x} cy={y} r="7" fill={color} />
           ))}
-          <g stroke={stroke} strokeOpacity={soft} strokeWidth="4">
+          <g stroke={color} strokeOpacity={soft} strokeWidth="4" fill="none">
             <line x1="0" y1="52" x2="180" y2="150" />
             <line x1="180" y1="52" x2="0" y2="150" />
             <line x1="90" y1="0" x2="90" y2="202" />
           </g>
         </g>
 
-        {/* ===== PEER – emoji-achtig ===== */}
-        <g transform="translate(28,18)">
+        {/* PEER – emoji-achtig (🍐) */}
+        <g transform="translate(34,20)">
           {/* steel */}
           <path
-            d="M112 50c-8 8 -18 12 -28 12"
+            d="M114 48c-8 10 -20 14 -32 14"
             stroke={stem}
             strokeWidth="6"
             strokeLinecap="round"
             fill="none"
           />
-          {/* blad (los element), rechtsboven, licht gekanteld */}
-          <path
-            d="M126 46c-18 -4 -31 2 -38 14c14 4 27 -2 38 -14z"
-            fill={stem}
-          />
-
-          {/* peer-silhouet:
-              - smalle hals (boven) die naar rechts helt
-              - volle, asymmetrische buik (onder)
-              - contour geïnspireerd op 🍐
-          */}
+          {/* blad (los) */}
+          <path d="M131 46c-18 -4 -32 2 -39 14c15 4 28 -2 39 -14z" fill={stem} />
+          {/* peer body: slanke hals (rechtshellend), volle buik beneden */}
           <path
             d="
-              M120,64
-              C118,50 110,40 98,38
-              C90,36 84,39 79,44
-              C75,36 66,32 57,33
-              C45,35 36,44 34,55
-              C33,60 34,66 37,71
-              C21,83 12,101 12,120
-              C12,154 40,178 78,178
-              C116,178 144,154 144,120
-              C144,98 133,80 115,72
-              C122,70 124,67 120,64
-              Z
+              M122,64
+              C120,51 111,41 99,39
+              C91,38 84,41 80,46
+              C76,37 66,33 56,34
+              C43,36 34,47 33,59
+              C32,65 33,70 36,76
+              C19,89 10,107 10,126
+              C10,162 40,186 80,186
+              C120,186 150,162 150,126
+              C150,102 138,82 118,74
+              C124,71 126,68 122,64 Z
             "
             fill={color}
           />
         </g>
 
-        {/* optioneel woordmerk */}
         {showWordmark && (
           <text
             x="110"
@@ -107,6 +95,7 @@ const PeearLogo: React.FC<PeearLogoProps> = ({
   );
 };
 
+// kleine helper om een tint donkerder te maken
 function shade(hex: string, percent: number) {
   const f = parseInt(hex.slice(1), 16);
   const t = percent < 0 ? 0 : 255;
