@@ -3,7 +3,7 @@ import * as React from "react";
 export type PeearLogoProps = {
   width?: number;
   height?: number;
-  color?: string;        // hoofdkleur
+  color?: string;        // hoofdkleur voor peer + netwerk
   className?: string;
   showWordmark?: boolean;
 };
@@ -17,8 +17,8 @@ const PeearLogo: React.FC<PeearLogoProps> = ({
 }) => {
   const stroke = color;
   const node = color;
-  const stem = shade(color, -18);   // iets donkerder dan peer
-  const edgesSoft = "0.55";         // transparantie diagonalen
+  const soft = "0.55";                     // transparantie diagonalen
+  const stem = shade(color, -18);          // iets donkerder voor steel/blad
 
   return (
     <div className={className} style={{ width, height, lineHeight: 0 }}>
@@ -29,7 +29,7 @@ const PeearLogo: React.FC<PeearLogoProps> = ({
         role="img"
         aria-label="Peear logo"
       >
-        {/* ===== NETWORK / HEXAGON ===== */}
+        {/* ===== NETWERK / HEXAGON ===== */}
         <g transform="translate(20,14)">
           <polygon
             points="90,0 180,52 180,150 90,202 0,150 0,52"
@@ -38,51 +38,50 @@ const PeearLogo: React.FC<PeearLogoProps> = ({
             strokeWidth="6"
             strokeLinejoin="round"
           />
-          {/* nodes */}
           {[ [90,0],[180,52],[180,150],[90,202],[0,150],[0,52] ].map(([x,y],i)=>(
-            <circle key={i} cx={x} cy={y} r="7" fill={node}/>
+            <circle key={i} cx={x} cy={y} r="7" fill={node} />
           ))}
-          {/* zachte diagonalen en vertical */}
-          <g stroke={stroke} strokeOpacity={edgesSoft} strokeWidth="4">
+          <g stroke={stroke} strokeOpacity={soft} strokeWidth="4">
             <line x1="0" y1="52" x2="180" y2="150" />
             <line x1="180" y1="52" x2="0" y2="150" />
             <line x1="90" y1="0" x2="90" y2="202" />
           </g>
         </g>
 
-        {/* ===== PEER (duidelijk vollere onderkant + slanke hals) ===== */}
-        <g transform="translate(24,20)">
-          {/* steel – apart van de peer */}
+        {/* ===== PEER – emoji-achtig ===== */}
+        <g transform="translate(28,18)">
+          {/* steel */}
           <path
-            d="M118 48c-6 8 -16 12 -26 12"
+            d="M112 50c-8 8 -18 12 -28 12"
             stroke={stem}
             strokeWidth="6"
             strokeLinecap="round"
             fill="none"
           />
-          {/* blad – los element */}
+          {/* blad (los element), rechtsboven, licht gekanteld */}
           <path
-            d="M130 44c-14 -3 -26 2 -32 12c12 3 23 -2 32 -12z"
+            d="M126 46c-18 -4 -31 2 -38 14c14 4 27 -2 38 -14z"
             fill={stem}
           />
 
           {/* peer-silhouet:
-              - duidelijke bolling onder (rond 120/126)
-              - smalle hals (rond 74–86)
-              - topkopje net onder de steel
+              - smalle hals (boven) die naar rechts helt
+              - volle, asymmetrische buik (onder)
+              - contour geïnspireerd op 🍐
           */}
           <path
             d="
-              M116,58
-              C114,44 105,34 93,34
-              C83,34 76,39 72,47
-              C62,49 54,56 48,65
-              C40,77 36,91 36,104
-              C36,136 62,160 98,160
-              C134,160 160,136 160,104
-              C160,88 154,74 143,65
-              C137,60 130,57 124,56
-              C121,56 118,57 116,58
+              M120,64
+              C118,50 110,40 98,38
+              C90,36 84,39 79,44
+              C75,36 66,32 57,33
+              C45,35 36,44 34,55
+              C33,60 34,66 37,71
+              C21,83 12,101 12,120
+              C12,154 40,178 78,178
+              C116,178 144,154 144,120
+              C144,98 133,80 115,72
+              C122,70 124,67 120,64
               Z
             "
             fill={color}
