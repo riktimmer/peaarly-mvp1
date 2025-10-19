@@ -9,6 +9,7 @@ export default function Home(): JSX.Element {
 
   return (
     <main className="min-h-screen relative flex flex-col items-center justify-center bg-[#FAFAF2] text-center p-6">
+      {/* Menu tab rechtsboven */}
       <div className="absolute top-4 right-4">
         <div className="relative">
           <button
@@ -61,10 +62,12 @@ export default function Home(): JSX.Element {
         </div>
       </div>
 
+      {/* Logo */}
       <div className="mb-8">
-        <PeearLogo width={120} height={120} />
+        <PeearLogo />
       </div>
 
+      {/* Titel en tagline */}
       <h1 className="text-4xl md:text-5xl font-bold text-green-900 mb-2 tracking-tight">
         Peear
       </h1>
@@ -72,6 +75,7 @@ export default function Home(): JSX.Element {
         Grow together. Stay curious. Be fruitful. 🍐
       </p>
 
+      {/* Drie knoppen */}
       <div className="flex flex-col gap-4 w-full max-w-sm">
         <Link
           href="/about"
@@ -93,6 +97,7 @@ export default function Home(): JSX.Element {
         </Link>
       </div>
 
+      {/* Why join sectie */}
       <section className="mt-12 max-w-md text-green-900">
         <h2 className="text-2xl font-semibold mb-4">Why join Peear?</h2>
         <ul className="space-y-2 text-left">
