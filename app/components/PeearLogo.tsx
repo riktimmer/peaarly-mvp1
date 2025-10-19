@@ -3,9 +3,9 @@ import * as React from "react";
 export type PeearLogoProps = {
   width?: number;
   height?: number;
-  color?: string;       // hoofdkleur (peertje + network)
+  color?: string;        // hoofdkleur
   className?: string;
-  showWordmark?: boolean; // indien true toont “Peear” onder het icoon
+  showWordmark?: boolean;
 };
 
 const PeearLogo: React.FC<PeearLogoProps> = ({
@@ -15,88 +15,85 @@ const PeearLogo: React.FC<PeearLogoProps> = ({
   className,
   showWordmark = false,
 }) => {
-  // lichtere/donkerdere varianten voor accenten
   const stroke = color;
-  const nodeFill = color;
-  const edge = color;
-  const stem = shade(color, -12);
+  const node = color;
+  const stem = shade(color, -18);   // iets donkerder dan peer
+  const edgesSoft = "0.55";         // transparantie diagonalen
 
   return (
     <div className={className} style={{ width, height, lineHeight: 0 }}>
       <svg
         viewBox="0 0 220 220"
-        role="img"
-        aria-label="Peear logo"
         width={width}
         height={height}
+        role="img"
+        aria-label="Peear logo"
       >
-        {/* NETWORK BACKGROUND */}
-        <g transform="translate(20,18)">
-          {/* Hexagon frame */}
+        {/* ===== NETWORK / HEXAGON ===== */}
+        <g transform="translate(20,14)">
           <polygon
             points="90,0 180,52 180,150 90,202 0,150 0,52"
             fill="none"
-            stroke={edge}
+            stroke={stroke}
             strokeWidth="6"
             strokeLinejoin="round"
           />
-          {/* Nodes */}
-          {[
-            [90, 0],
-            [180, 52],
-            [180, 150],
-            [90, 202],
-            [0, 150],
-            [0, 52],
-          ].map(([x, y], i) => (
-            <circle key={i} cx={x} cy={y} r="7.5" fill={nodeFill} />
+          {/* nodes */}
+          {[ [90,0],[180,52],[180,150],[90,202],[0,150],[0,52] ].map(([x,y],i)=>(
+            <circle key={i} cx={x} cy={y} r="7" fill={node}/>
           ))}
-          {/* Cross connections (subtieler) */}
-          <g stroke={edge} strokeOpacity="0.65" strokeWidth="4">
+          {/* zachte diagonalen en vertical */}
+          <g stroke={stroke} strokeOpacity={edgesSoft} strokeWidth="4">
             <line x1="0" y1="52" x2="180" y2="150" />
-            <line x1="0" y1="150" x2="180" y2="52" />
+            <line x1="180" y1="52" x2="0" y2="150" />
             <line x1="90" y1="0" x2="90" y2="202" />
           </g>
         </g>
 
-        {/* PEAR SHAPE */}
-        <g transform="translate(34,22)">
-          {/* steel */}
+        {/* ===== PEER (duidelijk vollere onderkant + slanke hals) ===== */}
+        <g transform="translate(24,20)">
+          {/* steel – apart van de peer */}
           <path
-            d="M106 43c-9 6-18 9-28 9"
+            d="M118 48c-6 8 -16 12 -26 12"
             stroke={stem}
             strokeWidth="6"
             strokeLinecap="round"
             fill="none"
           />
-
-          {/* blad */}
+          {/* blad – los element */}
           <path
-            d="M118 40c-12 -2 -22 2 -27 11 10 2 19 -2 27 -11z"
+            d="M130 44c-14 -3 -26 2 -32 12c12 3 23 -2 32 -12z"
             fill={stem}
           />
 
-          {/* peervorm (organisch silhouet) */}
+          {/* peer-silhouet:
+              - duidelijke bolling onder (rond 120/126)
+              - smalle hals (rond 74–86)
+              - topkopje net onder de steel
+          */}
           <path
             d="
-              M108,58
-              C108,42 97,30 84,30
-              C70,30 61,39 58,49
-              C40,52 26,68 26,88
-              C26,118 50,144 84,144
-              C118,144 142,118 142,88
-              C142,74 135,62 123,56
-              C116,53 111,55 108,58 Z
+              M116,58
+              C114,44 105,34 93,34
+              C83,34 76,39 72,47
+              C62,49 54,56 48,65
+              C40,77 36,91 36,104
+              C36,136 62,160 98,160
+              C134,160 160,136 160,104
+              C160,88 154,74 143,65
+              C137,60 130,57 124,56
+              C121,56 118,57 116,58
+              Z
             "
             fill={color}
           />
         </g>
 
-        {/* Optional wordmark */}
+        {/* optioneel woordmerk */}
         {showWordmark && (
           <text
             x="110"
-            y="212"
+            y="214"
             textAnchor="middle"
             fontFamily="'Poppins', ui-sans-serif, system-ui"
             fontWeight="700"
@@ -111,22 +108,13 @@ const PeearLogo: React.FC<PeearLogoProps> = ({
   );
 };
 
-/**
- * Kleine helper om de kleur iets donkerder of lichter te maken
- */
 function shade(hex: string, percent: number) {
-  // verwacht #RRGGBB
   const f = parseInt(hex.slice(1), 16);
   const t = percent < 0 ? 0 : 255;
   const p = Math.abs(percent) / 100;
-  const R = f >> 16;
-  const G = (f >> 8) & 0x00ff;
-  const B = f & 0x0000ff;
+  const R = f >> 16, G = (f >> 8) & 255, B = f & 255;
   const to = (c: number) => Math.round((t - c) * p) + c;
-  return (
-    "#" +
-    (0x1000000 + (to(R) << 16) + (to(G) << 8) + to(B)).toString(16).slice(1)
-  );
+  return "#" + (0x1000000 + (to(R) << 16) + (to(G) << 8) + to(B)).toString(16).slice(1);
 }
 
 export default PeearLogo;
