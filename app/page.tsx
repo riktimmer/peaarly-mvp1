@@ -33,7 +33,7 @@ export default function Home(): JSX.Element {
                     onClick={() => setMenuOpen(false)}
                     role="menuitem"
                   >
-                    About Peear.io
+                    About Peear
                   </Link>
                 </li>
                 <li>
@@ -43,7 +43,7 @@ export default function Home(): JSX.Element {
                     onClick={() => setMenuOpen(false)}
                     role="menuitem"
                   >
-                    Start Peear Drop
+                    Start Pear Drop
                   </Link>
                 </li>
                 <li>
@@ -54,6 +54,16 @@ export default function Home(): JSX.Element {
                     role="menuitem"
                   >
                     Start Fruit Pick
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/community"
+                    className="block px-4 py-2 hover:bg-green-50 text-green-900"
+                    onClick={() => setMenuOpen(false)}
+                    role="menuitem"
+                  >
+                    Community Feed
                   </Link>
                 </li>
               </ul>
@@ -81,13 +91,13 @@ export default function Home(): JSX.Element {
           href="/about"
           className="bg-green-700 hover:bg-green-800 text-white font-semibold py-3 rounded-2xl transition shadow-sm"
         >
-          About Peear.io
+          About Peear
         </Link>
         <Link
           href="/drop"
           className="bg-yellow-500 hover:bg-yellow-600 text-green-900 font-semibold py-3 rounded-2xl transition shadow-sm"
         >
-          Start Peear Drop
+          Start Pear Drop
         </Link>
         <Link
           href="/fruitpick"
