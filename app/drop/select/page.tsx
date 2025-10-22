@@ -5,16 +5,15 @@ import { useRouter } from "next/navigation";
 import {
   Card,
   Badge,
-  PearIcon,
+  // PearIcon,   // removed per request
   AnimatedFruit,
 } from "../../components/ui";
 
 /** ---------------------------------------------
- *  ✨ UX intent
- *  - Zoekveld + "Quick picks" voor snelle start
- *  - Max 5 keuzes met duidelijke progress
- *  - Glas-CTA onderin + micro-animaties
- *  - Toegankelijk (role="checkbox", aria-live)
+ *  UX
+ *  - Search + 5 Quick picks
+ *  - Max 5 selections with progress
+ *  - Polished sticky CTA + a11y
  *  --------------------------------------------- */
 
 const FRUIT_MAP: Record<string, string> = {
@@ -44,7 +43,7 @@ export default function SelectPage() {
   const router = useRouter();
   const liveRef = useRef<HTMLDivElement>(null);
 
-  // Restore (optional) previous selection for a smooth return trip
+  // Restore previous selection (optional)
   useEffect(() => {
     try {
       const raw = sessionStorage.getItem("peaarly.selectedTopics");
@@ -62,7 +61,7 @@ export default function SelectPage() {
     return ALL_TOPICS.filter((t) => t.toLowerCase().includes(q));
   }, [query]);
 
-  // Quick picks: ongevulde, populaire smaken bovenaan
+  // 5 Quick picks
   const quickPicks = useMemo(() => {
     const order = [
       "Focus",
@@ -72,7 +71,7 @@ export default function SelectPage() {
       "Time Management",
       "Communication",
     ];
-    return order.filter((t) => !selected.includes(t)).slice(0, 3);
+    return order.filter((t) => !selected.includes(t)).slice(0, 5);
   }, [selected]);
 
   function toggle(topic: string) {
@@ -83,7 +82,6 @@ export default function SelectPage() {
         return prev.filter((x) => x !== topic);
       }
       if (prev.length >= MAX) {
-        // brief haptic-like nudge via aria-live; no intrusive toast
         liveRef.current?.animate?.([{ opacity: 0.4 }, { opacity: 1 }], {
           duration: 180,
           iterations: 1,
@@ -106,7 +104,7 @@ export default function SelectPage() {
   const progressPct = Math.min(100, Math.round((count / MAX) * 100));
   const canContinue = count > 0;
 
-  // Tasteful floaters (decor)
+  // Decorative floaters
   const floaters = useMemo(
     () => [
       { kind: "pear" as const, left: "7%", delay: 0 },
@@ -129,14 +127,12 @@ export default function SelectPage() {
       <div className="max-w-xl mx-auto px-5 pt-8 pb-4">
         <header className="flex items-center justify-between gap-3">
           <div>
-            <h1 className="text-3xl font-extrabold tracking-tight">Find your perfect Pear 🍐</h1>
+            <h1 className="text-3xl font-extrabold tracking-tight">Find your perfect Peear 🍐</h1>
             <p className="text-sm text-[color:var(--ink)]/70">
-              Kies tot <strong>{MAX}</strong> interesses — hoe beter je smaak, hoe scherper je match.
+              Choose up to <strong>{MAX}</strong> interests — the sharper your taste, the better your match.
             </p>
           </div>
-          <div className="shrink-0">
-            <PearIcon size={32} tone="lime" />
-          </div>
+          {/* Removed the small pear icon on the right */}
         </header>
       </div>
 
@@ -234,7 +230,6 @@ export default function SelectPage() {
                   disabled={locked}
                   className={`chip ${active ? "chip--active" : "chip--ghost"} ${locked ? "opacity-40 cursor-not-allowed" : "hover:-translate-y-[1px]"} transition relative`}
                 >
-                  {/* micro pulse when just added */}
                   {justAdded === t && (
                     <span className="absolute -right-1 -top-1 text-xs animate-ping">✨</span>
                   )}
@@ -282,7 +277,7 @@ export default function SelectPage() {
             onClick={startDrop}
             disabled={!canContinue}
           >
-            <span className={`${canContinue ? "animate-none" : "animate-pulse"}`}>Find my Pear match</span>
+            <span className={`${canContinue ? "animate-none" : "animate-pulse"}`}>Find my Peear match</span>
           </button>
           {!canContinue ? (
             <p className="mt-1 text-center text-xs text-[color:var(--ink)]/70">
