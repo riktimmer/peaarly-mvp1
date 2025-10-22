@@ -20,13 +20,7 @@ const PeearLogo: React.FC<PeearLogoProps> = ({
 
   return (
     <div className={className} style={{ width, height, lineHeight: 0 }}>
-      <svg
-        viewBox="0 0 220 220"
-        width={width}
-        height={height}
-        role="img"
-        aria-label="Peear logo"
-      >
+      <svg viewBox="0 0 220 220" width={width} height={height} role="img" aria-label="Peear logo">
         {/* NETWERK / HEXAGON */}
         <g transform="translate(20,14)">
           <polygon
@@ -46,32 +40,33 @@ const PeearLogo: React.FC<PeearLogoProps> = ({
           </g>
         </g>
 
-        {/* PEER – emoji-achtig (🍐) */}
-        <g transform="translate(34,20)">
-          {/* steel */}
+        {/* PEER – emoji-achtige vorm (smalle hals + volle buik) */}
+        <g transform="translate(30,18)">
+          {/* steel (los) */}
           <path
-            d="M114 48c-8 10 -20 14 -32 14"
+            d="M112 50c-9 10-22 15-34 15"
             stroke={stem}
             strokeWidth="6"
             strokeLinecap="round"
             fill="none"
           />
-          {/* blad (los) */}
-          <path d="M131 46c-18 -4 -32 2 -39 14c15 4 28 -2 39 -14z" fill={stem} />
-          {/* peer body: slanke hals (rechtshellend), volle buik beneden */}
+          {/* blad (los, lichte draai) */}
+          <path d="M130 46c-19 -5 -33 2 -41 15c16 4 30 -3 41 -15z" fill={stem} />
+
+          {/* peer body */}
           <path
             d="
-              M122,64
-              C120,51 111,41 99,39
-              C91,38 84,41 80,46
-              C76,37 66,33 56,34
-              C43,36 34,47 33,59
-              C32,65 33,70 36,76
-              C19,89 10,107 10,126
-              C10,162 40,186 80,186
-              C120,186 150,162 150,126
-              C150,102 138,82 118,74
-              C124,71 126,68 122,64 Z
+              M132,74
+              C130,58 118,46 102,46
+              C92,46 86,49 82,54    /* smalle hals */
+              C74,56 66,61 60,69
+              C50,82 46,98 46,114   /* linkerkant bolling */
+              C46,152 76,176 110,176
+              C144,176 174,152 174,114
+              C174,95 166,81 154,71  /* rechter schouder */
+              C146,64 138,61 130,62
+              C132,66 133,70 132,74  /* top-lobje */
+              Z
             "
             fill={color}
           />
@@ -79,13 +74,9 @@ const PeearLogo: React.FC<PeearLogoProps> = ({
 
         {showWordmark && (
           <text
-            x="110"
-            y="214"
-            textAnchor="middle"
+            x="110" y="214" textAnchor="middle"
             fontFamily="'Poppins', ui-sans-serif, system-ui"
-            fontWeight="700"
-            fontSize="28"
-            fill={color}
+            fontWeight="700" fontSize="28" fill={color}
           >
             Peear
           </text>
@@ -95,7 +86,7 @@ const PeearLogo: React.FC<PeearLogoProps> = ({
   );
 };
 
-// kleine helper om een tint donkerder te maken
+// kleine helper om de kleur iets donkerder te maken
 function shade(hex: string, percent: number) {
   const f = parseInt(hex.slice(1), 16);
   const t = percent < 0 ? 0 : 255;
