@@ -4,284 +4,290 @@ import React, { useEffect, useMemo, useRef } from "react";
 import { useRouter } from "next/navigation";
 
 /* -------------------------------------------------
-   Timing & where to go next
+   Timing & navigation
 -------------------------------------------------- */
-const DURATION_MS = 3800;            // totale animatieduur (~3.8s) — pas aan naar smaak
-const NEXT_STEP   = "/drop/match";   // wijzig indien jouw volgende route anders is
+const DURATION_MS = 5200;            // totale duur van de animatie (pas gerust aan)
+const NEXT_STEP   = "/drop/match";   // volgende route
 
 /* -------------------------------------------------
-   Fruit SVGs (lichtgewicht, juicy kleuren)
+   Fruit "on belt"
 -------------------------------------------------- */
-function Orange({ size = 44 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 64 64" aria-hidden>
-      <defs>
-        <radialGradient id="og" cx="50%" cy="40%" r="60%">
-          <stop offset="0%" stopColor="#FFC45A" />
-          <stop offset="100%" stopColor="#F59E0B" />
-        </radialGradient>
-      </defs>
-      <circle cx="32" cy="34" r="18" fill="url(#og)" />
-      <path d="M42 22c-3 1-6 1-8-2 3-1 6-1 8 2z" fill="#2F7A3E" />
-    </svg>
-  );
-}
-function Strawberry({ size = 42 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 64 64" aria-hidden>
-      <defs>
-        <linearGradient id="sg" x1="0" x2="1">
-          <stop offset="0" stopColor="#F43F5E" />
-          <stop offset="1" stopColor="#E11D48" />
-        </linearGradient>
-      </defs>
-      <path d="M32 20c6 0 10-6 10-6s2 6 8 6c-2 6-9 10-18 10S16 26 14 20c6 0 8-6 8-6s4 6 10 6z" fill="#22C55E" />
-      <path d="M16 30c0 10 7 18 16 18s16-8 16-18S16 26 16 30z" fill="url(#sg)" />
-      <g fill="#FEE2E2" opacity=".85">
-        <circle cx="26" cy="35" r="1.2" /><circle cx="32" cy="38" r="1.2" />
-        <circle cx="39" cy="34" r="1.2" /><circle cx="45" cy="39" r="1.2" />
-        <circle cx="21" cy="40" r="1.2" /><circle cx="34" cy="44" r="1.2" />
-      </g>
-    </svg>
-  );
-}
-function Apple({ size = 44 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 64 64" aria-hidden>
-      <defs>
-        <radialGradient id="ag" cx="40%" cy="35%" r="60%">
-          <stop offset="0" stopColor="#FF8A8A" />
-          <stop offset="1" stopColor="#EB5757" />
-        </radialGradient>
-      </defs>
-      <circle cx="26" cy="34" r="16" fill="url(#ag)" />
-      <circle cx="40" cy="34" r="16" fill="#E34D4D" />
-      <path d="M33 17c4-2 7-2 10 0-2 4-5 6-10 6-3-3-3-5 0-6z" fill="#2F7A3E" />
-    </svg>
-  );
-}
-function Grape({ size = 42 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 64 64" aria-hidden>
-      {[0,1,2,3,4,5,6].map((i)=>(
-        <circle key={i} cx={22 + (i%3)*10} cy={22 + Math.floor(i/3)*10} r="6" fill="#7C3AED" />
-      ))}
-      <rect x="29" y="10" width="4" height="8" rx="2" fill="#265C31" />
-    </svg>
-  );
-}
-function Banana({ size = 46 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 64 64" aria-hidden>
-      <path d="M10 36c10 10 27 12 38 2 3-3 5-6 6-9-2 8-8 15-16 18-12 4-22-1-28-11z"
-        fill="#FCD34D" stroke="#EAB308" strokeWidth="2" />
-    </svg>
-  );
-}
+type FruitSpec = { emoji: string; offset: number; scale?: number };
 
-/* -------------------------------------------------
-   Types & helpers
--------------------------------------------------- */
-type Kind = "orange" | "straw" | "apple" | "grape" | "banana";
-type FruitItem = { kind: Kind; left: string; delay: number; dur: number; size?: number };
-
-function FruitIcon({ kind, size }: { kind: Kind; size?: number }) {
-  switch (kind) {
-    case "orange": return <Orange size={size ?? 44} />;
-    case "straw":  return <Strawberry size={size ?? 42} />;
-    case "apple":  return <Apple size={size ?? 44} />;
-    case "grape":  return <Grape size={size ?? 42} />;
-    case "banana": return <Banana size={size ?? 46} />;
-  }
-}
-
-/* -------------------------------------------------
-   Falling fruit element (with sway + spin)
--------------------------------------------------- */
-function FruitFall({ kind, left, delay, dur, size }: FruitItem) {
-  return (
-    <div
-      className="ff"
-      style={
-        {
-          left,
-          // @ts-ignore Custom CSS vars for animations
-          "--delay": `${delay}ms`,
-          "--dur": `${dur}ms`,
-          "--sway": Math.random() > 0.5 ? 1 : -1,
-          "--rot": `${Math.floor(Math.random() * 36 - 18)}deg`,
-        } as React.CSSProperties
-      }
-      aria-hidden
-    >
-      <FruitIcon kind={kind} size={size} />
-    </div>
-  );
-}
-
-/* -------------------------------------------------
-   Big Peear landing (emoji + shadow)
--------------------------------------------------- */
-function LandingPeear() {
-  return (
-    <div className="lp" aria-hidden>
-      <span className="peear-emoji" role="img" aria-label="peear">🍐</span>
-      <div className="lp-shadow" />
-    </div>
-  );
-}
-
-/* -------------------------------------------------
-   Page
--------------------------------------------------- */
-export default function LoadingPage() {
+export default function LoadingConveyor() {
   const router = useRouter();
   const liveRef = useRef<HTMLDivElement>(null);
 
-  // Navigate after animation completes
+  // Navigate when the show ends
   useEffect(() => {
     const t = setTimeout(() => router.push(NEXT_STEP), DURATION_MS);
     return () => clearTimeout(t);
   }, [router]);
 
+  // a11y hint
   useEffect(() => {
-    liveRef.current?.append?.("Matching based on your selected interests…");
+    liveRef.current?.append?.("We are matching based on your selected interests.");
   }, []);
 
-  // Column-distributed fruit with staggered timings
-  const fruits = useMemo<FruitItem[]>(
+  // Build a small set of fruits spaced across the belt
+  const fruits = useMemo<FruitSpec[]>(
     () => [
-      { kind: "orange", left: "8%",  delay: 30,  dur: 1200 },
-      { kind: "grape",  left: "20%", delay: 140, dur: 1260 },
-      { kind: "apple",  left: "32%", delay: 260, dur: 1300 },
-      { kind: "banana", left: "44%", delay: 340, dur: 1220 },
-      { kind: "straw",  left: "56%", delay: 420, dur: 1280 },
-      { kind: "orange", left: "68%", delay: 520, dur: 1240 },
-      { kind: "grape",  left: "80%", delay: 620, dur: 1260 },
-      { kind: "apple",  left: "16%", delay: 700, dur: 1220 },
-      { kind: "straw",  left: "48%", delay: 840, dur: 1240 },
-      { kind: "banana", left: "72%", delay: 940, dur: 1200 },
+      { emoji: "🍓", offset: 0 },
+      { emoji: "🍊", offset: 8 },
+      { emoji: "🍎", offset: 16 },
+      { emoji: "🍇", offset: 24, scale: 1.05 },
+      { emoji: "🍌", offset: 32 },
+      { emoji: "🍉", offset: 40, scale: 1.1 },
+      { emoji: "🍑", offset: 48 },
+      { emoji: "🍒", offset: 56 },
+      { emoji: "🍍", offset: 64, scale: 1.05 },
+      { emoji: "🍋", offset: 72 },
+      { emoji: "🍈", offset: 80 },
+      { emoji: "🥝", offset: 88 },
     ],
     []
   );
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-[#F5F7EE] to-[#FAFAF2] text-[color:var(--leaf)]">
-      <div className="max-w-xl mx-auto px-5 py-8">
-        {/* Card */}
-        <div className="relative overflow-hidden rounded-2xl bg-white/90 shadow-sm ring-1 ring-black/5">
-          {/* Copy + progress */}
-          <div className="text-center px-4 pt-6">
-            <h1 className="text-2xl md:text-[1.65rem] leading-tight font-extrabold">
-              We’re picking your best Peear match…
-            </h1>
-            <p className="text-[color:var(--ink)]/70 mt-1">
-              Fresh connections are being harvested.
-            </p>
+    <main className="min-h-screen conveyor-bg text-[color:var(--leaf)]">
+      {/* Overlay copy */}
+      <div className="container">
+        <div className="glass">
+          <h1 className="title">
+            We’re crafting your best <span className="highlight">Peear</span> match
+          </h1>
+          <p className="subtitle">Fresh chemistry coming off the line…</p>
 
-            {/* Progress bar synced to DURATION_MS */}
-            <div className="mt-4 h-2 w-full bg-[#EFF5E9] rounded-full overflow-hidden">
-              <div
-                className="h-full bg-[#A7D37C] animate-progress"
-                style={{ animationDuration: `${DURATION_MS}ms` }}
-              />
-            </div>
-          </div>
-
-          {/* Stage */}
-          <div className="relative h-80 w-full mt-4">
-            {/* Falling fruits */}
-            <div className="fruits">
-              {fruits.map((f, i) => (
-                <FruitFall key={i} {...f} />
-              ))}
-            </div>
-
-            {/* Peear reveal */}
-            <LandingPeear />
-            <div className="ground" aria-hidden />
-          </div>
-
-          {/* A11y live region */}
-          <div ref={liveRef} aria-live="polite" className="sr-only" />
-
-          <div className="px-4 pb-6 text-center text-xs text-[color:var(--ink)]/60">
-            Matching based on your selected interests…
+          {/* Progress synced to duration */}
+          <div className="progress">
+            <div className="bar" style={{ animationDuration: `${DURATION_MS}ms` }} />
           </div>
         </div>
       </div>
 
-      {/* Styles scoped to this page */}
+      {/* Stage: full-width conveyor */}
+      <div className="stage" aria-hidden>
+        {/* Rails / rollers */}
+        <div className="rails top" />
+        <div className="belt">
+          {/* Belt texture (moves) */}
+          <div
+            className="belt-surface"
+            style={{ animationDuration: `${Math.round(DURATION_MS * 0.95)}ms` }}
+          />
+          {/* Fruit items moving with the belt */}
+          <div
+            className="belt-stream"
+            style={{ animationDuration: `${Math.round(DURATION_MS * 0.95)}ms` }}
+          >
+            {fruits.map((f, i) => (
+              <span
+                key={i}
+                className="fruit"
+                style={{
+                  // offset maps fruit along the path; 0..100%-ish
+                  left: `calc(${f.offset}% + ${i * 6}px)`,
+                  transform: `translateX(0) translateY(0) scale(${f.scale ?? 1})`,
+                }}
+              >
+                {f.emoji}
+              </span>
+            ))}
+
+            {/* The hero Peear appears late and falls off the edge */}
+            <span
+              className="fruit pear hero"
+              // sync: enters late so it reaches the end near the finale
+              style={{
+                animationDelay: `${Math.round(DURATION_MS * 0.38)}ms`,
+              }}
+              aria-label="peear"
+              role="img"
+            >
+              🍐
+            </span>
+          </div>
+        </div>
+        <div className="rails bottom" />
+
+        {/* Catch tray shadow */}
+        <div className="tray-shadow" />
+      </div>
+
+      {/* screen reader live region */}
+      <div ref={liveRef} aria-live="polite" className="sr-only" />
+
+      {/* Styles */}
       <style jsx>{`
         :root {
           --leaf: #0f5132;
           --ink: #0c2a1f;
+          --lime: #a7d37c;
+          --cream: #fafaf2;
         }
 
-        .fruits { position: absolute; inset: 0; pointer-events: none; }
-        .ff {
-          position: absolute; top: -72px;
-          animation:
-            fall var(--dur) ease-in var(--delay) forwards,
-            sway calc(var(--dur) * 1.1) ease-in-out var(--delay) forwards,
-            spin var(--dur) linear var(--delay) forwards;
-          transform: translateX(0) translateY(0) rotate(var(--rot));
-          opacity: 0.95;
-          filter: drop-shadow(0 8px 18px rgba(0,0,0,.08));
+        .conveyor-bg {
+          background:
+            radial-gradient(1200px 800px at 20% -10%, #ecf6df 0%, transparent 55%),
+            radial-gradient(900px 700px at 100% 20%, #f0f8e8 0%, transparent 60%),
+            linear-gradient(180deg, #f6f8ef 0%, #fafaf2 100%);
         }
 
-        .lp {
-          position: absolute; left: 50%; bottom: 74px; transform: translateX(-50%);
-          animation: peear-drop ${Math.round(DURATION_MS * 0.55)}ms cubic-bezier(.2,.8,.2,1) ${Math.round(DURATION_MS*0.18)}ms forwards;
+        .container {
+          position: relative;
+          display: grid;
+          place-items: center;
+          padding-top: clamp(28px, 6vh, 52px);
         }
-        .peear-emoji { display: block; font-size: 100px; line-height: 1; filter: drop-shadow(0 8px 20px rgba(0,0,0,.10)); }
-        .lp-shadow {
-          position: absolute; left: 50%; bottom: -8px; transform: translateX(-50%);
-          width: 96px; height: 14px; border-radius: 9999px; background: rgba(0,0,0,.10);
-          animation: shadow ${Math.round(DURATION_MS * 0.55)}ms ease-out ${Math.round(DURATION_MS*0.18)}ms forwards;
-          opacity: 0;
+        .glass {
+          width: min(820px, 92vw);
+          background: rgba(255,255,255,0.78);
+          backdrop-filter: blur(6px);
+          border-radius: 20px;
+          box-shadow: 0 8px 26px rgba(0,0,0,.06);
+          border: 1px solid rgba(0,0,0,.06);
+          padding: 18px 18px 14px;
+          text-align: center;
         }
-
-        .ground {
-          position: absolute; left: 0; right: 0; bottom: 70px; height: 2px;
-          background: linear-gradient(90deg, transparent 0%, #E5EEDC 20%, #E5EEDC 80%, transparent 100%);
+        .title {
+          font-weight: 800;
+          letter-spacing: -0.01em;
+          font-size: clamp(1.25rem, 2.4vw, 1.8rem);
+          color: var(--leaf);
         }
-
-        @keyframes fall {
-          0% { transform: translateY(-40px) rotate(var(--rot)); opacity: 0; }
-          100% { transform: translateY(320px) rotate(var(--rot)); opacity: 1; }
+        .highlight {
+          background: linear-gradient(90deg, #6cb15a, #a7d37c);
+          -webkit-background-clip: text;
+          background-clip: text;
+          color: transparent;
         }
-        @keyframes sway {
-          from { transform: translateX(0) translateY(0) rotate(var(--rot)); }
-          to   { transform: translateX(calc(var(--sway) * 18px)) translateY(320px) rotate(var(--rot)); }
+        .subtitle {
+          margin-top: 4px;
+          font-size: .96rem;
+          color: rgba(15,81,50,.75);
         }
-        @keyframes spin {
-          to { transform: translateX(calc(var(--sway) * 18px)) translateY(320px) rotate(calc(var(--sway) * 1turn)); }
+        .progress {
+          margin: 12px auto 2px;
+          height: 10px;
+          width: min(640px, 86vw);
+          background: #EFF5E9;
+          border-radius: 9999px;
+          overflow: hidden;
+          box-shadow: 0 2px 10px rgba(0,0,0,.05) inset;
         }
-
-        @keyframes peear-drop {
-          0%   { transform: translate(-50%, -220px) scale(.86); }
-          70%  { transform: translate(-50%, 0) scale(1.02); }
-          100% { transform: translate(-50%, 0) scale(1); }
-        }
-        @keyframes shadow {
-          0%   { transform: translateX(-50%) scaleX(.3); opacity: 0; }
-          70%  { transform: translateX(-50%) scaleX(1.05); opacity: .7; }
-          100% { transform: translateX(-50%) scaleX(1); opacity: .55; }
-        }
-
-        .animate-progress {
-          animation-name: grow;
-          animation-timing-function: cubic-bezier(.22,1,.36,1);
-          animation-fill-mode: forwards;
+        .bar {
+          height: 100%;
           width: 0%;
+          background: linear-gradient(90deg, #6CB15A, #A7D37C);
+          animation: grow linear forwards;
         }
         @keyframes grow { to { width: 100%; } }
 
-        /* Reduced motion: disable complex movement */
+        /* ---- Stage / Conveyor ---- */
+        .stage {
+          position: relative;
+          height: clamp(280px, 45vh, 420px);
+          width: 100%;
+          display: grid;
+          place-items: center;
+          margin-top: clamp(16px, 4vh, 28px);
+        }
+        .rails {
+          position: absolute;
+          left: 0; right: 0;
+          height: 10px;
+          background: linear-gradient(180deg, rgba(0,0,0,.08), rgba(0,0,0,.12));
+          box-shadow: 0 2px 6px rgba(0,0,0,.08);
+          border-radius: 6px;
+          transform: translateZ(0);
+        }
+        .rails.top    { top: calc(50% - 52px); }
+        .rails.bottom { top: calc(50% + 52px); }
+
+        .belt {
+          position: absolute;
+          left: 6vw; right: 6vw;
+          top: 50%;
+          height: 88px;
+          transform: translateY(-50%);
+          border-radius: 14px;
+          overflow: hidden;
+          background: #1d2a1f;
+          box-shadow: 0 10px 24px rgba(0,0,0,.12), inset 0 1px 0 rgba(255,255,255,.08);
+        }
+
+        /* Moving tread texture */
+        .belt-surface {
+          position: absolute; inset: 0;
+          background:
+            repeating-linear-gradient(90deg, rgba(255,255,255,.09) 0 6px, transparent 6px 26px),
+            linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.06));
+          opacity: .9;
+          animation-name: tread;
+          animation-timing-function: linear;
+          animation-iteration-count: 1; /* loopt 1x voor controle */
+          animation-fill-mode: forwards;
+        }
+        @keyframes tread {
+          from { background-position: 0 0, 0 0; }
+          to   { background-position: 1200px 0, 0 0; }
+        }
+
+        /* Stream van fruit die met de band meebeweegt */
+        .belt-stream {
+          position: absolute; inset: 0;
+          animation: stream linear 1 forwards;
+        }
+        @keyframes stream {
+          from { transform: translateX(0); }
+          to   { transform: translateX(56vw); } /* schuift mee naar rechts */
+        }
+
+        .fruit {
+          position: absolute;
+          top: 50%;
+          transform: translateY(-50%);
+          font-size: 34px;
+          filter: drop-shadow(0 6px 14px rgba(0,0,0,.12));
+          transition: transform .2s ease;
+        }
+        .fruit:hover {
+          transform: translateY(-52%) scale(1.04);
+        }
+
+        /* De held: Peear die aan het einde van de band naar beneden valt */
+        .fruit.pear.hero {
+          left: 8%;
+          font-size: 40px;
+          /* Deze zit óók op de stream en beweegt daardoor mee naar rechts */
+          animation:
+            hero-enter ${Math.round(DURATION_MS * 0.18)}ms ease-out both,
+            hero-drop ${Math.round(DURATION_MS * 0.38)}ms cubic-bezier(.2,.8,.2,1) ${Math.round(DURATION_MS * 0.78)}ms forwards;
+        }
+        @keyframes hero-enter {
+          from { transform: translateY(-50%) scale(.92); opacity: 0; }
+          to   { transform: translateY(-50%) scale(1);   opacity: 1; }
+        }
+        /* valt recht naar beneden, terwijl de stream animatie hem tot de rand brengt */
+        @keyframes hero-drop {
+          0%   { transform: translateY(-50%) rotate(0deg);   opacity: 1; }
+          60%  { transform: translateY(95px)  rotate(14deg); opacity: 1; }
+          100% { transform: translateY(130px) rotate(18deg); opacity: .92; }
+        }
+
+        .tray-shadow {
+          position: absolute; left: 50%; bottom: calc(50% - 86px);
+          width: min(680px, 80vw); height: 16px;
+          transform: translateX(-50%);
+          background: radial-gradient(50% 100% at 50% 50%, rgba(0,0,0,.12), transparent 70%);
+          filter: blur(4px);
+          opacity: .5;
+          pointer-events: none;
+        }
+
+        /* Reduced motion: no moving belt; just fade + short delay */
         @media (prefers-reduced-motion: reduce) {
-          .ff, .lp, .lp-shadow { animation: none !important; }
-          .fruits { display: none; }
+          .belt-surface, .belt-stream, .fruit.pear.hero { animation: none !important; }
         }
       `}</style>
     </main>
