@@ -1,13 +1,26 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import PeearLogo from "./components/PeearLogo";
 
 export default function Home(): JSX.Element {
   const [menuOpen, setMenuOpen] = useState(false);
-  const router = useRouter();
+
+  // (Optioneel) Unregister eventuele oude service workers die een oude bundle cachen
+  useEffect(() => {
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.getRegistrations?.().then((regs) => {
+        regs.forEach((r) => r.unregister());
+      });
+    }
+  }, []);
+
+  const hardNavigateToDrop = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    // Forceer hard nav (fallback), zelfs als iets de click probeert te hijacken
+    e.preventDefault();
+    window.location.assign("/drop");
+  };
 
   return (
     <main className="min-h-screen relative flex flex-col items-center justify-center bg-[#FAFAF2] text-center p-6">
@@ -37,19 +50,20 @@ export default function Home(): JSX.Element {
                     className="block px-4 py-2 hover:bg-green-50 text-green-900"
                     onClick={() => setMenuOpen(false)}
                     role="menuitem"
+                    prefetch={false}
                   >
                     About Peear
                   </Link>
                 </li>
                 <li>
-                  <Link
-                    href="/drop"
+                  <a
+                    href="https://www.peear.io/drop"
+                    onClick={hardNavigateToDrop}
                     className="block px-4 py-2 hover:bg-green-50 text-green-900"
-                    onClick={() => setMenuOpen(false)}
                     role="menuitem"
                   >
                     Start Pear Drop
-                  </Link>
+                  </a>
                 </li>
                 <li>
                   <Link
@@ -57,6 +71,7 @@ export default function Home(): JSX.Element {
                     className="block px-4 py-2 hover:bg-green-50 text-green-900"
                     onClick={() => setMenuOpen(false)}
                     role="menuitem"
+                    prefetch={false}
                   >
                     Start Fruit Pick
                   </Link>
@@ -67,6 +82,7 @@ export default function Home(): JSX.Element {
                     className="block px-4 py-2 hover:bg-green-50 text-green-900"
                     onClick={() => setMenuOpen(false)}
                     role="menuitem"
+                    prefetch={false}
                   >
                     Community Feed
                   </Link>
@@ -96,24 +112,26 @@ export default function Home(): JSX.Element {
           href="/about"
           className="bg-green-700 hover:bg-green-800 text-white font-semibold py-3 rounded-2xl transition shadow-sm text-center"
           aria-label="Go to About Peear"
+          prefetch={false}
         >
           About Peear
         </Link>
 
-        {/* Gebruik router.push om elke mogelijke stale href / overlay te omzeilen */}
-        <button
-          onClick={() => router.push("/drop")}
-          className="bg-yellow-500 hover:bg-yellow-600 text-green-900 font-semibold py-3 rounded-2xl transition shadow-sm"
+        {/* Hard link + fallback JS naar /drop */}
+        <a
+          href="https://www.peear.io/drop"
+          onClick={hardNavigateToDrop}
+          className="bg-yellow-500 hover:bg-yellow-600 text-green-900 font-semibold py-3 rounded-2xl transition shadow-sm text-center"
           aria-label="Start Pear Drop"
-          type="button"
         >
           Start Pear Drop
-        </button>
+        </a>
 
         <Link
           href="/fruitpick"
           className="bg-orange-400 hover:bg-orange-500 text-green-900 font-semibold py-3 rounded-2xl transition shadow-sm text-center"
           aria-label="Start Fruit Pick"
+          prefetch={false}
         >
           Start Fruit Pick
         </Link>
@@ -123,4 +141,14 @@ export default function Home(): JSX.Element {
       <section className="mt-12 max-w-md text-green-900 z-10">
         <h2 className="text-2xl font-semibold mb-4">Why join Peear?</h2>
         <ul className="space-y-2 text-left">
-          <li>🍐 Peer-to-Peer
+          <li>🍐 Peer-to-Peer Growth</li>
+          <li>🍊 Fresh Perspectives</li>
+          <li>🌱 Earn credits by helping others</li>
+        </ul>
+      </section>
+
+      {/* Inert achtergrond zodat niets kliks onderschept */}
+      <div className="absolute inset-0 -z-10 pointer-events-none" />
+    </main>
+  );
+}
