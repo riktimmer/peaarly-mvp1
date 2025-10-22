@@ -6,11 +6,11 @@ import { useRouter } from "next/navigation";
 /* -------------------------------------------------
    Timing & navigation
 -------------------------------------------------- */
-const DURATION_MS = 5200;            // totale duur van de animatie (pas gerust aan)
-const NEXT_STEP   = "/drop/match";   // volgende route
+const DURATION_MS = 6200;            // langer & meeslepender
+const NEXT_STEP   = "/drop/match";   // pas aan naar jouw volgende route
 
 /* -------------------------------------------------
-   Fruit "on belt"
+   Fruit-model (emoji op de band)
 -------------------------------------------------- */
 type FruitSpec = { emoji: string; offset: number; scale?: number };
 
@@ -29,24 +29,19 @@ export default function LoadingConveyor() {
     liveRef.current?.append?.("We are matching based on your selected interests.");
   }, []);
 
-  // Build a small set of fruits spaced across the belt
-  const fruits = useMemo<FruitSpec[]>(
-    () => [
-      { emoji: "🍓", offset: 0 },
-      { emoji: "🍊", offset: 8 },
-      { emoji: "🍎", offset: 16 },
-      { emoji: "🍇", offset: 24, scale: 1.05 },
-      { emoji: "🍌", offset: 32 },
-      { emoji: "🍉", offset: 40, scale: 1.1 },
-      { emoji: "🍑", offset: 48 },
-      { emoji: "🍒", offset: 56 },
-      { emoji: "🍍", offset: 64, scale: 1.05 },
-      { emoji: "🍋", offset: 72 },
-      { emoji: "🍈", offset: 80 },
-      { emoji: "🥝", offset: 88 },
-    ],
-    []
-  );
+  // Veel meer fruit + meer diversiteit
+  const fruits = useMemo<FruitSpec[]>(() => {
+    const emojis = [
+      "🍓","🍊","🍎","🍏","🍇","🍌","🍉","🍑","🍒","🍍","🍋","🍈","🥝","🥭","🥥","🫐",
+      "🍐","🍓","🍊","🍎","🍏","🍇","🍌","🍉","🍑","🍒","🍍","🍋","🍈","🥝","🥭","🥥","🫐"
+    ];
+    // verdeel over de band; offset in %
+    return emojis.map((e, i) => ({
+      emoji: e,
+      offset: (i * 3.1) % 96,           // 0..~96%
+      scale: 0.95 + ((i % 5) * 0.03),    // kleine variatie
+    }));
+  }, []);
 
   return (
     <main className="min-h-screen conveyor-bg text-[color:var(--leaf)]">
@@ -65,42 +60,44 @@ export default function LoadingConveyor() {
         </div>
       </div>
 
-      {/* Stage: full-width conveyor */}
+      {/* Stage: dominante, lichte conveyor */}
       <div className="stage" aria-hidden>
         {/* Rails / rollers */}
         <div className="rails top" />
         <div className="belt">
-          {/* Belt texture (moves) */}
+          {/* Rollers (licht & draaiend) */}
+          <div
+            className="rollers"
+            style={{ animationDuration: `${Math.round(DURATION_MS * 0.95)}ms` }}
+          />
+          {/* Lichtere band-textuur die beweegt */}
           <div
             className="belt-surface"
             style={{ animationDuration: `${Math.round(DURATION_MS * 0.95)}ms` }}
           />
-          {/* Fruit items moving with the belt */}
+          {/* Fruit items die met de band meeschuiven */}
           <div
             className="belt-stream"
             style={{ animationDuration: `${Math.round(DURATION_MS * 0.95)}ms` }}
           >
             {fruits.map((f, i) => (
               <span
-                key={i}
+                key={`${f.emoji}-${i}`}
                 className="fruit"
                 style={{
-                  // offset maps fruit along the path; 0..100%-ish
-                  left: `calc(${f.offset}% + ${i * 6}px)`,
-                  transform: `translateX(0) translateY(0) scale(${f.scale ?? 1})`,
+                  left: `calc(${f.offset}% + ${i * 4}px)`,
+                  transform: `translateY(-50%) scale(${f.scale ?? 1})`,
                 }}
               >
                 {f.emoji}
               </span>
             ))}
 
-            {/* The hero Peear appears late and falls off the edge */}
+            {/* De held: Peear die aan het einde van de band naar beneden valt */}
             <span
               className="fruit pear hero"
-              // sync: enters late so it reaches the end near the finale
-              style={{
-                animationDelay: `${Math.round(DURATION_MS * 0.38)}ms`,
-              }}
+              // Enter iets later; bereikt dan het einde vlak voor de finale
+              style={{ animationDelay: `${Math.round(DURATION_MS * 0.42)}ms` }}
               aria-label="peear"
               role="img"
             >
@@ -110,7 +107,7 @@ export default function LoadingConveyor() {
         </div>
         <div className="rails bottom" />
 
-        {/* Catch tray shadow */}
+        {/* Vangbak-schaduw onder de band */}
         <div className="tray-shadow" />
       </div>
 
@@ -140,10 +137,10 @@ export default function LoadingConveyor() {
           padding-top: clamp(28px, 6vh, 52px);
         }
         .glass {
-          width: min(820px, 92vw);
+          width: min(860px, 92vw);
           background: rgba(255,255,255,0.78);
           backdrop-filter: blur(6px);
-          border-radius: 20px;
+          border-radius: 22px;
           box-shadow: 0 8px 26px rgba(0,0,0,.06);
           border: 1px solid rgba(0,0,0,.06);
           padding: 18px 18px 14px;
@@ -152,7 +149,7 @@ export default function LoadingConveyor() {
         .title {
           font-weight: 800;
           letter-spacing: -0.01em;
-          font-size: clamp(1.25rem, 2.4vw, 1.8rem);
+          font-size: clamp(1.25rem, 2.4vw, 1.9rem);
           color: var(--leaf);
         }
         .highlight {
@@ -163,13 +160,13 @@ export default function LoadingConveyor() {
         }
         .subtitle {
           margin-top: 4px;
-          font-size: .96rem;
-          color: rgba(15,81,50,.75);
+          font-size: .98rem;
+          color: rgba(15,81,50,.78);
         }
         .progress {
           margin: 12px auto 2px;
           height: 10px;
-          width: min(640px, 86vw);
+          width: min(700px, 86vw);
           background: #EFF5E9;
           border-radius: 9999px;
           overflow: hidden;
@@ -183,10 +180,10 @@ export default function LoadingConveyor() {
         }
         @keyframes grow { to { width: 100%; } }
 
-        /* ---- Stage / Conveyor ---- */
+        /* ---- Dominante, lichte conveyor ---- */
         .stage {
           position: relative;
-          height: clamp(280px, 45vh, 420px);
+          height: clamp(360px, 58vh, 520px); /* veel dominanter */
           width: 100%;
           display: grid;
           place-items: center;
@@ -196,41 +193,64 @@ export default function LoadingConveyor() {
           position: absolute;
           left: 0; right: 0;
           height: 10px;
-          background: linear-gradient(180deg, rgba(0,0,0,.08), rgba(0,0,0,.12));
-          box-shadow: 0 2px 6px rgba(0,0,0,.08);
+          background: linear-gradient(180deg, rgba(0,0,0,.06), rgba(0,0,0,.10));
+          box-shadow: 0 2px 6px rgba(0,0,0,.06);
           border-radius: 6px;
-          transform: translateZ(0);
         }
-        .rails.top    { top: calc(50% - 52px); }
-        .rails.bottom { top: calc(50% + 52px); }
+        .rails.top    { top: calc(50% - 86px); }
+        .rails.bottom { top: calc(50% + 86px); }
 
         .belt {
           position: absolute;
-          left: 6vw; right: 6vw;
+          left: 4vw; right: 4vw;         /* lekker breed in beeld */
           top: 50%;
-          height: 88px;
+          height: 172px;                 /* hoger = dominanter */
           transform: translateY(-50%);
-          border-radius: 14px;
+          border-radius: 18px;
           overflow: hidden;
-          background: #1d2a1f;
-          box-shadow: 0 10px 24px rgba(0,0,0,.12), inset 0 1px 0 rgba(255,255,255,.08);
+          background: #EAF3E2;           /* ✔︎ lichtere band */
+          border: 1px solid #D8E7CD;
+          box-shadow:
+            0 14px 28px rgba(0,0,0,.10),
+            inset 0 1px 0 rgba(255,255,255,.8),
+            inset 0 -20px 30px rgba(108,177,90,.08);
         }
 
-        /* Moving tread texture */
+        /* Rollers: herhalende highlights die horizontaal bewegen/roteren */
+        .rollers {
+          position: absolute; inset: 0;
+          background:
+            radial-gradient(18px 18px at 20px 20px, rgba(255,255,255,.9), rgba(255,255,255,0) 60%) repeat-x,
+            radial-gradient(18px 18px at 20px calc(100% - 20px), rgba(255,255,255,.85), rgba(255,255,255,0) 60%) repeat-x;
+          background-size: 120px 100%, 120px 100%;
+          background-position: 0 0, 60px 0;
+          opacity: .45;
+          animation-name: rollers;
+          animation-timing-function: linear;
+          animation-iteration-count: 1;
+          animation-fill-mode: forwards;
+        }
+        @keyframes rollers {
+          from { background-position: 0 0, 60px 0; }
+          to   { background-position: 1400px 0, 1460px 0; }
+        }
+
+        /* Lichte tread-textuur die mee schuift */
         .belt-surface {
           position: absolute; inset: 0;
           background:
-            repeating-linear-gradient(90deg, rgba(255,255,255,.09) 0 6px, transparent 6px 26px),
-            linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.06));
-          opacity: .9;
+            repeating-linear-gradient(90deg, rgba(108,177,90,.18) 0 8px, transparent 8px 28px),
+            linear-gradient(180deg, rgba(255,255,255,.85), rgba(255,255,255,.55));
+          mix-blend-mode: multiply;
           animation-name: tread;
           animation-timing-function: linear;
-          animation-iteration-count: 1; /* loopt 1x voor controle */
+          animation-iteration-count: 1;
           animation-fill-mode: forwards;
+          opacity: .9;
         }
         @keyframes tread {
           from { background-position: 0 0, 0 0; }
-          to   { background-position: 1200px 0, 0 0; }
+          to   { background-position: 1400px 0, 0 0; }
         }
 
         /* Stream van fruit die met de band meebeweegt */
@@ -240,44 +260,42 @@ export default function LoadingConveyor() {
         }
         @keyframes stream {
           from { transform: translateX(0); }
-          to   { transform: translateX(56vw); } /* schuift mee naar rechts */
+          to   { transform: translateX(70vw); } /* grotere verplaatsing */
         }
 
         .fruit {
           position: absolute;
           top: 50%;
           transform: translateY(-50%);
-          font-size: 34px;
-          filter: drop-shadow(0 6px 14px rgba(0,0,0,.12));
+          font-size: 40px;
+          filter: drop-shadow(0 8px 18px rgba(0,0,0,.10));
           transition: transform .2s ease;
         }
         .fruit:hover {
-          transform: translateY(-52%) scale(1.04);
+          transform: translateY(calc(-50% - 2px)) scale(1.04);
         }
 
         /* De held: Peear die aan het einde van de band naar beneden valt */
         .fruit.pear.hero {
-          left: 8%;
-          font-size: 40px;
-          /* Deze zit óók op de stream en beweegt daardoor mee naar rechts */
+          left: 10%;
+          font-size: 48px;
           animation:
-            hero-enter ${Math.round(DURATION_MS * 0.18)}ms ease-out both,
-            hero-drop ${Math.round(DURATION_MS * 0.38)}ms cubic-bezier(.2,.8,.2,1) ${Math.round(DURATION_MS * 0.78)}ms forwards;
+            hero-enter ${Math.round(DURATION_MS * 0.2)}ms ease-out both,
+            hero-drop  ${Math.round(DURATION_MS * 0.42)}ms cubic-bezier(.2,.8,.2,1) ${Math.round(DURATION_MS * 0.78)}ms forwards;
         }
         @keyframes hero-enter {
-          from { transform: translateY(-50%) scale(.92); opacity: 0; }
+          from { transform: translateY(-50%) scale(.9); opacity: 0; }
           to   { transform: translateY(-50%) scale(1);   opacity: 1; }
         }
-        /* valt recht naar beneden, terwijl de stream animatie hem tot de rand brengt */
         @keyframes hero-drop {
           0%   { transform: translateY(-50%) rotate(0deg);   opacity: 1; }
-          60%  { transform: translateY(95px)  rotate(14deg); opacity: 1; }
-          100% { transform: translateY(130px) rotate(18deg); opacity: .92; }
+          60%  { transform: translateY(130px) rotate(16deg); opacity: 1; }
+          100% { transform: translateY(168px) rotate(20deg); opacity: .95; }
         }
 
         .tray-shadow {
-          position: absolute; left: 50%; bottom: calc(50% - 86px);
-          width: min(680px, 80vw); height: 16px;
+          position: absolute; left: 50%; bottom: calc(50% - 112px);
+          width: min(800px, 86vw); height: 18px;
           transform: translateX(-50%);
           background: radial-gradient(50% 100% at 50% 50%, rgba(0,0,0,.12), transparent 70%);
           filter: blur(4px);
@@ -285,9 +303,9 @@ export default function LoadingConveyor() {
           pointer-events: none;
         }
 
-        /* Reduced motion: no moving belt; just fade + short delay */
+        /* Reduced motion: disable complex movement */
         @media (prefers-reduced-motion: reduce) {
-          .belt-surface, .belt-stream, .fruit.pear.hero { animation: none !important; }
+          .rollers, .belt-surface, .belt-stream, .fruit.pear.hero, .bar { animation: none !important; }
         }
       `}</style>
     </main>
