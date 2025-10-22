@@ -9,8 +9,17 @@ export default function Home() {
 
   return (
     <main className="min-h-screen relative flex flex-col items-center justify-center text-center p-6 bg-gradient-to-b from-[#FAFAF2] to-[#FFF7E0] dark:from-[#0f1d14] dark:to-[#183b28] transition-colors duration-500">
-      {/* Menu tab rechtsboven */}
-      <div className="absolute top-4 right-4">
+      {/* Backdrop wanneer menu open is */}
+      {menuOpen && (
+        <button
+          aria-label="Close menu backdrop"
+          onClick={() => setMenuOpen(false)}
+          className="fixed inset-0 z-40 bg-black/30 backdrop-blur-[2px]"
+        />
+      )}
+
+      {/* Menu tab rechtsboven (voorop met z-index) */}
+      <div className="absolute top-4 right-4 z-50">
         <div className="relative">
           <button
             onClick={() => setMenuOpen((v) => !v)}
@@ -20,16 +29,17 @@ export default function Home() {
           >
             Menu
           </button>
+
           {menuOpen && (
             <nav
               role="menu"
-              className="absolute right-0 mt-2 w-56 rounded-2xl bg-white shadow-lg ring-1 ring-black/5 overflow-hidden dark:bg-[#0f261c] dark:ring-white/10"
+              className="absolute right-0 mt-2 w-64 rounded-2xl bg-white shadow-xl ring-1 ring-black/5 overflow-hidden z-50 dark:bg-[#0f261c] dark:ring-white/10"
             >
               <ul className="py-2 text-left">
                 <li>
                   <Link
                     href="/about"
-                    className="block px-4 py-2 hover:bg-green-50 text-green-900 dark:text-green-100 dark:hover:bg-white/5"
+                    className="block px-4 py-3 hover:bg-green-50 text-green-900 dark:text-green-100 dark:hover:bg-white/5"
                     onClick={() => setMenuOpen(false)}
                     role="menuitem"
                   >
@@ -39,7 +49,7 @@ export default function Home() {
                 <li>
                   <Link
                     href="/drop/select"
-                    className="block px-4 py-2 hover:bg-green-50 text-green-900 dark:text-green-100 dark:hover:bg-white/5"
+                    className="block px-4 py-3 hover:bg-green-50 text-green-900 dark:text-green-100 dark:hover:bg-white/5"
                     onClick={() => setMenuOpen(false)}
                     role="menuitem"
                   >
@@ -49,7 +59,7 @@ export default function Home() {
                 <li>
                   <Link
                     href="/fruitpick"
-                    className="block px-4 py-2 hover:bg-green-50 text-green-900 dark:text-green-100 dark:hover:bg-white/5"
+                    className="block px-4 py-3 hover:bg-green-50 text-green-900 dark:text-green-100 dark:hover:bg-white/5"
                     onClick={() => setMenuOpen(false)}
                     role="menuitem"
                   >
@@ -59,7 +69,7 @@ export default function Home() {
                 <li>
                   <Link
                     href="/community"
-                    className="block px-4 py-2 hover:bg-green-50 text-green-900 dark:text-green-100 dark:hover:bg-white/5"
+                    className="block px-4 py-3 hover:bg-green-50 text-green-900 dark:text-green-100 dark:hover:bg-white/5"
                     onClick={() => setMenuOpen(false)}
                     role="menuitem"
                   >
@@ -72,12 +82,12 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Logo – V2 (bewust andere componentnaam tegen caching) */}
-      <div className="mb-8 drop-shadow-lg transition-transform hover:scale-105">
+      {/* Logo – bewust achter menu met lagere z-index */}
+      <div className="mb-8 drop-shadow-lg transition-transform hover:scale-105 z-10">
         <PeearLogoV2 width={180} height={180} />
       </div>
 
-      {/* Titel en tagline */}
+      {/* Titel & tagline */}
       <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-green-900 dark:text-green-100 mb-3">
         Peear
       </h1>
@@ -85,25 +95,31 @@ export default function Home() {
         Grow together. Stay curious. Be fruitful. 🍐
       </p>
 
-      {/* CTA's */}
+      {/* CTA's – fruitig in light & dark */}
       <div className="flex flex-col gap-4 w-full max-w-sm">
+        {/* Groen (About) */}
         <Link
           href="/about"
-          className="bg-green-700 hover:bg-green-800 text-white font-semibold py-3 rounded-2xl transition shadow-sm dark:bg-green-600 dark:hover:bg-green-500"
+          className="bg-green-700 hover:bg-green-800 text-white font-semibold py-3 rounded-2xl transition shadow-sm
+                     dark:bg-emerald-500 dark:hover:bg-emerald-400 dark:text-white"
         >
           About Peear
         </Link>
 
+        {/* Amber (Pear Drop) */}
         <Link
           href="/drop/select"
-          className="bg-[#F0B429] hover:bg-[#E3A21A] text-green-900 font-semibold py-3 rounded-2xl transition shadow-sm dark:bg-[#D99A18] dark:hover:bg-[#C98E15] dark:text-[#102b1f]"
+          className="bg-[#F0B429] hover:bg-[#E3A21A] text-green-900 font-semibold py-3 rounded-2xl transition shadow-sm
+                     dark:bg-amber-500 dark:hover:bg-amber-400 dark:text-[#0f1d14]"
         >
           Start Pear Drop
         </Link>
 
+        {/* Oranje (Fruit Pick) */}
         <Link
           href="/fruitpick"
-          className="bg-[#FF944D] hover:bg-[#FF8533] text-green-900 font-semibold py-3 rounded-2xl transition shadow-sm dark:bg-[#E67E36] dark:hover:bg-[#D8712D] dark:text-[#102b1f]"
+          className="bg-[#FF944D] hover:bg-[#FF8533] text-green-900 font-semibold py-3 rounded-2xl transition shadow-sm
+                     dark:bg-orange-500 dark:hover:bg-orange-400 dark:text-[#0f1d14]"
         >
           Start Fruit Pick
         </Link>
