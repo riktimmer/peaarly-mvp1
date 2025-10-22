@@ -1,119 +1,64 @@
 "use client";
 
-import React, { useState } from "react";
 import Link from "next/link";
 import PeearLogo from "./components/PeearLogo";
+import React from "react";
 
-export default function Home(): JSX.Element {
-  const [menuOpen, setMenuOpen] = useState(false);
-
+export default function Home() {
   return (
-    <main className="min-h-screen relative flex flex-col items-center justify-center bg-[#FAFAF2] text-center p-6">
-      {/* Menu */}
-      <div className="absolute top-4 right-4 z-50">
-        <div className="relative">
-          <button
-            onClick={() => setMenuOpen((v) => !v)}
-            className="px-4 py-2 rounded-full bg-white/70 hover:bg-white shadow-sm border border-green-900/10 text-green-900 font-semibold transition"
-          >
-            Menu
-          </button>
+    <main className="min-h-screen flex flex-col items-center justify-center bg-[#FAFAF2] text-center p-6 relative overflow-hidden">
 
-          {menuOpen && (
-            <nav className="absolute right-0 mt-2 w-56 rounded-2xl bg-white shadow-lg ring-1 ring-black/5 overflow-hidden z-50">
-              <ul className="py-2 text-left">
-                <li>
-                  <Link
-                    href="/about"
-                    className="block px-4 py-2 hover:bg-green-50 text-green-900"
-                    onClick={() => setMenuOpen(false)}
-                  >
-                    About Peear
-                  </Link>
-                </li>
-                <li>
-                  {/* ✅ Directe link naar /drop/select */}
-                  <Link
-                    href="/drop/select"
-                    className="block px-4 py-2 hover:bg-green-50 text-green-900"
-                    onClick={() => setMenuOpen(false)}
-                  >
-                    Start Pear Drop
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/fruitpick"
-                    className="block px-4 py-2 hover:bg-green-50 text-green-900"
-                    onClick={() => setMenuOpen(false)}
-                  >
-                    Start Fruit Pick
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/community"
-                    className="block px-4 py-2 hover:bg-green-50 text-green-900"
-                    onClick={() => setMenuOpen(false)}
-                  >
-                    Community Feed
-                  </Link>
-                </li>
-              </ul>
-            </nav>
-          )}
-        </div>
-      </div>
-
-      {/* Logo */}
-      <div className="mb-8 z-10">
-        <PeearLogo />
+      {/* Logo + subtiele animatie */}
+      <div className="mb-8">
+        <PeearLogo width={160} height={160} pulse />
       </div>
 
       {/* Titel en tagline */}
-      <h1 className="text-4xl md:text-5xl font-bold text-green-900 mb-2 tracking-tight z-10">
+      <h1 className="text-4xl md:text-5xl font-bold text-green-900 mb-3 tracking-tight">
         Peear
       </h1>
-      <p className="text-lg md:text-xl text-green-800 mb-10 z-10">
+      <p className="text-lg text-green-800 mb-10 leading-relaxed">
         Grow together. Stay curious. Be fruitful. 🍐
       </p>
 
-      {/* Actieknoppen */}
-      <div className="flex flex-col gap-4 w-full max-w-sm z-10">
+      {/* Knoppen */}
+      <div className="flex flex-col gap-4 w-full max-w-xs">
         <Link
           href="/about"
-          className="bg-green-700 hover:bg-green-800 text-white font-semibold py-3 rounded-2xl transition shadow-sm text-center"
+          className="bg-green-700 hover:bg-green-800 text-white font-semibold py-3 rounded-2xl transition"
         >
           About Peear
         </Link>
 
-        {/* ✅ Deze knop gaat direct naar /drop/select */}
         <Link
-          href="/drop/select"
-          className="bg-yellow-500 hover:bg-yellow-600 text-green-900 font-semibold py-3 rounded-2xl transition shadow-sm text-center"
+          href="/drop"
+          className="bg-yellow-500 hover:bg-yellow-600 text-green-900 font-semibold py-3 rounded-2xl transition"
         >
-          Start Pear Drop
+          Start Pear Drop 🍐
         </Link>
 
         <Link
           href="/fruitpick"
-          className="bg-orange-400 hover:bg-orange-500 text-green-900 font-semibold py-3 rounded-2xl transition shadow-sm text-center"
+          className="bg-orange-400 hover:bg-orange-500 text-green-900 font-semibold py-3 rounded-2xl transition"
         >
-          Start Fruit Pick
+          Start Fruit Pick 🍊
         </Link>
       </div>
 
       {/* Why join sectie */}
-      <section className="mt-12 max-w-md text-green-900 z-10">
+      <section className="mt-16 max-w-md text-green-900">
         <h2 className="text-2xl font-semibold mb-4">Why join Peear?</h2>
-        <ul className="space-y-2 text-left">
+        <ul className="space-y-2 text-left text-lg">
           <li>🍐 Peer-to-Peer Growth</li>
           <li>🍊 Fresh Perspectives</li>
           <li>🌱 Earn credits by helping others</li>
         </ul>
       </section>
 
-      <div className="absolute inset-0 -z-10 pointer-events-none" />
+      {/* Zachte achtergrondglow effect */}
+      <div className="absolute inset-0 -z-10 pointer-events-none">
+        <div className="w-[600px] h-[600px] bg-green-200/30 rounded-full blur-[120px] absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+      </div>
     </main>
   );
 }
