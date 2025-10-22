@@ -7,8 +7,7 @@ import React from "react";
 export default function Home() {
   return (
     <main className="min-h-screen flex flex-col items-center justify-center bg-[#FAFAF2] text-center p-6 relative overflow-hidden">
-
-      {/* Logo + subtiele animatie */}
+      {/* Logo */}
       <div className="mb-8">
         <PeearLogo width={160} height={160} pulse />
       </div>
@@ -21,7 +20,7 @@ export default function Home() {
         Grow together. Stay curious. Be fruitful. 🍐
       </p>
 
-      {/* Knoppen */}
+      {/* Drie knoppen */}
       <div className="flex flex-col gap-4 w-full max-w-xs">
         <Link
           href="/about"
@@ -31,17 +30,17 @@ export default function Home() {
         </Link>
 
         <Link
-          href="/drop"
+          href="/drop/select"
           className="bg-yellow-500 hover:bg-yellow-600 text-green-900 font-semibold py-3 rounded-2xl transition"
         >
-          Start Pear Drop 🍐
+          Start Pear Drop
         </Link>
 
         <Link
           href="/fruitpick"
           className="bg-orange-400 hover:bg-orange-500 text-green-900 font-semibold py-3 rounded-2xl transition"
         >
-          Start Fruit Pick 🍊
+          Start Fruit Pick
         </Link>
       </div>
 
@@ -55,7 +54,7 @@ export default function Home() {
         </ul>
       </section>
 
-      {/* Zachte achtergrondglow effect */}
+      {/* Zachte achtergrondglow */}
       <div className="absolute inset-0 -z-10 pointer-events-none">
         <div className="w-[600px] h-[600px] bg-green-200/30 rounded-full blur-[120px] absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
       </div>
