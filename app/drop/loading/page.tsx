@@ -4,15 +4,15 @@ import React, { useEffect, useMemo, useRef } from "react";
 import { useRouter } from "next/navigation";
 
 /* -------------------------------------------------
-   Timing & navigation
+   Timing & where to go next
 -------------------------------------------------- */
-const DURATION_MS = 6400;            // run time (~6.4s) — langer & meeslepender
-const NEXT_STEP   = "/drop/match";   // pas aan naar je volgende route
+const DURATION_MS = 3800;            // totale animatieduur (~3.8s) — pas aan naar smaak
+const NEXT_STEP   = "/drop/match";   // wijzig indien jouw volgende route anders is
 
 /* -------------------------------------------------
-   Juicy fruit SVGs
+   Fruit SVGs (lichtgewicht, juicy kleuren)
 -------------------------------------------------- */
-function Orange({ size = 40 }: { size?: number }) {
+function Orange({ size = 44 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 64 64" aria-hidden>
       <defs>
@@ -26,7 +26,7 @@ function Orange({ size = 40 }: { size?: number }) {
     </svg>
   );
 }
-function Strawberry({ size = 38 }: { size?: number }) {
+function Strawberry({ size = 42 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 64 64" aria-hidden>
       <defs>
@@ -40,11 +40,12 @@ function Strawberry({ size = 38 }: { size?: number }) {
       <g fill="#FEE2E2" opacity=".85">
         <circle cx="26" cy="35" r="1.2" /><circle cx="32" cy="38" r="1.2" />
         <circle cx="39" cy="34" r="1.2" /><circle cx="45" cy="39" r="1.2" />
+        <circle cx="21" cy="40" r="1.2" /><circle cx="34" cy="44" r="1.2" />
       </g>
     </svg>
   );
 }
-function Apple({ size = 40 }: { size?: number }) {
+function Apple({ size = 44 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 64 64" aria-hidden>
       <defs>
@@ -59,7 +60,7 @@ function Apple({ size = 40 }: { size?: number }) {
     </svg>
   );
 }
-function Grape({ size = 36 }: { size?: number }) {
+function Grape({ size = 42 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 64 64" aria-hidden>
       {[0,1,2,3,4,5,6].map((i)=>(
@@ -69,7 +70,7 @@ function Grape({ size = 36 }: { size?: number }) {
     </svg>
   );
 }
-function Banana({ size = 42 }: { size?: number }) {
+function Banana({ size = 46 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 64 64" aria-hidden>
       <path d="M10 36c10 10 27 12 38 2 3-3 5-6 6-9-2 8-8 15-16 18-12 4-22-1-28-11z"
@@ -82,36 +83,50 @@ function Banana({ size = 42 }: { size?: number }) {
    Types & helpers
 -------------------------------------------------- */
 type Kind = "orange" | "straw" | "apple" | "grape" | "banana";
-type FruitSpec = { kind: Kind; size: number; angle: number; ring: 1|2|3 };
+type FruitItem = { kind: Kind; left: string; delay: number; dur: number; size?: number };
 
-const COMP = {
-  orange: Orange,
-  straw: Strawberry,
-  apple: Apple,
-  grape: Grape,
-  banana: Banana,
-} as const;
+function FruitIcon({ kind, size }: { kind: Kind; size?: number }) {
+  switch (kind) {
+    case "orange": return <Orange size={size ?? 44} />;
+    case "straw":  return <Strawberry size={size ?? 42} />;
+    case "apple":  return <Apple size={size ?? 44} />;
+    case "grape":  return <Grape size={size ?? 42} />;
+    case "banana": return <Banana size={size ?? 46} />;
+  }
+}
 
-function Fruit({ spec, radius }: { spec: FruitSpec; radius: number }) {
-  const { kind, size, angle, ring } = spec;
-  const Comp = COMP[kind];
-  const dir = ring === 2 ? -1 : 1; // middelste ring tegengesteld
+/* -------------------------------------------------
+   Falling fruit element (with sway + spin)
+-------------------------------------------------- */
+function FruitFall({ kind, left, delay, dur, size }: FruitItem) {
   return (
     <div
-      className={`orbit ring-${ring}`}
+      className="ff"
       style={
         {
-          // @ts-ignore CSS vars
-          "--r": `${radius}px`,
-          "--angle": `${angle}deg`,
-          "--dir": dir,
+          left,
+          // @ts-ignore Custom CSS vars for animations
+          "--delay": `${delay}ms`,
+          "--dur": `${dur}ms`,
+          "--sway": Math.random() > 0.5 ? 1 : -1,
+          "--rot": `${Math.floor(Math.random() * 36 - 18)}deg`,
         } as React.CSSProperties
       }
       aria-hidden
     >
-      <div className="fruit">
-        <Comp size={size} />
-      </div>
+      <FruitIcon kind={kind} size={size} />
+    </div>
+  );
+}
+
+/* -------------------------------------------------
+   Big Peear landing (emoji + shadow)
+-------------------------------------------------- */
+function LandingPeear() {
+  return (
+    <div className="lp" aria-hidden>
+      <span className="peear-emoji" role="img" aria-label="peear">🍐</span>
+      <div className="lp-shadow" />
     </div>
   );
 }
@@ -123,6 +138,7 @@ export default function LoadingPage() {
   const router = useRouter();
   const liveRef = useRef<HTMLDivElement>(null);
 
+  // Navigate after animation completes
   useEffect(() => {
     const t = setTimeout(() => router.push(NEXT_STEP), DURATION_MS);
     return () => clearTimeout(t);
@@ -132,214 +148,140 @@ export default function LoadingPage() {
     liveRef.current?.append?.("Matching based on your selected interests…");
   }, []);
 
-  // Bouw 3 ringen met 10–12 fruit per ring
-  const fruitRing = useMemo<FruitSpec[]>(() => {
-    const kinds: Kind[] = ["orange", "straw", "apple", "grape", "banana"];
-    const ringCounts = [12, 12, 12]; // kun je verhogen tot 14/16 voor nog voller
-    const out: FruitSpec[] = [];
-    ringCounts.forEach((count, ringIdx) => {
-      for (let i = 0; i < count; i++) {
-        out.push({
-          kind: kinds[(i + ringIdx) % kinds.length],
-          size: [36, 38, 40, 42][(i + ringIdx) % 4],
-          angle: (360 / count) * i,
-          ring: (ringIdx + 1) as 1|2|3,
-        });
-      }
-    });
-    return out;
-  }, []);
+  // Column-distributed fruit with staggered timings
+  const fruits = useMemo<FruitItem[]>(
+    () => [
+      { kind: "orange", left: "8%",  delay: 30,  dur: 1200 },
+      { kind: "grape",  left: "20%", delay: 140, dur: 1260 },
+      { kind: "apple",  left: "32%", delay: 260, dur: 1300 },
+      { kind: "banana", left: "44%", delay: 340, dur: 1220 },
+      { kind: "straw",  left: "56%", delay: 420, dur: 1280 },
+      { kind: "orange", left: "68%", delay: 520, dur: 1240 },
+      { kind: "grape",  left: "80%", delay: 620, dur: 1260 },
+      { kind: "apple",  left: "16%", delay: 700, dur: 1220 },
+      { kind: "straw",  left: "48%", delay: 840, dur: 1240 },
+      { kind: "banana", left: "72%", delay: 940, dur: 1200 },
+    ],
+    []
+  );
 
   return (
-    <main className="min-h-screen fancy-bg text-[color:var(--leaf)]">
-      {/* Fullscreen stage */}
-      <div className="stage">
-        {/* Parallax rings */}
-        <div className="ring ring-1">
-          {fruitRing.filter(f => f.ring === 1).map((spec, i) => (
-            <Fruit key={`r1-${i}`} spec={spec} radius={220} />
-          ))}
-        </div>
-        <div className="ring ring-2">
-          {fruitRing.filter(f => f.ring === 2).map((spec, i) => (
-            <Fruit key={`r2-${i}`} spec={spec} radius={300} />
-          ))}
-        </div>
-        <div className="ring ring-3">
-          {fruitRing.filter(f => f.ring === 3).map((spec, i) => (
-            <Fruit key={`r3-${i}`} spec={spec} radius={380} />
-          ))}
-        </div>
+    <main className="min-h-screen bg-gradient-to-b from-[#F5F7EE] to-[#FAFAF2] text-[color:var(--leaf)]">
+      <div className="max-w-xl mx-auto px-5 py-8">
+        {/* Card */}
+        <div className="relative overflow-hidden rounded-2xl bg-white/90 shadow-sm ring-1 ring-black/5">
+          {/* Copy + progress */}
+          <div className="text-center px-4 pt-6">
+            <h1 className="text-2xl md:text-[1.65rem] leading-tight font-extrabold">
+              We’re picking your best Peear match…
+            </h1>
+            <p className="text-[color:var(--ink)]/70 mt-1">
+              Fresh connections are being harvested.
+            </p>
 
-        {/* Center Peear reveal */}
-        <div className="peear">
-          <span role="img" aria-label="peear">🍐</span>
-          <div className="shadow" />
-        </div>
+            {/* Progress bar synced to DURATION_MS */}
+            <div className="mt-4 h-2 w-full bg-[#EFF5E9] rounded-full overflow-hidden">
+              <div
+                className="h-full bg-[#A7D37C] animate-progress"
+                style={{ animationDuration: `${DURATION_MS}ms` }}
+              />
+            </div>
+          </div>
 
-        {/* Soft grid gloss */}
-        <div className="gridlines" aria-hidden />
+          {/* Stage */}
+          <div className="relative h-80 w-full mt-4">
+            {/* Falling fruits */}
+            <div className="fruits">
+              {fruits.map((f, i) => (
+                <FruitFall key={i} {...f} />
+              ))}
+            </div>
+
+            {/* Peear reveal */}
+            <LandingPeear />
+            <div className="ground" aria-hidden />
+          </div>
+
+          {/* A11y live region */}
+          <div ref={liveRef} aria-live="polite" className="sr-only" />
+
+          <div className="px-4 pb-6 text-center text-xs text-[color:var(--ink)]/60">
+            Matching based on your selected interests…
+          </div>
+        </div>
       </div>
 
-      {/* Copy & progress — overlay bovenop */}
-      <div className="overlay">
-        <h1 className="title">We’re crafting your best <span className="highlight">Peear</span> match</h1>
-        <p className="subtitle">Dancing data. Fresh chemistry. Almost there…</p>
-
-        <div className="progress">
-          <div className="bar" style={{ animationDuration: `${DURATION_MS}ms` }} />
-        </div>
-      </div>
-
-      {/* SR live */}
-      <div ref={liveRef} aria-live="polite" className="sr-only" />
-
-      {/* Page-scoped styles */}
+      {/* Styles scoped to this page */}
       <style jsx>{`
         :root {
           --leaf: #0f5132;
           --ink: #0c2a1f;
-          --lime: #a7d37c;
         }
 
-        .fancy-bg {
-          background:
-            radial-gradient(1200px 800px at 10% -10%, #e9f6d8 0%, transparent 55%),
-            radial-gradient(1000px 700px at 110% 20%, #f0f8e8 0%, transparent 60%),
-            linear-gradient(180deg, #f6f8ef 0%, #fafaf2 100%);
-          animation: hueShift ${Math.round(DURATION_MS * 1.4)}ms ease-in-out infinite alternate;
-        }
-        @keyframes hueShift {
-          from { filter: hue-rotate(0deg) saturate(1.0); }
-          to   { filter: hue-rotate(-8deg) saturate(1.08); }
-        }
-
-        .stage {
-          position: fixed;
-          inset: 0;
-          display: grid;
-          place-items: center;
-          overflow: hidden;
-        }
-        .ring { position: absolute; inset: 0; }
-        .orbit {
-          position: absolute;
-          width: 0; height: 0;
-          transform: rotate(var(--angle));
-          filter: drop-shadow(0 8px 18px rgba(0,0,0,.08));
+        .fruits { position: absolute; inset: 0; pointer-events: none; }
+        .ff {
+          position: absolute; top: -72px;
           animation:
-            swirl var(--swirlDur) linear var(--swirlDelay, 0ms) infinite,
-            converge ${Math.round(DURATION_MS * 0.35)}ms cubic-bezier(.25,.9,.2,1) ${Math.round(DURATION_MS * 0.64)}ms forwards;
-        }
-        .fruit {
-          transform: translateX(var(--r)) rotate(calc(var(--angle) * -1));
-          will-change: transform;
-        }
-
-        /* ring-speeds + directions (parallax) */
-        .ring-1 .orbit { --swirlDur: ${Math.round(DURATION_MS * 1.0)}ms; }
-        .ring-2 .orbit { --swirlDur: ${Math.round(DURATION_MS * 0.8)}ms; }
-        .ring-3 .orbit { --swirlDur: ${Math.round(DURATION_MS * 1.2)}ms; }
-
-        @keyframes swirl {
-          to { transform: rotate(calc(var(--angle) + (var(--dir) * 1turn))); }
+            fall var(--dur) ease-in var(--delay) forwards,
+            sway calc(var(--dur) * 1.1) ease-in-out var(--delay) forwards,
+            spin var(--dur) linear var(--delay) forwards;
+          transform: translateX(0) translateY(0) rotate(var(--rot));
+          opacity: 0.95;
+          filter: drop-shadow(0 8px 18px rgba(0,0,0,.08));
         }
 
-        @keyframes converge {
-          0%   { transform: rotate(var(--angle)); opacity: 1; }
-          100% { transform: rotate(var(--angle)); opacity: .15; }
+        .lp {
+          position: absolute; left: 50%; bottom: 74px; transform: translateX(-50%);
+          animation: peear-drop ${Math.round(DURATION_MS * 0.55)}ms cubic-bezier(.2,.8,.2,1) ${Math.round(DURATION_MS*0.18)}ms forwards;
         }
-
-        .peear {
-          position: absolute;
-          display: grid;
-          place-items: end center;
-          inset: 0;
-          padding-bottom: 90px;
+        .peear-emoji { display: block; font-size: 100px; line-height: 1; filter: drop-shadow(0 8px 20px rgba(0,0,0,.10)); }
+        .lp-shadow {
+          position: absolute; left: 50%; bottom: -8px; transform: translateX(-50%);
+          width: 96px; height: 14px; border-radius: 9999px; background: rgba(0,0,0,.10);
+          animation: shadow ${Math.round(DURATION_MS * 0.55)}ms ease-out ${Math.round(DURATION_MS*0.18)}ms forwards;
           opacity: 0;
-          animation: reveal ${Math.round(DURATION_MS * 0.35)}ms cubic-bezier(.2,.8,.2,1) ${Math.round(DURATION_MS * 0.68)}ms forwards;
-        }
-        .peear > span {
-          font-size: 122px;
-          transform: translateY(24px) scale(.9);
-          filter: drop-shadow(0 10px 24px rgba(0,0,0,.12));
-          animation: bounceIn ${Math.round(DURATION_MS * 0.32)}ms cubic-bezier(.2,.8,.2,1) ${Math.round(DURATION_MS * 0.72)}ms forwards;
-        }
-        .peear .shadow {
-          position: absolute; bottom: 76px; left: 50%;
-          width: 128px; height: 18px; border-radius: 9999px;
-          transform: translateX(-50%) scaleX(.3);
-          background: rgba(0,0,0,.12);
-          filter: blur(2px);
-          opacity: 0;
-          animation: shadowIn ${Math.round(DURATION_MS * 0.3)}ms ease-out ${Math.round(DURATION_MS * 0.76)}ms forwards;
-        }
-        @keyframes reveal { to { opacity: 1; } }
-        @keyframes bounceIn {
-          0%   { transform: translateY(28px) scale(.88); }
-          70%  { transform: translateY(0)    scale(1.04); }
-          100% { transform: translateY(0)    scale(1); }
-        }
-        @keyframes shadowIn {
-          0%   { opacity: 0; transform: translateX(-50%) scaleX(.3); }
-          70%  { opacity: .75; transform: translateX(-50%) scaleX(1.05); }
-          100% { opacity: .6; transform: translateX(-50%) scaleX(1); }
         }
 
-        .gridlines {
-          position: absolute; inset: 0; pointer-events: none;
-          background:
-            radial-gradient(circle at 50% 50%, rgba(108,177,90,.12), transparent 38%),
-            repeating-linear-gradient(90deg, rgba(0,0,0,.04) 0 1px, transparent 1px 38px),
-            repeating-linear-gradient(0deg,  rgba(0,0,0,.04) 0 1px, transparent 1px 38px);
-          mask-image: radial-gradient(circle at 50% 60%, black 45%, transparent 85%);
-          opacity: .35;
-          animation: gridFade ${Math.round(DURATION_MS * 0.8)}ms ease-in-out forwards;
-        }
-        @keyframes gridFade {
-          0% { opacity: 0; } 25% { opacity: .35; } 100% { opacity: .2; }
+        .ground {
+          position: absolute; left: 0; right: 0; bottom: 70px; height: 2px;
+          background: linear-gradient(90deg, transparent 0%, #E5EEDC 20%, #E5EEDC 80%, transparent 100%);
         }
 
-        .overlay {
-          position: fixed; inset: 0;
-          display: grid; place-items: end center;
-          padding: 32px 20px 28px;
-          pointer-events: none; /* animatie primair; tekst niet klikbaar */
-          text-align: center;
-          color: var(--leaf);
+        @keyframes fall {
+          0% { transform: translateY(-40px) rotate(var(--rot)); opacity: 0; }
+          100% { transform: translateY(320px) rotate(var(--rot)); opacity: 1; }
         }
-        .title {
-          position: absolute; top: 32px; left: 50%; transform: translateX(-50%);
-          font-weight: 800; letter-spacing: -0.01em;
-          font-size: clamp(1.3rem, 2.6vw, 2rem);
-          text-shadow: 0 2px 10px rgba(255,255,255,.6);
+        @keyframes sway {
+          from { transform: translateX(0) translateY(0) rotate(var(--rot)); }
+          to   { transform: translateX(calc(var(--sway) * 18px)) translateY(320px) rotate(var(--rot)); }
         }
-        .highlight {
-          background: linear-gradient(90deg, #6cb15a, #a7d37c);
-          -webkit-background-clip: text; background-clip: text; color: transparent;
+        @keyframes spin {
+          to { transform: translateX(calc(var(--sway) * 18px)) translateY(320px) rotate(calc(var(--sway) * 1turn)); }
         }
-        .subtitle {
-          position: absolute; top: 72px; left: 50%; transform: translateX(-50%);
-          font-size: .95rem; color: rgba(15,81,50,.75);
-          text-shadow: 0 1px 8px rgba(255,255,255,.7);
+
+        @keyframes peear-drop {
+          0%   { transform: translate(-50%, -220px) scale(.86); }
+          70%  { transform: translate(-50%, 0) scale(1.02); }
+          100% { transform: translate(-50%, 0) scale(1); }
         }
-        .progress {
-          position: relative; width: min(680px, 86vw); height: 10px;
-          background: #EFF5E9; border-radius: 9999px; overflow: hidden;
-          box-shadow: 0 2px 12px rgba(0,0,0,.04) inset;
+        @keyframes shadow {
+          0%   { transform: translateX(-50%) scaleX(.3); opacity: 0; }
+          70%  { transform: translateX(-50%) scaleX(1.05); opacity: .7; }
+          100% { transform: translateX(-50%) scaleX(1); opacity: .55; }
         }
-        .bar {
-          height: 100%; width: 0%;
-          background: linear-gradient(90deg, #6CB15A, #A7D37C);
-          animation-name: grow; animation-timing-function: cubic-bezier(.22,1,.36,1);
+
+        .animate-progress {
+          animation-name: grow;
+          animation-timing-function: cubic-bezier(.22,1,.36,1);
           animation-fill-mode: forwards;
+          width: 0%;
         }
         @keyframes grow { to { width: 100%; } }
 
-        /* Reduced motion */
+        /* Reduced motion: disable complex movement */
         @media (prefers-reduced-motion: reduce) {
-          .fancy-bg, .orbit, .peear, .gridlines, .bar { animation: none !important; }
-          .peear { opacity: 1; }
+          .ff, .lp, .lp-shadow { animation: none !important; }
+          .fruits { display: none; }
         }
       `}</style>
     </main>
