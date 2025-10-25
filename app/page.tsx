@@ -9,7 +9,6 @@ export default function Home() {
 
   return (
     <main className="min-h-screen relative flex flex-col items-center justify-center text-center p-6 bg-gradient-to-b from-[#FAFAF2] to-[#FFF7E0] dark:from-[#0f1d14] dark:to-[#183b28] transition-colors duration-500">
-      {/* Backdrop wanneer menu open is */}
       {menuOpen && (
         <button
           aria-label="Close menu backdrop"
@@ -97,29 +96,32 @@ export default function Home() {
 
       {/* CTA's */}
       <div className="flex flex-col gap-4 w-full max-w-sm">
-        {/* Groen (About Peear) */}
+        {/* Groen (About Peear) – fel + glow in dark */}
         <Link
           href="/about"
           className="bg-green-700 hover:bg-green-800 text-white font-semibold py-3 rounded-2xl transition shadow-sm
-                     dark:bg-green-500 dark:hover:bg-green-400 dark:text-[#0f1d14]"
+                     dark:bg-emerald-400 dark:hover:bg-emerald-300 dark:text-[#07150f]
+                     dark:shadow-[0_0_32px_rgba(16,185,129,0.45)] hover:dark:shadow-[0_0_48px_rgba(16,185,129,0.65)]"
         >
           About Peear
         </Link>
 
-        {/* Geel (Start Pear Drop) */}
+        {/* Geel (Start Pear Drop) – fel + glow in dark */}
         <Link
           href="/drop/select"
           className="bg-[#F0B429] hover:bg-[#E3A21A] text-green-900 font-semibold py-3 rounded-2xl transition shadow-sm
-                     dark:bg-yellow-400 dark:hover:bg-yellow-300 dark:text-[#0f1d14]"
+                     dark:bg-yellow-300 dark:hover:bg-yellow-200 dark:text-[#0b1310]
+                     dark:shadow-[0_0_32px_rgba(250,204,21,0.45)] hover:dark:shadow-[0_0_48px_rgba(250,204,21,0.65)]"
         >
           Start Pear Drop
         </Link>
 
-        {/* Oranje (Start Fruit Pick) */}
+        {/* Oranje (Start Fruit Pick) – fel + glow in dark */}
         <Link
           href="/fruitpick"
           className="bg-[#FF944D] hover:bg-[#FF8533] text-green-900 font-semibold py-3 rounded-2xl transition shadow-sm
-                     dark:bg-orange-500 dark:hover:bg-orange-400 dark:text-[#0f1d14]"
+                     dark:bg-orange-400 dark:hover:bg-orange-300 dark:text-[#0b1310]
+                     dark:shadow-[0_0_32px_rgba(249,115,22,0.45)] hover:dark:shadow-[0_0_48px_rgba(249,115,22,0.65)]"
         >
           Start Fruit Pick
         </Link>
