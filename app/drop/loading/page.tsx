@@ -3,49 +3,56 @@
 import React, { useEffect, useMemo, useRef } from "react";
 import { useRouter } from "next/navigation";
 
-/* -------------------------------------------------
+/* ---------------------------------------------
    Timing & navigation
--------------------------------------------------- */
-const DURATION_MS = 6200;            // langer & meeslepender
-const NEXT_STEP   = "/drop/match";   // pas aan naar jouw volgende route
+---------------------------------------------- */
+const DURATION_MS = 6200;
+const NEXT_STEP = "/drop/match";
 
-/* -------------------------------------------------
-   Fruit-model (emoji op de band)
--------------------------------------------------- */
-type FruitSpec = { emoji: string; offset: number; scale?: number };
+/* ---------------------------------------------
+   Types
+---------------------------------------------- */
+type FruitSpec = { emoji: string };
 
+/* ---------------------------------------------
+   Component
+---------------------------------------------- */
 export default function LoadingConveyor() {
   const router = useRouter();
   const liveRef = useRef<HTMLDivElement>(null);
 
-  // Navigate when the show ends
   useEffect(() => {
     const t = setTimeout(() => router.push(NEXT_STEP), DURATION_MS);
     return () => clearTimeout(t);
   }, [router]);
 
-  // a11y hint
   useEffect(() => {
     liveRef.current?.append?.("We are matching based on your selected interests.");
   }, []);
 
-  // Veel meer fruit + meer diversiteit
-  const fruits = useMemo<FruitSpec[]>(() => {
-    const emojis = [
-      "🍓","🍊","🍎","🍏","🍇","🍌","🍉","🍑","🍒","🍍","🍋","🍈","🥝","🥭","🥥","🫐",
-      "🍐","🍓","🍊","🍎","🍏","🍇","🍌","🍉","🍑","🍒","🍍","🍋","🍈","🥝","🥭","🥥","🫐"
-    ];
-    // verdeel over de band; offset in %
-    return emojis.map((e, i) => ({
-      emoji: e,
-      offset: (i * 3.1) % 96,           // 0..~96%
-      scale: 0.95 + ((i % 5) * 0.03),    // kleine variatie
-    }));
-  }, []);
+  // Een compacte, gevarieerde fruitslinger
+  const palette = useMemo<FruitSpec[]>(
+    () =>
+      "🍓🍊🍎🍏🍇🍌🍉🍑🍒🍍🍋🍈🥝🥭🥥🫐🍐".split("").map((e) => ({ emoji: e })),
+    []
+  );
+
+  // 3 rijen met verschillend tempo/parallax — vult de hele band
+  const rows = useMemo(
+    () => [
+      { id: "row-a", speed: 1.0, size: 42, y: "28%" },
+      { id: "row-b", speed: 0.85, size: 38, y: "50%" },
+      { id: "row-c", speed: 1.15, size: 34, y: "72%" },
+    ],
+    []
+  );
+
+  // Rugzak met voldoende tegels om 200% breedte te vullen
+  const tilesPerRow = 60; // veel = zichtbaar vol
 
   return (
-    <main className="min-h-screen conveyor-bg text-[color:var(--leaf)]">
-      {/* Overlay copy */}
+    <main className="min-h-screen conveyor-bg text-[color:var(--ink)]">
+      {/* Headline / Glass */}
       <div className="container">
         <div className="glass">
           <h1 className="title">
@@ -53,83 +60,93 @@ export default function LoadingConveyor() {
           </h1>
           <p className="subtitle">Fresh chemistry coming off the line…</p>
 
-          {/* Progress synced to duration */}
           <div className="progress">
             <div className="bar" style={{ animationDuration: `${DURATION_MS}ms` }} />
           </div>
         </div>
       </div>
 
-      {/* Stage: dominante, lichte conveyor */}
+      {/* Stage */}
       <div className="stage" aria-hidden>
-        {/* Rails / rollers */}
         <div className="rails top" />
         <div className="belt">
-          {/* Rollers (licht & draaiend) */}
-          <div
-            className="rollers"
-            style={{ animationDuration: `${Math.round(DURATION_MS * 0.95)}ms` }}
-          />
-          {/* Lichtere band-textuur die beweegt */}
-          <div
-            className="belt-surface"
-            style={{ animationDuration: `${Math.round(DURATION_MS * 0.95)}ms` }}
-          />
-          {/* Fruit items die met de band meeschuiven */}
-          <div
-            className="belt-stream"
-            style={{ animationDuration: `${Math.round(DURATION_MS * 0.95)}ms` }}
-          >
-            {fruits.map((f, i) => (
-              <span
-                key={`${f.emoji}-${i}`}
-                className="fruit"
-                style={{
-                  left: `calc(${f.offset}% + ${i * 4}px)`,
-                  transform: `translateY(-50%) scale(${f.scale ?? 1})`,
-                }}
-              >
-                {f.emoji}
-              </span>
-            ))}
-
-            {/* De held: Peear die aan het einde van de band naar beneden valt */}
-            <span
-              className="fruit pear hero"
-              // Enter iets later; bereikt dan het einde vlak voor de finale
-              style={{ animationDelay: `${Math.round(DURATION_MS * 0.42)}ms` }}
-              aria-label="peear"
-              role="img"
+          {/* Textuur & lichte shine */}
+          <div className="belt-surface" />
+          {/* Drie rijen fruit, elk 200% breed met loop-animatie */}
+          {rows.map((row, rIndex) => (
+            <div
+              key={row.id}
+              className="row"
+              style={
+                {
+                  "--row-y": row.y,
+                  "--row-size": `${row.size}px`,
+                  "--row-dur": `${Math.round(DURATION_MS * 1.2 * (2.1 - row.speed))}ms`,
+                } as React.CSSProperties
+              }
             >
-              🍐
-            </span>
-          </div>
+              {/* Twee identieke slingers achter elkaar → naadloze loop */}
+              {[0, 1].map((segment) => (
+                <div className="rowStripe" key={segment}>
+                  {Array.from({ length: tilesPerRow }).map((_, i) => {
+                    const fruit = palette[(i + rIndex * 7 + segment * 13) % palette.length];
+                    return (
+                      <span
+                        key={`${row.id}-${segment}-${i}`}
+                        className="fruit"
+                        style={
+                          {
+                            "--jiggle-delay": `${(i % 12) * 80}ms`,
+                            "--spin-delay": `${(i % 10) * 120}ms`,
+                          } as React.CSSProperties
+                        }
+                        aria-hidden
+                        role="img"
+                      >
+                        {fruit.emoji}
+                      </span>
+                    );
+                  })}
+                </div>
+              ))}
+            </div>
+          ))}
         </div>
         <div className="rails bottom" />
-
-        {/* Vangbak-schaduw onder de band */}
         <div className="tray-shadow" />
       </div>
 
-      {/* screen reader live region */}
+      {/* SR live region */}
       <div ref={liveRef} aria-live="polite" className="sr-only" />
 
       {/* Styles */}
       <style jsx>{`
         :root {
+          --ink: #0e261c;
           --leaf: #0f5132;
-          --ink: #0c2a1f;
-          --lime: #a7d37c;
           --cream: #fafaf2;
+          --soft: #eaf3e2;
         }
 
+        /* ---------- Backgrounds ---------- */
         .conveyor-bg {
           background:
             radial-gradient(1200px 800px at 20% -10%, #ecf6df 0%, transparent 55%),
             radial-gradient(900px 700px at 100% 20%, #f0f8e8 0%, transparent 60%),
             linear-gradient(180deg, #f6f8ef 0%, #fafaf2 100%);
         }
+        :global(.dark) .conveyor-bg {
+          /* dieper contrast in dark */
+          background:
+            radial-gradient(1200px 820px at 20% -10%, rgba(34,86,58,0.35), transparent 55%),
+            radial-gradient(900px 720px at 100% 20%, rgba(161,98,7,0.18), transparent 60%),
+            linear-gradient(180deg, #0f1d14 0%, #183b28 100%);
+          --ink: #e7f9ee;
+          --leaf: #c6f6d5;
+          --soft: rgba(255,255,255,0.06);
+        }
 
+        /* ---------- Glass Card ---------- */
         .container {
           position: relative;
           display: grid;
@@ -138,19 +155,29 @@ export default function LoadingConveyor() {
         }
         .glass {
           width: min(860px, 92vw);
-          background: rgba(255,255,255,0.78);
+          background: rgba(255, 255, 255, 0.8);
           backdrop-filter: blur(6px);
           border-radius: 22px;
-          box-shadow: 0 8px 26px rgba(0,0,0,.06);
-          border: 1px solid rgba(0,0,0,.06);
+          box-shadow: 0 8px 26px rgba(0, 0, 0, 0.06);
+          border: 1px solid rgba(0, 0, 0, 0.06);
           padding: 18px 18px 14px;
           text-align: center;
         }
+        :global(.dark) .glass {
+          background: rgba(15, 29, 20, 0.7);
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          box-shadow:
+            0 0 0 1px rgba(255, 255, 255, 0.04) inset,
+            0 20px 60px rgba(0, 0, 0, 0.35),
+            0 0 40px rgba(16, 185, 129, 0.15);
+          backdrop-filter: blur(10px);
+        }
+
         .title {
           font-weight: 800;
           letter-spacing: -0.01em;
           font-size: clamp(1.25rem, 2.4vw, 1.9rem);
-          color: var(--leaf);
+          color: var(--ink);
         }
         .highlight {
           background: linear-gradient(90deg, #6cb15a, #a7d37c);
@@ -158,32 +185,51 @@ export default function LoadingConveyor() {
           background-clip: text;
           color: transparent;
         }
+        :global(.dark) .highlight {
+          background: linear-gradient(90deg, #34d399, #bef264); /* emerald → lime */
+        }
         .subtitle {
           margin-top: 4px;
-          font-size: .98rem;
-          color: rgba(15,81,50,.78);
+          font-size: 0.98rem;
+          color: rgba(15, 81, 50, 0.78);
         }
+        :global(.dark) .subtitle {
+          color: rgba(231, 249, 238, 0.8);
+        }
+
         .progress {
           margin: 12px auto 2px;
           height: 10px;
           width: min(700px, 86vw);
-          background: #EFF5E9;
+          background: #eff5e9;
           border-radius: 9999px;
           overflow: hidden;
-          box-shadow: 0 2px 10px rgba(0,0,0,.05) inset;
+          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05) inset;
         }
         .bar {
           height: 100%;
           width: 0%;
-          background: linear-gradient(90deg, #6CB15A, #A7D37C);
+          background: linear-gradient(90deg, #6cb15a, #a7d37c);
           animation: grow linear forwards;
         }
-        @keyframes grow { to { width: 100%; } }
+        :global(.dark) .progress {
+          background: rgba(255, 255, 255, 0.08);
+          box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+        }
+        :global(.dark) .bar {
+          background: linear-gradient(90deg, #34d399, #f59e0b); /* groen → geel */
+          box-shadow: 0 0 24px rgba(34, 197, 94, 0.5);
+        }
+        @keyframes grow {
+          to {
+            width: 100%;
+          }
+        }
 
-        /* ---- Dominante, lichte conveyor ---- */
+        /* ---------- Stage / Conveyor ---------- */
         .stage {
           position: relative;
-          height: clamp(360px, 58vh, 520px); /* veel dominanter */
+          height: clamp(380px, 58vh, 540px);
           width: 100%;
           display: grid;
           place-items: center;
@@ -191,121 +237,174 @@ export default function LoadingConveyor() {
         }
         .rails {
           position: absolute;
-          left: 0; right: 0;
+          left: 0;
+          right: 0;
           height: 10px;
-          background: linear-gradient(180deg, rgba(0,0,0,.06), rgba(0,0,0,.10));
-          box-shadow: 0 2px 6px rgba(0,0,0,.06);
+          background: linear-gradient(180deg, rgba(0, 0, 0, 0.06), rgba(0, 0, 0, 0.1));
+          box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
           border-radius: 6px;
         }
-        .rails.top    { top: calc(50% - 86px); }
-        .rails.bottom { top: calc(50% + 86px); }
+        .rails.top {
+          top: calc(50% - 96px);
+        }
+        .rails.bottom {
+          top: calc(50% + 96px);
+        }
+        :global(.dark) .rails {
+          background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.08));
+          box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08) inset;
+        }
 
         .belt {
           position: absolute;
-          left: 4vw; right: 4vw;         /* lekker breed in beeld */
+          left: 4vw;
+          right: 4vw;
           top: 50%;
-          height: 172px;                 /* hoger = dominanter */
+          height: 192px;
           transform: translateY(-50%);
-          border-radius: 18px;
+          border-radius: 22px;
           overflow: hidden;
-          background: #EAF3E2;           /* ✔︎ lichtere band */
-          border: 1px solid #D8E7CD;
+          background: #eaf3e2;
+          border: 1px solid #d8e7cd;
           box-shadow:
-            0 14px 28px rgba(0,0,0,.10),
-            inset 0 1px 0 rgba(255,255,255,.8),
-            inset 0 -20px 30px rgba(108,177,90,.08);
+            0 14px 28px rgba(0, 0, 0, 0.1),
+            inset 0 1px 0 rgba(255, 255, 255, 0.8),
+            inset 0 -20px 30px rgba(108, 177, 90, 0.08);
+        }
+        :global(.dark) .belt {
+          background: rgba(255, 255, 255, 0.04);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          box-shadow:
+            0 20px 60px rgba(0, 0, 0, 0.45),
+            0 0 0 1px rgba(255, 255, 255, 0.06) inset,
+            0 0 48px rgba(16, 185, 129, 0.18); /* emerald glow */
         }
 
-        /* Rollers: herhalende highlights die horizontaal bewegen/roteren */
-        .rollers {
-          position: absolute; inset: 0;
-          background:
-            radial-gradient(18px 18px at 20px 20px, rgba(255,255,255,.9), rgba(255,255,255,0) 60%) repeat-x,
-            radial-gradient(18px 18px at 20px calc(100% - 20px), rgba(255,255,255,.85), rgba(255,255,255,0) 60%) repeat-x;
-          background-size: 120px 100%, 120px 100%;
-          background-position: 0 0, 60px 0;
-          opacity: .45;
-          animation-name: rollers;
-          animation-timing-function: linear;
-          animation-iteration-count: 1;
-          animation-fill-mode: forwards;
-        }
-        @keyframes rollers {
-          from { background-position: 0 0, 60px 0; }
-          to   { background-position: 1400px 0, 1460px 0; }
-        }
-
-        /* Lichte tread-textuur die mee schuift */
         .belt-surface {
-          position: absolute; inset: 0;
+          position: absolute;
+          inset: 0;
           background:
-            repeating-linear-gradient(90deg, rgba(108,177,90,.18) 0 8px, transparent 8px 28px),
-            linear-gradient(180deg, rgba(255,255,255,.85), rgba(255,255,255,.55));
+            repeating-linear-gradient(
+              90deg,
+              rgba(108, 177, 90, 0.18) 0 8px,
+              transparent 8px 28px
+            ),
+            linear-gradient(180deg, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.5));
           mix-blend-mode: multiply;
-          animation-name: tread;
-          animation-timing-function: linear;
-          animation-iteration-count: 1;
-          animation-fill-mode: forwards;
-          opacity: .9;
+          opacity: 0.9;
+          animation: surface 7s linear infinite;
         }
-        @keyframes tread {
-          from { background-position: 0 0, 0 0; }
-          to   { background-position: 1400px 0, 0 0; }
+        @keyframes surface {
+          from {
+            background-position: 0 0, 0 0;
+          }
+          to {
+            background-position: 1400px 0, 0 0;
+          }
+        }
+        :global(.dark) .belt-surface {
+          background:
+            repeating-linear-gradient(
+              90deg,
+              rgba(52, 211, 153, 0.2) 0 8px,
+              transparent 8px 28px
+            ),
+            linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02));
+          mix-blend-mode: normal;
+          opacity: 1;
         }
 
-        /* Stream van fruit die met de band meebeweegt */
-        .belt-stream {
-          position: absolute; inset: 0;
-          animation: stream linear 1 forwards;
+        /* ---------- Fruit Rows ---------- */
+        .row {
+          position: absolute;
+          left: 0;
+          right: 0;
+          top: var(--row-y);
+          height: var(--row-size);
+          transform: translateY(-50%);
+          pointer-events: none;
+          display: flex;
+          gap: 0;
         }
-        @keyframes stream {
-          from { transform: translateX(0); }
-          to   { transform: translateX(70vw); } /* grotere verplaatsing */
+        .rowStripe {
+          /* 200% breed: twee stripes achter elkaar voor naadloze loop */
+          width: 200%;
+          display: flex;
+          align-items: center;
+          gap: 14px;
+          padding-left: 14px;
+          animation: stripe var(--row-dur) linear infinite;
+        }
+        @keyframes stripe {
+          from {
+            transform: translateX(0);
+          }
+          to {
+            transform: translateX(-50%);
+          }
         }
 
         .fruit {
-          position: absolute;
-          top: 50%;
-          transform: translateY(-50%);
-          font-size: 40px;
-          filter: drop-shadow(0 8px 18px rgba(0,0,0,.10));
-          transition: transform .2s ease;
-        }
-        .fruit:hover {
-          transform: translateY(calc(-50% - 2px)) scale(1.04);
-        }
-
-        /* De held: Peear die aan het einde van de band naar beneden valt */
-        .fruit.pear.hero {
-          left: 10%;
-          font-size: 48px;
+          display: inline-block;
+          font-size: calc(var(--row-size) * 0.9);
+          filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.12));
+          transform-origin: 50% 60%;
           animation:
-            hero-enter ${Math.round(DURATION_MS * 0.2)}ms ease-out both,
-            hero-drop  ${Math.round(DURATION_MS * 0.42)}ms cubic-bezier(.2,.8,.2,1) ${Math.round(DURATION_MS * 0.78)}ms forwards;
+            jiggle 1.8s ease-in-out infinite alternate;
+          animation-delay: var(--jiggle-delay);
         }
-        @keyframes hero-enter {
-          from { transform: translateY(-50%) scale(.9); opacity: 0; }
-          to   { transform: translateY(-50%) scale(1);   opacity: 1; }
+        @keyframes jiggle {
+          0% {
+            transform: translateY(-2px) rotate(-1.5deg);
+          }
+          100% {
+            transform: translateY(2px) rotate(1.5deg);
+          }
         }
-        @keyframes hero-drop {
-          0%   { transform: translateY(-50%) rotate(0deg);   opacity: 1; }
-          60%  { transform: translateY(130px) rotate(16deg); opacity: 1; }
-          100% { transform: translateY(168px) rotate(20deg); opacity: .95; }
+        /* af en toe zacht spinnen voor speelsheid */
+        .fruit:nth-child(7n) {
+          animation:
+            jiggle 1.8s ease-in-out infinite alternate,
+            spin 6.5s ease-in-out infinite;
+          animation-delay: var(--jiggle-delay), var(--spin-delay);
+        }
+        @keyframes spin {
+          0%,
+          92% {
+            transform: rotate(0deg);
+          }
+          96% {
+            transform: rotate(12deg);
+          }
+          100% {
+            transform: rotate(0deg);
+          }
         }
 
         .tray-shadow {
-          position: absolute; left: 50%; bottom: calc(50% - 112px);
-          width: min(800px, 86vw); height: 18px;
+          position: absolute;
+          left: 50%;
+          bottom: calc(50% - 124px);
+          width: min(860px, 88vw);
+          height: 18px;
           transform: translateX(-50%);
-          background: radial-gradient(50% 100% at 50% 50%, rgba(0,0,0,.12), transparent 70%);
+          background: radial-gradient(50% 100% at 50% 50%, rgba(0, 0, 0, 0.12), transparent 70%);
           filter: blur(4px);
-          opacity: .5;
+          opacity: 0.5;
           pointer-events: none;
         }
+        :global(.dark) .tray-shadow {
+          opacity: 0.65;
+        }
 
-        /* Reduced motion: disable complex movement */
+        /* Reduced motion */
         @media (prefers-reduced-motion: reduce) {
-          .rollers, .belt-surface, .belt-stream, .fruit.pear.hero, .bar { animation: none !important; }
+          .bar,
+          .belt-surface,
+          .rowStripe,
+          .fruit {
+            animation: none !important;
+          }
         }
       `}</style>
     </main>
