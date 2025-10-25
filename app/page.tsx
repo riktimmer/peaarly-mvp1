@@ -18,7 +18,7 @@ export default function Home() {
         />
       )}
 
-      {/* Menu tab rechtsboven (voorop met z-index) */}
+      {/* Menu knop */}
       <div className="absolute top-4 right-4 z-50">
         <div className="relative">
           <button
@@ -82,7 +82,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Logo – bewust achter menu met lagere z-index */}
+      {/* Logo */}
       <div className="mb-8 drop-shadow-lg transition-transform hover:scale-105 z-10">
         <PeearLogoV2 width={180} height={180} />
       </div>
@@ -95,27 +95,27 @@ export default function Home() {
         Grow together. Stay curious. Be fruitful. 🍐
       </p>
 
-      {/* CTA's – fruitig in light & dark */}
+      {/* CTA's */}
       <div className="flex flex-col gap-4 w-full max-w-sm">
-        {/* Groen (About) */}
+        {/* Groen (About Peear) */}
         <Link
           href="/about"
           className="bg-green-700 hover:bg-green-800 text-white font-semibold py-3 rounded-2xl transition shadow-sm
-                     dark:bg-emerald-500 dark:hover:bg-emerald-400 dark:text-white"
+                     dark:bg-green-500 dark:hover:bg-green-400 dark:text-[#0f1d14]"
         >
           About Peear
         </Link>
 
-        {/* Amber (Pear Drop) */}
+        {/* Geel (Start Pear Drop) */}
         <Link
           href="/drop/select"
           className="bg-[#F0B429] hover:bg-[#E3A21A] text-green-900 font-semibold py-3 rounded-2xl transition shadow-sm
-                     dark:bg-amber-500 dark:hover:bg-amber-400 dark:text-[#0f1d14]"
+                     dark:bg-yellow-400 dark:hover:bg-yellow-300 dark:text-[#0f1d14]"
         >
           Start Pear Drop
         </Link>
 
-        {/* Oranje (Fruit Pick) */}
+        {/* Oranje (Start Fruit Pick) */}
         <Link
           href="/fruitpick"
           className="bg-[#FF944D] hover:bg-[#FF8533] text-green-900 font-semibold py-3 rounded-2xl transition shadow-sm
@@ -135,7 +135,7 @@ export default function Home() {
         </ul>
       </section>
 
-      {/* Fruitige achtergrond accenten */}
+      {/* Achtergrond accenten */}
       <div className="absolute inset-0 -z-10 pointer-events-none">
         <div className="w-[620px] h-[620px] bg-green-300/25 dark:bg-green-900/30 rounded-full blur-[120px] absolute -top-20 -right-24" />
         <div className="w-[520px] h-[520px] bg-amber-200/30 dark:bg-amber-900/20 rounded-full blur-[120px] absolute bottom-0 -left-24" />
