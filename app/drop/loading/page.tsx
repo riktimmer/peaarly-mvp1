@@ -4,15 +4,10 @@ import React, { useEffect, useMemo, useRef } from "react";
 import { useRouter } from "next/navigation";
 
 /* ---------------------------------------------
-   Timing & navigation
+   Timing & routing
 ---------------------------------------------- */
 const DURATION_MS = 6200;
 const NEXT_STEP = "/drop/match";
-
-/* ---------------------------------------------
-   Types
----------------------------------------------- */
-type FruitSpec = { emoji: string };
 
 /* ---------------------------------------------
    Component
@@ -30,50 +25,48 @@ export default function LoadingConveyor() {
     liveRef.current?.append?.("We are matching based on your selected interests.");
   }, []);
 
-  // Een compacte, gevarieerde fruitslinger
-  const palette = useMemo<FruitSpec[]>(
-    () =>
-      "🍓🍊🍎🍏🍇🍌🍉🍑🍒🍍🍋🍈🥝🥭🥥🫐🍐".split("").map((e) => ({ emoji: e })),
-    []
-  );
-
-  // 3 rijen met verschillend tempo/parallax — vult de hele band
-  const rows = useMemo(
+  // ❗ Expliciete emoji-array (geen split!)
+  const EMOJIS = useMemo(
     () => [
-      { id: "row-a", speed: 1.0, size: 42, y: "28%" },
-      { id: "row-b", speed: 0.85, size: 38, y: "50%" },
-      { id: "row-c", speed: 1.15, size: 34, y: "72%" },
+      "🍓", "🍊", "🍎", "🍏", "🍇", "🍌", "🍉", "🍑", "🍒", "🍍",
+      "🍋", "🍈", "🥝", "🥭", "🥥", "🫐", "🍐"
     ],
     []
   );
 
-  // Rugzak met voldoende tegels om 200% breedte te vullen
-  const tilesPerRow = 60; // veel = zichtbaar vol
+  // 3 rijen met verschillende snelheden
+  const ROWS = useMemo(
+    () => [
+      { id: "row-a", speed: 1.00, size: 44, y: "28%" },
+      { id: "row-b", speed: 0.85, size: 40, y: "50%" },
+      { id: "row-c", speed: 1.15, size: 36, y: "72%" },
+    ],
+    []
+  );
+
+  const TILES_PER_ROW = 56; // vult ruim 200% breedte
 
   return (
     <main className="min-h-screen conveyor-bg text-[color:var(--ink)]">
-      {/* Headline / Glass */}
+      {/* Koptekst / Glass */}
       <div className="container">
         <div className="glass">
           <h1 className="title">
             We’re crafting your best <span className="highlight">Peear</span> match
           </h1>
           <p className="subtitle">Fresh chemistry coming off the line…</p>
-
           <div className="progress">
             <div className="bar" style={{ animationDuration: `${DURATION_MS}ms` }} />
           </div>
         </div>
       </div>
 
-      {/* Stage */}
+      {/* Conveyor */}
       <div className="stage" aria-hidden>
         <div className="rails top" />
         <div className="belt">
-          {/* Textuur & lichte shine */}
           <div className="belt-surface" />
-          {/* Drie rijen fruit, elk 200% breed met loop-animatie */}
-          {rows.map((row, rIndex) => (
+          {ROWS.map((row, rIndex) => (
             <div
               key={row.id}
               className="row"
@@ -85,17 +78,21 @@ export default function LoadingConveyor() {
                 } as React.CSSProperties
               }
             >
-              {/* Twee identieke slingers achter elkaar → naadloze loop */}
-              {[0, 1].map((segment) => (
-                <div className="rowStripe" key={segment}>
-                  {Array.from({ length: tilesPerRow }).map((_, i) => {
-                    const fruit = palette[(i + rIndex * 7 + segment * 13) % palette.length];
+              {/* Twee stripes achter elkaar → naadloze loop */}
+              {[0, 1].map((seg) => (
+                <div className="rowStripe" key={seg}>
+                  {Array.from({ length: TILES_PER_ROW }).map((_, i) => {
+                    const fruit = EMOJIS[(i + rIndex * 5 + seg * 13) % EMOJIS.length];
                     return (
                       <span
-                        key={`${row.id}-${segment}-${i}`}
+                        key={`${row.id}-${seg}-${i}`}
                         className="fruit"
                         style={
                           {
+                            // Zorgt dat kleur-emoji fonts worden gebruikt
+                            fontFamily:
+                              'system-ui, "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", "Twemoji Mozilla", "EmojiOne Color", "Noto Emoji", sans-serif',
+                            // kleine variatie/jiggle
                             "--jiggle-delay": `${(i % 12) * 80}ms`,
                             "--spin-delay": `${(i % 10) * 120}ms`,
                           } as React.CSSProperties
@@ -103,7 +100,7 @@ export default function LoadingConveyor() {
                         aria-hidden
                         role="img"
                       >
-                        {fruit.emoji}
+                        {fruit}
                       </span>
                     );
                   })}
@@ -136,7 +133,6 @@ export default function LoadingConveyor() {
             linear-gradient(180deg, #f6f8ef 0%, #fafaf2 100%);
         }
         :global(.dark) .conveyor-bg {
-          /* dieper contrast in dark */
           background:
             radial-gradient(1200px 820px at 20% -10%, rgba(34,86,58,0.35), transparent 55%),
             radial-gradient(900px 720px at 100% 20%, rgba(161,98,7,0.18), transparent 60%),
@@ -186,7 +182,7 @@ export default function LoadingConveyor() {
           color: transparent;
         }
         :global(.dark) .highlight {
-          background: linear-gradient(90deg, #34d399, #bef264); /* emerald → lime */
+          background: linear-gradient(90deg, #34d399, #bef264);
         }
         .subtitle {
           margin-top: 4px;
@@ -217,14 +213,10 @@ export default function LoadingConveyor() {
           box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
         }
         :global(.dark) .bar {
-          background: linear-gradient(90deg, #34d399, #f59e0b); /* groen → geel */
+          background: linear-gradient(90deg, #34d399, #f59e0b);
           box-shadow: 0 0 24px rgba(34, 197, 94, 0.5);
         }
-        @keyframes grow {
-          to {
-            width: 100%;
-          }
-        }
+        @keyframes grow { to { width: 100%; } }
 
         /* ---------- Stage / Conveyor ---------- */
         .stage {
@@ -237,28 +229,22 @@ export default function LoadingConveyor() {
         }
         .rails {
           position: absolute;
-          left: 0;
-          right: 0;
+          left: 0; right: 0;
           height: 10px;
-          background: linear-gradient(180deg, rgba(0, 0, 0, 0.06), rgba(0, 0, 0, 0.1));
-          box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+          background: linear-gradient(180deg, rgba(0,0,0,.06), rgba(0,0,0,.10));
+          box-shadow: 0 2px 6px rgba(0,0,0,.06);
           border-radius: 6px;
         }
-        .rails.top {
-          top: calc(50% - 96px);
-        }
-        .rails.bottom {
-          top: calc(50% + 96px);
-        }
+        .rails.top { top: calc(50% - 96px); }
+        .rails.bottom { top: calc(50% + 96px); }
         :global(.dark) .rails {
-          background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.08));
-          box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08) inset;
+          background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.08));
+          box-shadow: 0 0 0 1px rgba(255,255,255,.08) inset;
         }
 
         .belt {
           position: absolute;
-          left: 4vw;
-          right: 4vw;
+          left: 4vw; right: 4vw;
           top: 50%;
           height: 192px;
           transform: translateY(-50%);
@@ -267,101 +253,71 @@ export default function LoadingConveyor() {
           background: #eaf3e2;
           border: 1px solid #d8e7cd;
           box-shadow:
-            0 14px 28px rgba(0, 0, 0, 0.1),
-            inset 0 1px 0 rgba(255, 255, 255, 0.8),
-            inset 0 -20px 30px rgba(108, 177, 90, 0.08);
+            0 14px 28px rgba(0,0,0,.10),
+            inset 0 1px 0 rgba(255,255,255,.8),
+            inset 0 -20px 30px rgba(108,177,90,.08);
         }
         :global(.dark) .belt {
-          background: rgba(255, 255, 255, 0.04);
-          border: 1px solid rgba(255, 255, 255, 0.1);
+          background: rgba(255,255,255,0.04);
+          border: 1px solid rgba(255,255,255,0.1);
           box-shadow:
-            0 20px 60px rgba(0, 0, 0, 0.45),
-            0 0 0 1px rgba(255, 255, 255, 0.06) inset,
-            0 0 48px rgba(16, 185, 129, 0.18); /* emerald glow */
+            0 20px 60px rgba(0,0,0,0.45),
+            0 0 0 1px rgba(255,255,255,0.06) inset,
+            0 0 48px rgba(16,185,129,0.18);
         }
 
         .belt-surface {
-          position: absolute;
-          inset: 0;
+          position: absolute; inset: 0;
           background:
-            repeating-linear-gradient(
-              90deg,
-              rgba(108, 177, 90, 0.18) 0 8px,
-              transparent 8px 28px
-            ),
-            linear-gradient(180deg, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.5));
+            repeating-linear-gradient(90deg, rgba(108,177,90,.18) 0 8px, transparent 8px 28px),
+            linear-gradient(180deg, rgba(255,255,255,.8), rgba(255,255,255,.5));
           mix-blend-mode: multiply;
-          opacity: 0.9;
+          opacity: .9;
           animation: surface 7s linear infinite;
         }
         @keyframes surface {
-          from {
-            background-position: 0 0, 0 0;
-          }
-          to {
-            background-position: 1400px 0, 0 0;
-          }
+          from { background-position: 0 0, 0 0; }
+          to   { background-position: 1400px 0, 0 0; }
         }
         :global(.dark) .belt-surface {
           background:
-            repeating-linear-gradient(
-              90deg,
-              rgba(52, 211, 153, 0.2) 0 8px,
-              transparent 8px 28px
-            ),
-            linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02));
+            repeating-linear-gradient(90deg, rgba(52,211,153,.2) 0 8px, transparent 8px 28px),
+            linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
           mix-blend-mode: normal;
           opacity: 1;
         }
 
         /* ---------- Fruit Rows ---------- */
         .row {
-          position: absolute;
-          left: 0;
-          right: 0;
-          top: var(--row-y);
+          position: absolute; left: 0; right: 0; top: var(--row-y);
           height: var(--row-size);
           transform: translateY(-50%);
           pointer-events: none;
           display: flex;
-          gap: 0;
         }
         .rowStripe {
-          /* 200% breed: twee stripes achter elkaar voor naadloze loop */
           width: 200%;
-          display: flex;
-          align-items: center;
-          gap: 14px;
-          padding-left: 14px;
+          display: flex; align-items: center;
+          gap: 14px; padding-left: 14px;
           animation: stripe var(--row-dur) linear infinite;
         }
         @keyframes stripe {
-          from {
-            transform: translateX(0);
-          }
-          to {
-            transform: translateX(-50%);
-          }
+          from { transform: translateX(0); }
+          to   { transform: translateX(-50%); }
         }
 
         .fruit {
           display: inline-block;
           font-size: calc(var(--row-size) * 0.9);
-          filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.12));
+          filter: drop-shadow(0 8px 18px rgba(0,0,0,.12));
           transform-origin: 50% 60%;
-          animation:
-            jiggle 1.8s ease-in-out infinite alternate;
+          animation: jiggle 1.8s ease-in-out infinite alternate;
           animation-delay: var(--jiggle-delay);
         }
         @keyframes jiggle {
-          0% {
-            transform: translateY(-2px) rotate(-1.5deg);
-          }
-          100% {
-            transform: translateY(2px) rotate(1.5deg);
-          }
+          0%   { transform: translateY(-2px) rotate(-1.5deg); }
+          100% { transform: translateY( 2px) rotate( 1.5deg); }
         }
-        /* af en toe zacht spinnen voor speelsheid */
         .fruit:nth-child(7n) {
           animation:
             jiggle 1.8s ease-in-out infinite alternate,
@@ -369,42 +325,23 @@ export default function LoadingConveyor() {
           animation-delay: var(--jiggle-delay), var(--spin-delay);
         }
         @keyframes spin {
-          0%,
-          92% {
-            transform: rotate(0deg);
-          }
-          96% {
-            transform: rotate(12deg);
-          }
-          100% {
-            transform: rotate(0deg);
-          }
+          0%, 92% { transform: rotate(0deg); }
+          96%     { transform: rotate(12deg); }
+          100%    { transform: rotate(0deg); }
         }
 
         .tray-shadow {
-          position: absolute;
-          left: 50%;
-          bottom: calc(50% - 124px);
-          width: min(860px, 88vw);
-          height: 18px;
+          position: absolute; left: 50%; bottom: calc(50% - 124px);
+          width: min(860px, 88vw); height: 18px;
           transform: translateX(-50%);
-          background: radial-gradient(50% 100% at 50% 50%, rgba(0, 0, 0, 0.12), transparent 70%);
-          filter: blur(4px);
-          opacity: 0.5;
-          pointer-events: none;
+          background: radial-gradient(50% 100% at 50% 50%, rgba(0,0,0,.12), transparent 70%);
+          filter: blur(4px); opacity: .5; pointer-events: none;
         }
-        :global(.dark) .tray-shadow {
-          opacity: 0.65;
-        }
+        :global(.dark) .tray-shadow { opacity: .65; }
 
         /* Reduced motion */
         @media (prefers-reduced-motion: reduce) {
-          .bar,
-          .belt-surface,
-          .rowStripe,
-          .fruit {
-            animation: none !important;
-          }
+          .bar, .belt-surface, .rowStripe, .fruit { animation: none !important; }
         }
       `}</style>
     </main>
