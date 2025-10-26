@@ -6,12 +6,11 @@ import { motion, useAnimationControls } from "framer-motion";
 import PeearLogoV2 from "./components/PeearLogoV2";
 
 /**
- * Peear Home – Night Garden + Social Proof + Fruit Cards + Timeline
- * - Dark mode: diepe paars/indigo met neon-glows
- * - Social proof (per refresh randomisering): peers joined + matches made + global community
- * - 3 visuele fruit-cards i.p.v. lange tekst
- * - Community timeline (dynamisch)
- * - Gouden CTA naar /community
+ * Peear Home – Night Garden + Fixed Social Proof + Solid Fruit Cards
+ * - Dark mode: diepe paars/indigo glows
+ * - Social proof: 🍉 25 peers joined today, 🍌 88 fruitful matches today, 🥝 Global community
+ * - Why join: 3 solide cards (geen gradients, geen fruit-emoji)
+ * - Community timeline + Gouden CTA blijven
  */
 
 const FRUIT = ["🍐", "🍊", "🍎", "🍇", "🍓", "🍋", "🍒", "🍍"];
@@ -57,19 +56,10 @@ function randomEvent(): CommunityEvent {
   return { id: `${ts.getTime()}-${Math.random()}`, avatar, name, action, time };
 }
 
-// Helper voor random integer binnen bereik (incl. grenzen)
-function randInt(min: number, max: number) {
-  return Math.floor(min + Math.random() * (max - min + 1));
-}
-
 export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
   const pearControls = useAnimationControls();
   const [pearTapped, setPearTapped] = useState(false);
-
-  // Social proof – per refresh variabel
-  const [peersJoined, setPeersJoined] = useState<number>(24);
-  const [matchesMade, setMatchesMade] = useState<number>(75);
 
   // Community feed
   const [events, setEvents] = useState<CommunityEvent[]>(() => [
@@ -86,12 +76,6 @@ export default function Home() {
       transition: { duration: 5.2, repeat: Infinity, ease: "easeInOut" },
     });
   }, [pearControls]);
-
-  // Per refresh randomize peersJoined & matchesMade (kleine bandbreedte)
-  useEffect(() => {
-    setPeersJoined(randInt(20, 32)); // rond 24
-    setMatchesMade(randInt(65, 90)); // rond 75
-  }, []);
 
   // Community feed – voeg elke 10s een event toe (max 30)
   useEffect(() => {
@@ -222,41 +206,32 @@ export default function Home() {
           <CTA href="/fruitpick" tone="orange" label="Start Fruit Pick" />
         </div>
 
-        {/* Social proof (per refresh random) */}
+        {/* Social proof – vaste waarden met specifieke emoji */}
         <div className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-3">
-          <StatPill icon="🫶" label={`${peersJoined} peers joined today`} />
-          <StatPill icon="✨" label={`${matchesMade} fruitful matches made today`} />
-          <StatPill icon="🌍" label="Global community" />
+          <StatPill icon="🍉" label={`25 peers joined today`} />
+          <StatPill icon="🍌" label={`88 fruitful matches today`} />
+          <StatPill icon="🥝" label="Global community" />
         </div>
       </section>
 
-      {/* Why join – visuele fruit cards */}
+      {/* Why join – 3 solide cards (geen gradients, geen fruit-emoji) */}
       <section className="mx-auto mt-16 w-full max-w-2xl">
         <h2 className="mb-5 text-center text-2xl font-bold text-green-900 dark:text-violet-50 md:text-3xl">
           Why join Peear?
         </h2>
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-          <FruitCard
-            emoji="🍐"
+          <SolidInfoCard
             title="Social Skilling"
             line="Real growth starts with real people, not systems."
-            gradientLight="from-emerald-100 to-emerald-50"
-            gradientDark="from-fuchsia-900/40 to-emerald-900/40"
           />
-          <FruitCard
-            emoji="🍊"
+          <SolidInfoCard
             title="Character > Credentials"
             line="Match on who you are and who you can become."
-            gradientLight="from-amber-100 to-orange-50"
-            gradientDark="from-rose-900/40 to-amber-900/40"
           />
-          <FruitCard
-            emoji="🍋"
+          <SolidInfoCard
             title="Fun, fast & human"
             line="Playful formats keep learning alive."
-            gradientLight="from-yellow-100 to-lime-50"
-            gradientDark="from-indigo-900/40 to-lime-900/40"
           />
         </div>
       </section>
@@ -304,8 +279,6 @@ export default function Home() {
           >
             <span className="text-lg">Join the Peear Community</span>
             <span className="text-xl">✨</span>
-
-            {/* Delight: zachte golden glow op hover */}
             <span className="pointer-events-none absolute inset-0 -z-10 rounded-2xl opacity-0 blur-xl transition-opacity duration-300 group-hover:opacity-30 dark:bg-white/10" />
           </Link>
         </div>
@@ -359,29 +332,17 @@ function StatPill({ icon, label }: { icon: string; label: string }) {
   );
 }
 
-function FruitCard({
-  emoji,
-  title,
-  line,
-  gradientLight,
-  gradientDark,
-}: {
-  emoji: string;
-  title: string;
-  line: string;
-  gradientLight: string;
-  gradientDark: string;
-}) {
+// Solide variant van de fruit cards (geen gradient, geen emoji)
+function SolidInfoCard({ title, line }: { title: string; line: string }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 8 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-80px" }}
       transition={{ duration: 0.5 }}
-      className={`rounded-2xl border border-black/5 bg-gradient-to-b ${gradientLight} p-4 text-left shadow-sm backdrop-blur
-                  dark:border-white/10 dark:${gradientDark}`}
+      className="rounded-2xl border border-black/5 bg-white/85 p-4 text-left shadow-sm backdrop-blur
+                 hover:shadow-md dark:border-white/10 dark:bg-[#121129]/70"
     >
-      <div className="mb-2 text-2xl">{emoji}</div>
       <h3 className="text-lg font-bold text-green-900 dark:text-violet-50">{title}</h3>
       <p className="mt-1 text-sm text-green-900/80 dark:text-violet-100/80">{line}</p>
     </motion.div>
