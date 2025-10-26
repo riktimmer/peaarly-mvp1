@@ -6,10 +6,7 @@ import { motion, useAnimationControls } from "framer-motion";
 import PeearLogoV2 from "./components/PeearLogoV2";
 
 /**
- * Peear Home – Night Garden + Tuned Social Proof Layout + Updated Copy
- * - Social proof layout: two pills on top (🍉 peers + 🥝 global), one below full width (🍌 matches)
- * - Numbers vary per refresh (peers ~22–28, matches ~80–95)
- * - Why join copy updated
+ * Peear Home – Social proof horizontal + dark-mode glow
  */
 
 const FRUIT = ["🍐", "🍊", "🍎", "🍇", "🍓", "🍋", "🍒", "🍍"];
@@ -63,19 +60,15 @@ export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
   const pearControls = useAnimationControls();
   const [pearTapped, setPearTapped] = useState(false);
-
-  // Social proof (random per refresh)
-  const [peersJoined, setPeersJoined] = useState<number>(24);
+  const [peersJoined, setPeersJoined] = useState<number>(25);
   const [matchesMade, setMatchesMade] = useState<number>(88);
-
-  // Community feed
   const [events, setEvents] = useState<CommunityEvent[]>(() => [
     { id: "e1", avatar: "🍐", name: "Lina", action: "just joined", time: "08:12" },
     { id: "e2", avatar: "🍊", name: "Mateo", action: "made a fruitful match", time: "08:09" },
     { id: "e3", avatar: "🍇", name: "Aisha", action: "shared a growth tip", time: "08:05" },
   ]);
 
-  // Logo breathing
+  // Pear breathing
   useEffect(() => {
     pearControls.start({
       y: [0, -6, 0],
@@ -84,13 +77,13 @@ export default function Home() {
     });
   }, [pearControls]);
 
-  // Randomize numbers on mount
+  // Random numbers
   useEffect(() => {
     setPeersJoined(randInt(22, 28));
     setMatchesMade(randInt(80, 95));
   }, []);
 
-  // Community feed – add event every 10s (max 30)
+  // Community events
   useEffect(() => {
     const t = setInterval(() => {
       setEvents((prev) => {
@@ -110,10 +103,9 @@ export default function Home() {
     <main
       className="relative flex min-h-[100dvh] flex-col items-center justify-start p-6 text-center
                  bg-[radial-gradient(120%_120%_at_50%_0%,#FAFAF2_0%,#FFF7E0_40%,#FFFDF5_100%)]
-                 text-emerald-900
-                 dark:bg-[#0b0714] dark:text-violet-50"
+                 text-emerald-900 dark:bg-[#0b0714] dark:text-violet-50"
     >
-      {/* Night Garden neon glows for dark mode */}
+      {/* Dark glows */}
       <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
         <div className="hidden dark:block absolute -top-28 -right-24 w-[620px] h-[620px] rounded-full bg-fuchsia-500/20 blur-[160px]" />
         <div className="hidden dark:block absolute bottom-[-120px] -left-24 w-[680px] h-[680px] rounded-full bg-indigo-500/25 blur-[180px]" />
@@ -142,7 +134,7 @@ export default function Home() {
           <button
             onClick={() => setMenuOpen((v) => !v)}
             className="rounded-full border border-black/5 bg-white/85 px-5 py-2.5 font-semibold text-green-900 shadow-sm hover:bg-white
-                       dark:border-white/10 dark:bg-white/10 dark:text-violet-50 dark:hover:bg-white/15 dark:shadow-[0_0_0_1px_rgba(255,255,255,0.08),0_10px_28px_rgba(0,0,0,0.45)]"
+                       dark:border-white/10 dark:bg-white/10 dark:text-violet-50 dark:hover:bg-white/15"
             aria-haspopup="menu"
             aria-expanded={menuOpen}
           >
@@ -152,8 +144,7 @@ export default function Home() {
           {menuOpen && (
             <nav
               role="menu"
-              className="absolute right-0 z-50 mt-2 w-64 overflow-hidden rounded-2xl bg-white shadow-xl ring-1 ring-black/5
-                         dark:bg-[#160a28]/95 dark:ring-white/10 dark:backdrop-blur-sm"
+              className="absolute right-0 z-50 mt-2 w-64 overflow-hidden rounded-2xl bg-white shadow-xl ring-1 ring-black/5 dark:bg-[#160a28]/95 dark:ring-white/10 dark:backdrop-blur-sm"
             >
               <ul className="py-2 text-left">
                 {[
@@ -166,7 +157,6 @@ export default function Home() {
                     <Link
                       href={item.href}
                       className="block px-4 py-3 text-green-900 hover:bg-green-50 dark:text-violet-50 dark:hover:bg-white/10"
-                      role="menuitem"
                       onClick={() => setMenuOpen(false)}
                     >
                       {item.label}
@@ -181,13 +171,11 @@ export default function Home() {
 
       {/* Hero */}
       <section className="mx-auto flex w-full max-w-2xl flex-col items-center pt-20">
-        {/* Logo (tap → shimmer) */}
         <motion.button
           onClick={handlePearTap}
           animate={pearControls}
           whileTap={{ scale: 0.98 }}
           className="mb-6 z-10"
-          aria-label="Tap the pear"
         >
           <div className="relative">
             <PeearLogoV2 width={180} height={180} />
@@ -208,32 +196,32 @@ export default function Home() {
           Peear
         </h1>
         <p className="mb-8 max-w-md text-lg leading-relaxed text-green-800 dark:text-fuchsia-100/90">
-          Grow together. <span className="inline-block">Stay curious.</span>{" "}
-          <span className="inline-block">Be fruitful. 🍐</span>
+          Grow together. Stay curious. Be fruitful. 🍐
         </p>
 
-        {/* CTAs */}
+        {/* CTA buttons */}
         <div className="flex w-full max-w-sm flex-col gap-4">
           <CTA href="/about" tone="green" label="About Peear" />
           <CTA href="/drop/select" tone="amber" label="Start Pear Drop" />
           <CTA href="/fruitpick" tone="orange" label="Start Fruit Pick" />
         </div>
 
-        {/* Social proof – custom layout */}
-        <div className="mt-8 grid w-full max-w-2xl grid-cols-1 gap-3 sm:grid-cols-2">
-          <div className="sm:col-span-1">
-            <StatPill icon="🍉" label={`${peersJoined} peers joined today`} />
+        {/* Social proof – new layout */}
+        <div className="mt-8 w-full max-w-md mx-auto space-y-2">
+          {/* Top row */}
+          <div className="grid grid-cols-2 gap-2">
+            <StatPill icon="🍉" label={`${peersJoined} peers joined today`} glow />
+            <StatPill icon="🥝" label="Global community" glow />
           </div>
-          <div className="sm:col-span-1">
-            <StatPill icon="🥝" label="Global community" />
-          </div>
-          <div className="sm:col-span-2">
+
+          {/* Bottom row */}
+          <div>
             <StatPill icon="🍌" label={`${matchesMade} fruitful matches today`} />
           </div>
         </div>
       </section>
 
-      {/* Why join – 3 solide cards (geen gradients, geen fruit-emoji) */}
+      {/* Why join */}
       <section className="mx-auto mt-16 w-full max-w-2xl">
         <h2 className="mb-5 text-center text-2xl font-bold text-green-900 dark:text-violet-50 md:text-3xl">
           Why join Peear?
@@ -259,7 +247,9 @@ export default function Home() {
       <section className="mx-auto mt-16 w-full max-w-2xl pb-28">
         <div className="sticky top-0 z-10 mb-3 -mx-6 border-b border-black/5 bg-white/70 px-6 py-3 backdrop-blur dark:border-white/10 dark:bg-[#0b0714]/80">
           <div className="mx-auto flex max-w-2xl items-center justify-between">
-            <h3 className="text-left text-xl font-bold text-green-900 dark:text-violet-100">Community</h3>
+            <h3 className="text-left text-xl font-bold text-green-900 dark:text-violet-100">
+              Community
+            </h3>
             <span className="text-sm text-green-900/70 dark:text-fuchsia-200/80">Live updates</span>
           </div>
         </div>
@@ -277,7 +267,9 @@ export default function Home() {
                 <div className="flex-1">
                   <div className="flex items-center justify-between">
                     <p className="font-semibold text-green-900 dark:text-violet-100">{ev.name}</p>
-                    <span className="text-sm text-green-800/70 dark:text-fuchsia-200/70">{ev.time}</span>
+                    <span className="text-sm text-green-800/70 dark:text-fuchsia-200/70">
+                      {ev.time}
+                    </span>
                   </div>
                   <p className="text-green-900/90 dark:text-violet-50/90">{ev.action}</p>
                 </div>
@@ -286,7 +278,7 @@ export default function Home() {
           ))}
         </ul>
 
-        {/* Golden Join CTA */}
+        {/* Golden CTA */}
         <div className="mx-auto mt-6 flex max-w-2xl justify-center">
           <Link
             href="/community"
@@ -294,27 +286,15 @@ export default function Home() {
           >
             <span className="text-lg">Join the Peear Community</span>
             <span className="text-xl">✨</span>
-            <span className="pointer-events-none absolute inset-0 -z-10 rounded-2xl opacity-0 blur-xl transition-opacity duration-300 group-hover:opacity-30 dark:bg-white/10" />
           </Link>
         </div>
       </section>
-
-      {/* Footer vignette */}
-      <div className="pointer-events-none absolute inset-0 mix-blend-soft-light [background:radial-gradient(60%_40%_at_50%_10%,rgba(255,255,255,0.35),transparent)] dark:[background:radial-gradient(60%_40%_at_50%_10%,rgba(167,139,250,0.12),transparent)]" />
     </main>
   );
 }
 
-/** Components **/
-function CTA({
-  href,
-  label,
-  tone,
-}: {
-  href: string;
-  label: string;
-  tone: "green" | "amber" | "orange";
-}) {
+/* Components */
+function CTA({ href, label, tone }: { href: string; label: string; tone: "green" | "amber" | "orange" }) {
   const toneClasses = {
     green:
       "from-emerald-700 to-emerald-800 text-white shadow-emerald-900/20 dark:from-emerald-400 dark:to-emerald-500 dark:text-[#07150f]",
@@ -329,25 +309,27 @@ function CTA({
       <motion.div
         whileHover={{ y: -2 }}
         whileTap={{ scale: 0.98 }}
-        className={`relative isolate w-full rounded-2xl bg-gradient-to-b ${toneClasses} px-6 py-3 text-center text-lg font-semibold tracking-tight shadow-lg ring-1 ring-black/5 transition md:text-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400`}
+        className={`relative isolate w-full rounded-2xl bg-gradient-to-b ${toneClasses} px-6 py-3 text-center text-lg font-semibold tracking-tight shadow-lg ring-1 ring-black/5 transition md:text-xl`}
       >
         {label}
-        <span className="pointer-events-none absolute inset-0 -z-10 rounded-2xl opacity-0 blur-xl transition-opacity duration-300 group-hover:opacity-30 dark:bg-white/10" />
       </motion.div>
     </Link>
   );
 }
 
-function StatPill({ icon, label }: { icon: string; label: string }) {
+function StatPill({ icon, label, glow }: { icon: string; label: string; glow?: boolean }) {
   return (
-    <div className="flex items-center justify-center gap-2 rounded-full bg-white/70 px-3 py-1 text-sm text-emerald-900 shadow-sm backdrop-blur dark:bg-purple-900/40 dark:text-violet-50">
+    <div
+      className={`flex items-center justify-center gap-2 rounded-full bg-white/70 px-3 py-1 text-sm text-emerald-900 shadow-sm backdrop-blur dark:text-violet-50 ${
+        glow ? "dark:shadow-[0_0_12px_rgba(168,85,247,0.4)]" : "dark:bg-purple-900/40"
+      }`}
+    >
       <span className="text-base">{icon}</span>
       <span>{label}</span>
     </div>
   );
 }
 
-// Solid cards without gradients or emojis
 function SolidInfoCard({ title, line }: { title: string; line: string }) {
   return (
     <motion.div
