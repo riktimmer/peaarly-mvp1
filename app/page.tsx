@@ -6,11 +6,10 @@ import { motion, useAnimationControls } from "framer-motion";
 import PeearLogoV2 from "./components/PeearLogoV2";
 
 /**
- * Peear Home – Night Garden + Fixed Social Proof + Solid Fruit Cards
- * - Dark mode: diepe paars/indigo glows
- * - Social proof: 🍉 25 peers joined today, 🍌 88 fruitful matches today, 🥝 Global community
- * - Why join: 3 solide cards (geen gradients, geen fruit-emoji)
- * - Community timeline + Gouden CTA blijven
+ * Peear Home – Night Garden + Tuned Social Proof Layout + Updated Copy
+ * - Social proof layout: two pills on top (🍉 peers + 🥝 global), one below full width (🍌 matches)
+ * - Numbers vary per refresh (peers ~22–28, matches ~80–95)
+ * - Why join copy updated
  */
 
 const FRUIT = ["🍐", "🍊", "🍎", "🍇", "🍓", "🍋", "🍒", "🍍"];
@@ -56,10 +55,18 @@ function randomEvent(): CommunityEvent {
   return { id: `${ts.getTime()}-${Math.random()}`, avatar, name, action, time };
 }
 
+function randInt(min: number, max: number) {
+  return Math.floor(min + Math.random() * (max - min + 1));
+}
+
 export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
   const pearControls = useAnimationControls();
   const [pearTapped, setPearTapped] = useState(false);
+
+  // Social proof (random per refresh)
+  const [peersJoined, setPeersJoined] = useState<number>(24);
+  const [matchesMade, setMatchesMade] = useState<number>(88);
 
   // Community feed
   const [events, setEvents] = useState<CommunityEvent[]>(() => [
@@ -68,7 +75,7 @@ export default function Home() {
     { id: "e3", avatar: "🍇", name: "Aisha", action: "shared a growth tip", time: "08:05" },
   ]);
 
-  // Adem-animatie logo
+  // Logo breathing
   useEffect(() => {
     pearControls.start({
       y: [0, -6, 0],
@@ -77,7 +84,13 @@ export default function Home() {
     });
   }, [pearControls]);
 
-  // Community feed – voeg elke 10s een event toe (max 30)
+  // Randomize numbers on mount
+  useEffect(() => {
+    setPeersJoined(randInt(22, 28));
+    setMatchesMade(randInt(80, 95));
+  }, []);
+
+  // Community feed – add event every 10s (max 30)
   useEffect(() => {
     const t = setInterval(() => {
       setEvents((prev) => {
@@ -206,11 +219,17 @@ export default function Home() {
           <CTA href="/fruitpick" tone="orange" label="Start Fruit Pick" />
         </div>
 
-        {/* Social proof – vaste waarden met specifieke emoji */}
-        <div className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-3">
-          <StatPill icon="🍉" label={`25 peers joined today`} />
-          <StatPill icon="🍌" label={`88 fruitful matches today`} />
-          <StatPill icon="🥝" label="Global community" />
+        {/* Social proof – custom layout */}
+        <div className="mt-8 grid w-full max-w-2xl grid-cols-1 gap-3 sm:grid-cols-2">
+          <div className="sm:col-span-1">
+            <StatPill icon="🍉" label={`${peersJoined} peers joined today`} />
+          </div>
+          <div className="sm:col-span-1">
+            <StatPill icon="🥝" label="Global community" />
+          </div>
+          <div className="sm:col-span-2">
+            <StatPill icon="🍌" label={`${matchesMade} fruitful matches today`} />
+          </div>
         </div>
       </section>
 
@@ -223,11 +242,11 @@ export default function Home() {
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
           <SolidInfoCard
             title="Social Skilling"
-            line="Real growth starts with real people, not systems."
+            line="Real growth starts with real people. Not with systems."
           />
           <SolidInfoCard
-            title="Character > Credentials"
-            line="Match on who you are and who you can become."
+            title="Character beats Credentials"
+            line="Match on who you are, and can become. Resumes excluded."
           />
           <SolidInfoCard
             title="Fun, fast & human"
@@ -240,9 +259,7 @@ export default function Home() {
       <section className="mx-auto mt-16 w-full max-w-2xl pb-28">
         <div className="sticky top-0 z-10 mb-3 -mx-6 border-b border-black/5 bg-white/70 px-6 py-3 backdrop-blur dark:border-white/10 dark:bg-[#0b0714]/80">
           <div className="mx-auto flex max-w-2xl items-center justify-between">
-            <h3 className="text-left text-xl font-bold text-green-900 dark:text-violet-100">
-              Community
-            </h3>
+            <h3 className="text-left text-xl font-bold text-green-900 dark:text-violet-100">Community</h3>
             <span className="text-sm text-green-900/70 dark:text-fuchsia-200/80">Live updates</span>
           </div>
         </div>
@@ -260,9 +277,7 @@ export default function Home() {
                 <div className="flex-1">
                   <div className="flex items-center justify-between">
                     <p className="font-semibold text-green-900 dark:text-violet-100">{ev.name}</p>
-                    <span className="text-sm text-green-800/70 dark:text-fuchsia-200/70">
-                      {ev.time}
-                    </span>
+                    <span className="text-sm text-green-800/70 dark:text-fuchsia-200/70">{ev.time}</span>
                   </div>
                   <p className="text-green-900/90 dark:text-violet-50/90">{ev.action}</p>
                 </div>
@@ -332,7 +347,7 @@ function StatPill({ icon, label }: { icon: string; label: string }) {
   );
 }
 
-// Solide variant van de fruit cards (geen gradient, geen emoji)
+// Solid cards without gradients or emojis
 function SolidInfoCard({ title, line }: { title: string; line: string }) {
   return (
     <motion.div
@@ -340,8 +355,7 @@ function SolidInfoCard({ title, line }: { title: string; line: string }) {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-80px" }}
       transition={{ duration: 0.5 }}
-      className="rounded-2xl border border-black/5 bg-white/85 p-4 text-left shadow-sm backdrop-blur
-                 hover:shadow-md dark:border-white/10 dark:bg-[#121129]/70"
+      className="rounded-2xl border border-black/5 bg-white/85 p-4 text-left shadow-sm backdrop-blur hover:shadow-md dark:border-white/10 dark:bg-[#121129]/70"
     >
       <h3 className="text-lg font-bold text-green-900 dark:text-violet-50">{title}</h3>
       <p className="mt-1 text-sm text-green-900/80 dark:text-violet-100/80">{line}</p>
