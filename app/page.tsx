@@ -2,52 +2,17 @@
 
 import React, { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { motion, AnimatePresence, useAnimationControls } from "framer-motion";
+import { motion, useAnimationControls } from "framer-motion";
+import PeearLogoV2 from "./components/PeearLogoV2";
 
 /**
- * Peear Home
- * - Rich gradient (light + dark)
- * - Floating pear logo with Easter egg (tap → golden pear sparkle)
- * - Micro-interaction buttons (juicy bounce + glow in dark mode)
- * - Feature strip + social proof + ambient fruit sprites
- * - Fully responsive & accessible
+ * Peear Home – Deluxe + Night Garden
+ * - Donkere modus: diep paars met neon-achtige fruittinten
+ * - Ambient fruit + ademende peer (behoudt jouw PeearLogoV2)
+ * - Social proof + community timeline (light insta/linkedin vibe)
+ * - Gouden CTA: "Join the Peear Community" met UX delight → gouden peer
  */
 
-/** SVGs **/
-const PearSVG: React.FC<{ golden?: boolean }> = ({ golden }) => (
-  <svg
-    viewBox="0 0 200 240"
-    className="w-40 h-48 drop-shadow-[0_8px_16px_rgba(0,0,0,0.15)] md:w-48 md:h-56"
-    role="img"
-    aria-label={golden ? "Golden pear" : "Pear logo"}
-  >
-    <defs>
-      <radialGradient id="pearShine" cx="35%" cy="35%" r="60%">
-        <stop offset="0%" stopColor={golden ? "#FFEAA0" : "#9EE493"} />
-        <stop offset="100%" stopColor={golden ? "#E7B400" : "#2E7D32"} />
-      </radialGradient>
-      <linearGradient id="leafGrad" x1="0" x2="1">
-        <stop offset="0%" stopColor={golden ? "#FFEAA0" : "#3FA34D"} />
-        <stop offset="100%" stopColor={golden ? "#E7B400" : "#1B5E20"} />
-      </linearGradient>
-    </defs>
-    <g>
-      {/* stem */}
-      <rect x="96" y="30" width="8" height="28" rx="4" fill={golden ? "#B28900" : "#4E342E"} />
-      {/* leaf */}
-      <path d="M110 26c28 0 40 24 18 38-18 12-44 4-46-10 6-18 20-28 28-28z" fill="url(#leafGrad)" />
-      {/* body */}
-      <path
-        d="M100 70c-40 0-68 36-64 75 4 41 30 75 64 75s60-34 64-75c4-39-24-75-64-75z"
-        fill="url(#pearShine)"
-      />
-      {/* highlight */}
-      <ellipse cx="78" cy="120" rx="18" ry="26" fill={golden ? "#FFF4C8" : "#CFF6C9"} opacity=".55" />
-    </g>
-  </svg>
-);
-
-/** Ambient fruit emoji that drift gently **/
 const FRUIT = ["🍐", "🍊", "🍎", "🍇", "🍓", "🍋", "🍒", "🍍"];
 
 const FruitSprite: React.FC<{ i: number }> = ({ i }) => {
@@ -59,7 +24,7 @@ const FruitSprite: React.FC<{ i: number }> = ({ i }) => {
 
   return (
     <motion.span
-      className="pointer-events-none select-none absolute top-0 opacity-30 dark:opacity-40"
+      className="pointer-events-none select-none absolute top-0 opacity-30 dark:opacity-50"
       style={{ left: `${left}%`, fontSize: size }}
       initial={{ y: -20, rotate: 0 }}
       animate={{ y: "110vh", rotate: 15 }}
@@ -72,27 +37,51 @@ const FruitSprite: React.FC<{ i: number }> = ({ i }) => {
 };
 
 const StatPill: React.FC<{ icon: string; label: string }> = ({ icon, label }) => (
-  <div className="flex items-center gap-2 rounded-full bg-white/70 px-3 py-1 text-sm text-emerald-900 shadow-sm backdrop-blur dark:bg-emerald-900/40 dark:text-emerald-50">
+  <div className="flex items-center gap-2 rounded-full bg-white/70 px-3 py-1 text-sm text-emerald-900 shadow-sm backdrop-blur dark:bg-purple-900/40 dark:text-violet-50">
     <span className="text-base">{icon}</span>
     <span>{label}</span>
   </div>
 );
 
+// Mock community events
+type CommunityEvent = { id: string; avatar: string; name: string; action: string; time: string };
+const NAMES = ["Lina", "Mateo", "Aisha", "Noah", "Kai", "Zoe", "Amir", "Mila", "Jules", "Aria"];
+const ACTIONS = [
+  "just joined",
+  "made a fruitful match",
+  "shared a growth tip",
+  "gave kudos",
+  "started a peer session",
+];
+const AVATARS = ["🍐", "🍊", "🍎", "🍇", "🍓", "🍋", "🍒", "🍍"]; // emoji as avatars for now
+
+function randomEvent(): CommunityEvent {
+  const name = NAMES[Math.floor(Math.random() * NAMES.length)];
+  const action = ACTIONS[Math.floor(Math.random() * ACTIONS.length)];
+  const avatar = AVATARS[Math.floor(Math.random() * AVATARS.length)];
+  const ts = new Date();
+  const time = ts.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  return { id: `${ts.getTime()}-${Math.random()}`, avatar, name, action, time };
+}
+
 export default function Home() {
-  const [golden, setGolden] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const [joinCount, setJoinCount] = useState(0);
   const pearControls = useAnimationControls();
+  const [pearTapped, setPearTapped] = useState(false);
+  const [events, setEvents] = useState<CommunityEvent[]>(() => [
+    { id: "e1", avatar: "🍐", name: "Lina", action: "just joined", time: "08:12" },
+    { id: "e2", avatar: "🍊", name: "Mateo", action: "made a fruitful match", time: "08:09" },
+    { id: "e3", avatar: "🍇", name: "Aisha", action: "shared a growth tip", time: "08:05" },
+  ]);
+  const [goldenJoin, setGoldenJoin] = useState(false);
 
-  // Gentle breathing motion
+  // Pear breathing
   useEffect(() => {
-    pearControls.start({
-      y: [0, -6, 0],
-      scale: [1, 1.02, 1],
-      transition: { duration: 5.2, repeat: Infinity, ease: "easeInOut" },
-    });
+    pearControls.start({ y: [0, -6, 0], scale: [1, 1.02, 1], transition: { duration: 5.2, repeat: Infinity, ease: "easeInOut" } });
   }, [pearControls]);
 
-  // Social proof counter (fake but delightful)
+  // Social proof counter
   useEffect(() => {
     const base = 12 + Math.floor(Math.random() * 20);
     setJoinCount(base);
@@ -100,56 +89,109 @@ export default function Home() {
     return () => clearInterval(t);
   }, []);
 
-  // Easter egg: tap pear → golden for 1.6s
-  const triggerGolden = () => {
-    setGolden(true);
-    setTimeout(() => setGolden(false), 1600);
+  // Community feed: append a new event every 10s (max 30)
+  useEffect(() => {
+    const t = setInterval(() => {
+      setEvents((prev) => {
+        const next = [randomEvent(), ...prev];
+        return next.slice(0, 30);
+      });
+    }, 10000);
+    return () => clearInterval(t);
+  }, []);
+
+  const handlePearTap = () => {
+    setPearTapped(true);
+    setTimeout(() => setPearTapped(false), 1600);
+  };
+
+  const handleGoldenJoin = () => {
+    setGoldenJoin(true);
+    setTimeout(() => setGoldenJoin(false), 1400);
   };
 
   return (
-    <div className="relative min-h-[100dvh] overflow-hidden bg-[radial-gradient(120%_120%_at_50%_0%,#FFF6E7_0%,#F3FBF4_35%,#F9FFF7_100%)] text-emerald-900 dark:bg-[radial-gradient(120%_120%_at_50%_-10%,#0c1b17_0%,#062018_50%,#03130f_100%)] dark:text-emerald-50">
+    <main
+      className="relative flex min-h-[100dvh] flex-col items-center justify-start p-6 text-center
+                 bg-[radial-gradient(120%_120%_at_50%_0%,#FAFAF2_0%,#FFF7E0_40%,#FFFDF5_100%)]
+                 text-emerald-900
+                 dark:bg-[#0b0714] dark:text-violet-50"
+    >
+      {/* Night Garden neon glows for dark mode */}
+      <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
+        {/* layered purple/indigo glows */}
+        <div className="hidden dark:block absolute -top-28 -right-24 w-[620px] h-[620px] rounded-full bg-fuchsia-500/20 blur-[160px]" />
+        <div className="hidden dark:block absolute bottom-[-120px] -left-24 w-[680px] h-[680px] rounded-full bg-indigo-500/25 blur-[180px]" />
+        <div className="hidden dark:block absolute top-1/3 left-1/2 -translate-x-1/2 w-[520px] h-[520px] rounded-full bg-emerald-400/20 blur-[160px]" />
+      </div>
+
       {/* Ambient fruit */}
-      <div className="pointer-events-none absolute inset-0">
+      <div className="pointer-events-none absolute inset-0 -z-10">
         {Array.from({ length: 14 }).map((_, i) => (
           <FruitSprite key={i} i={i} />
         ))}
       </div>
 
-      {/* Content container */}
-      <main className="relative mx-auto flex max-w-2xl flex-col items-center px-6 pb-24 pt-16 md:pt-24">
-        {/* Menu stub (keeps your existing menu top-right space) */}
-        <div className="absolute right-6 top-6">
-          <Link
-            href="#menu"
-            className="rounded-full bg-white/70 px-5 py-2 text-sm font-semibold text-emerald-800 shadow-md backdrop-blur hover:bg-white/90 focus:outline-none focus:ring-2 focus:ring-emerald-400 dark:bg-emerald-900/50 dark:text-emerald-50 dark:hover:bg-emerald-900/70"
+      {/* Backdrop when menu open */}
+      {menuOpen && (
+        <button aria-label="Close menu backdrop" onClick={() => setMenuOpen(false)} className="fixed inset-0 z-40 bg-black/40 backdrop-blur-[2px]" />
+      )}
+
+      {/* Menu */}
+      <div className="absolute right-4 top-4 z-50">
+        <div className="relative">
+          <button
+            onClick={() => setMenuOpen((v) => !v)}
+            className="rounded-full border border-black/5 bg-white/85 px-5 py-2.5 font-semibold text-green-900 shadow-sm hover:bg-white dark:border-white/10 dark:bg-white/10 dark:text-violet-50 dark:hover:bg-white/15 dark:shadow-[0_0_0_1px_rgba(255,255,255,0.08),0_10px_28px_rgba(0,0,0,0.45)]"
+            aria-haspopup="menu"
+            aria-expanded={menuOpen}
           >
             Menu
-          </Link>
-        </div>
+          </button>
 
-        {/* Logo + heading */}
-        <motion.button
-          onClick={triggerGolden}
-          animate={pearControls}
-          whileTap={{ scale: 0.98 }}
-          className="mt-4"
-          aria-label="Tap the pear"
-        >
-          <PearSVG golden={golden} />
+          {menuOpen && (
+            <nav role="menu" className="absolute right-0 z-50 mt-2 w-64 overflow-hidden rounded-2xl bg-white shadow-xl ring-1 ring-black/5 dark:bg-[#160a28]/95 dark:ring-white/10 dark:backdrop-blur-sm">
+              <ul className="py-2 text-left">
+                {[
+                  { href: "/about", label: "About Peear" },
+                  { href: "/drop/select", label: "Start Pear Drop" },
+                  { href: "/fruitpick", label: "Start Fruit Pick" },
+                  { href: "/community", label: "Community Feed" },
+                ].map((item) => (
+                  <li key={item.href}>
+                    <Link href={item.href} className="block px-4 py-3 text-green-900 hover:bg-green-50 dark:text-violet-50 dark:hover:bg-white/10" role="menuitem" onClick={() => setMenuOpen(false)}>
+                      {item.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          )}
+        </div>
+      </div>
+
+      {/* Hero */}
+      <section className="mx-auto flex w-full max-w-2xl flex-col items-center pt-20">
+        {/* Logo (tap → shimmer) */}
+        <motion.button onClick={handlePearTap} animate={pearControls} whileTap={{ scale: 0.98 }} className="mb-6 z-10" aria-label="Tap the pear">
+          <div className="relative">
+            <PeearLogoV2 width={180} height={180} />
+            {pearTapped && (
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.8 }} className="pointer-events-none absolute inset-0 rounded-full" style={{ boxShadow: "0 0 0 12px rgba(255,255,255,0.25) inset" }} />
+            )}
+          </div>
         </motion.button>
 
-        <div className="mt-6 text-center">
-          <h1 className="text-5xl font-black tracking-tight md:text-6xl">Peear</h1>
-          <p className="mx-auto mt-3 max-w-md text-lg leading-relaxed text-emerald-800/90 dark:text-emerald-100/90">
-            Grow together. <span className="inline-block">Stay curious.</span> <span className="inline-block">Be fruitful. 🍐</span>
-          </p>
-        </div>
+        <h1 className="mb-3 text-4xl font-extrabold tracking-tight text-green-900 dark:text-violet-100 md:text-5xl">Peear</h1>
+        <p className="mb-8 max-w-md text-lg leading-relaxed text-green-800 dark:text-fuchsia-100/90">
+          Grow together. <span className="inline-block">Stay curious.</span> <span className="inline-block">Be fruitful. 🍐</span>
+        </p>
 
-        {/* CTA Buttons */}
-        <div className="mt-8 flex w-full flex-col gap-4">
-          <CTAButton href="/about" label="About Peear" emoji="ℹ️" tone="green" />
-          <CTAButton href="/drop" label="Start Pear Drop" emoji="🍐" tone="amber" />
-          <CTAButton href="/pick" label="Start Fruit Pick" emoji="🍊" tone="orange" />
+        {/* CTAs (zelfde routes) */}
+        <div className="flex w-full max-w-sm flex-col gap-4">
+          <CTA href="/about" tone="green" label="About Peear" />
+          <CTA href="/drop/select" tone="amber" label="Start Pear Drop" />
+          <CTA href="/fruitpick" tone="orange" label="Start Fruit Pick" />
         </div>
 
         {/* Social proof */}
@@ -158,35 +200,93 @@ export default function Home() {
           <StatPill icon="✨" label={`$${(joinCount * 3).toFixed(0)} credits earned`} />
           <StatPill icon="🌍" label="Global community" />
         </div>
+      </section>
 
-        {/* Feature trio */}
-        <section className="mt-12 grid w-full grid-cols-1 gap-4 md:grid-cols-3">
-          <FeatureCard icon="🍏" title="Peer Growth" desc="Match on character & potential, not titles." />
-          <FeatureCard icon="🍊" title="Fresh Perspectives" desc="Learn by sharing real challenges." />
-          <FeatureCard icon="🍇" title="Earn Credits" desc="Help others, harvest rewards." />
-        </section>
+      {/* Why join */}
+      <section className="mx-auto mt-16 w-full max-w-2xl text-left text-green-900 dark:text-violet-50">
+        <h2 className="mb-4 text-center text-2xl font-bold md:text-3xl">Why join Peear?</h2>
+        <ul className="space-y-4 text-lg">
+          <li>
+            <div className="font-semibold">1. Social Skilling.</div>
+            <div className="opacity-90">Real growth starts with real people, not systems. Learn, share, and grow peer-to-peer.</div>
+          </li>
+          <li>
+            <div className="font-semibold">2. Character beats credentials.</div>
+            <div className="opacity-90">Connect and match based on who you are and who you can become, not your résumé.</div>
+          </li>
+          <li>
+            <div className="font-semibold">3. Fun, fast and human.</div>
+            <div className="opacity-90">Grow your skills, network, and mindset through playful formats that keep learning alive.</div>
+          </li>
+        </ul>
+      </section>
 
-        {/* Footer blurb */}
-        <p className="mt-10 text-center text-sm text-emerald-800/70 dark:text-emerald-100/60">
-          Tip: tap the pear for a golden surprise ✨
-        </p>
-      </main>
+      {/* Community timeline */}
+      <section className="mx-auto mt-16 w-full max-w-2xl pb-28">
+        <div className="sticky top-0 z-10 mb-3 -mx-6 border-b border-black/5 bg-white/70 px-6 py-3 backdrop-blur dark:border-white/10 dark:bg-[#0b0714]/80">
+          <div className="mx-auto flex max-w-2xl items-center justify-between">
+            <h3 className="text-left text-xl font-bold text-green-900 dark:text-violet-100">Community</h3>
+            <span className="text-sm text-green-900/70 dark:text-fuchsia-200/80">Live updates</span>
+          </div>
+        </div>
 
-      {/* Soft vignette / glow for dark-mode richness */}
-      <div className="pointer-events-none absolute inset-0 mix-blend-soft-light [background:radial-gradient(60%_40%_at_50%_10%,rgba(255,255,255,0.35),transparent)] dark:[background:radial-gradient(60%_40%_at_50%_10%,rgba(62,255,197,0.07),transparent)]" />
-    </div>
+        <ul className="space-y-3">
+          {events.map((ev) => (
+            <li key={ev.id} className="rounded-2xl border border-black/5 bg-white/80 p-4 text-left shadow-sm backdrop-blur dark:border-white/10 dark:bg-[#160a28]/60">
+              <div className="flex items-start gap-3">
+                <div className="grid h-10 w-10 place-items-center rounded-xl bg-emerald-100 text-xl shadow-sm dark:bg-fuchsia-500/20 dark:text-fuchsia-200">{ev.avatar}</div>
+                <div className="flex-1">
+                  <div className="flex items-center justify-between">
+                    <p className="font-semibold text-green-900 dark:text-violet-100">{ev.name}</p>
+                    <span className="text-sm text-green-800/70 dark:text-fuchsia-200/70">{ev.time}</span>
+                  </div>
+                  <p className="text-green-900/90 dark:text-violet-50/90">{ev.action}</p>
+                </div>
+              </div>
+            </li>
+          ))}
+        </ul>
+
+        {/* Golden Join CTA */}
+        <div className="mx-auto mt-6 flex max-w-2xl justify-center">
+          <button
+            onClick={handleGoldenJoin}
+            className="group relative inline-flex items-center gap-2 rounded-2xl border border-amber-500/40 bg-gradient-to-b from-amber-300 to-amber-400 px-6 py-3 font-extrabold text-amber-950 shadow-lg ring-1 ring-black/5 transition hover:brightness-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 dark:from-yellow-300 dark:to-amber-300"
+          >
+            <span className="text-lg">Join the Peear Community</span>
+            <span className="text-xl">✨</span>
+
+            {/* Delight: morph to golden pear */}
+            {goldenJoin && (
+              <motion.span
+                initial={{ scale: 0.6, opacity: 0 }}
+                animate={{ scale: 1.1, opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.5 }}
+                className="pointer-events-none absolute inset-0 grid place-items-center text-3xl"
+                aria-hidden
+              >
+                🫶
+              </motion.span>
+            )}
+          </button>
+        </div>
+      </section>
+
+      {/* Footer vignette */}
+      <div className="pointer-events-none absolute inset-0 mix-blend-soft-light [background:radial-gradient(60%_40%_at_50%_10%,rgba(255,255,255,0.35),transparent)] dark:[background:radial-gradient(60%_40%_at_50%_10%,rgba(167,139,250,0.12),transparent)]" />
+    </main>
   );
 }
 
-/** Components **/
-function CTAButton({ href, label, emoji, tone }: { href: string; label: string; emoji: string; tone: "green" | "amber" | "orange" }) {
+function CTA({ href, label, tone }: { href: string; label: string; tone: "green" | "amber" | "orange" }) {
   const toneClasses = {
     green:
-      "from-emerald-700 to-emerald-800 text-white shadow-emerald-900/20 dark:from-emerald-500 dark:to-emerald-600",
+      "from-emerald-700 to-emerald-800 text-white shadow-emerald-900/20 dark:from-emerald-400 dark:to-emerald-500 dark:text-[#07150f]",
     amber:
-      "from-amber-400 to-amber-500 text-emerald-950 shadow-amber-900/10 dark:from-amber-300 dark:to-amber-400",
+      "from-amber-400 to-amber-500 text-emerald-950 shadow-amber-900/10 dark:from-yellow-300 dark:to-yellow-300/90 dark:text-[#102012]",
     orange:
-      "from-orange-400 to-orange-500 text-emerald-950 shadow-orange-900/10 dark:from-orange-300 dark:to-orange-400",
+      "from-orange-400 to-orange-500 text-emerald-950 shadow-orange-900/10 dark:from-orange-400 dark:to-orange-300 dark:text-[#101a14]",
   }[tone];
 
   return (
@@ -194,29 +294,11 @@ function CTAButton({ href, label, emoji, tone }: { href: string; label: string; 
       <motion.div
         whileHover={{ y: -2 }}
         whileTap={{ scale: 0.98 }}
-        className={`relative isolate w-full rounded-2xl bg-gradient-to-b ${toneClasses} px-6 py-4 text-center text-lg font-extrabold tracking-tight shadow-lg ring-1 ring-black/5 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 md:text-xl`}
+        className={`relative isolate w-full rounded-2xl bg-gradient-to-b ${toneClasses} px-6 py-3 text-center text-lg font-semibold tracking-tight shadow-lg ring-1 ring-black/5 transition md:text-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400`}
       >
-        <span className="mr-2">{emoji}</span>
         {label}
-        {/* juicy shine */}
         <span className="pointer-events-none absolute inset-0 -z-10 rounded-2xl opacity-0 blur-xl transition-opacity duration-300 group-hover:opacity-30 dark:bg-white/10" />
       </motion.div>
     </Link>
-  );
-}
-
-function FeatureCard({ icon, title, desc }: { icon: string; title: string; desc: string }) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 8 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-80px" }}
-      transition={{ duration: 0.5 }}
-      className="rounded-2xl border border-emerald-900/5 bg-white/70 p-4 shadow-sm backdrop-blur dark:border-emerald-50/10 dark:bg-emerald-900/30"
-    >
-      <div className="mb-1 text-2xl">{icon}</div>
-      <h3 className="text-lg font-bold">{title}</h3>
-      <p className="mt-1 text-sm text-emerald-800/80 dark:text-emerald-100/80">{desc}</p>
-    </motion.div>
   );
 }
