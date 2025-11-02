@@ -3,7 +3,17 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 
-/* -------------------------------- Types ---------------------------------- */
+/* =========================================================================
+   Community Feed – fruitige LinkedIn-vibe
+   - Sticky header met filters (Growth, Creativity, Focus, Leadership, Balance)
+   - Composer (korte wins/uitnodigingen posten)
+   - Fruit-reactions met telling (🍐 default + snel toevoegen)
+   - Rijke kaarten (rol, time-ago, topics, acties)
+   - Recent Chats + Suggested Topics blijven speels en coherent met home
+   - Data lives in localStorage voor levend gevoel (geen backend nodig)
+   ========================================================================= */
+
+/* ------------------------------- Types ---------------------------------- */
 type ChatSummary = {
   id: string;
   name: string;
@@ -23,14 +33,14 @@ type Post = {
   fruits: Record<string, number>; // emoji -> count
   comments: number;
   reshared?: boolean;
-  image?: string; // optional preview image url (future)
+  image?: string;
 };
 
-/* ------------------------------- Storage keys ---------------------------- */
+/* ------------------------------ Storage keys ---------------------------- */
 const CHAT_LIST_KEY = "peaarly.chat.summaries";
 const FEED_KEY = "peaarly.community.feed.v2";
 
-/* ------------------------------ Utils ----------------------------------- */
+/* ------------------------------ Helpers --------------------------------- */
 const timeAgo = (ts: number) => {
   const s = Math.floor((Date.now() - ts) / 1000);
   if (s < 60) return `${s}s`;
@@ -42,7 +52,7 @@ const timeAgo = (ts: number) => {
   return `${d}d`;
 };
 
-/* ----------------------- Seeders (only once per browser) ----------------- */
+/* ----------------------- Seeders (eenmalig per browser) ----------------- */
 function seedChatsIfEmpty(): ChatSummary[] {
   let list: ChatSummary[] = [];
   try {
@@ -50,30 +60,9 @@ function seedChatsIfEmpty(): ChatSummary[] {
     list = raw ? (JSON.parse(raw) as ChatSummary[]) : [];
     if (!Array.isArray(list) || list.length === 0) {
       list = [
-        {
-          id: "liam",
-          name: "Liam",
-          avatar: "🍊",
-          lastText: "Timeboxing werkte top 🙌",
-          lastTs: Date.now() - 1000 * 60 * 12,
-          unread: 0,
-        },
-        {
-          id: "ava",
-          name: "Ava",
-          avatar: "🍓",
-          lastText: "Morgen 20-min ideation sessie?",
-          lastTs: Date.now() - 1000 * 60 * 45,
-          unread: 1,
-        },
-        {
-          id: "noah",
-          name: "Noah",
-          avatar: "🍎",
-          lastText: "Thanks voor je pitch feedback!",
-          lastTs: Date.now() - 1000 * 60 * 90,
-          unread: 0,
-        },
+        { id: "liam", name: "Liam", avatar: "🍊", lastText: "Timeboxing werkte top 🙌", lastTs: Date.now() - 12 * 60_000, unread: 0 },
+        { id: "ava", name: "Ava", avatar: "🍓", lastText: "Morgen 20-min ideation sessie?", lastTs: Date.now() - 45 * 60_000, unread: 1 },
+        { id: "noah", name: "Noah", avatar: "🍎", lastText: "Thanks voor je pitch feedback!", lastTs: Date.now() - 90 * 60_000, unread: 0 },
       ];
       localStorage.setItem(CHAT_LIST_KEY, JSON.stringify(list));
     }
@@ -86,7 +75,7 @@ function seedFeedIfEmpty(): Post[] {
     {
       id: "p1",
       author: { name: "Emily", avatar: "E", role: "Product learner" },
-      createdAt: Date.now() - 1000 * 60 * 6,
+      createdAt: Date.now() - 6 * 60_000,
       text: "Mini-stap gezet: 25m deep work op m’n slide deck. Ritme vasthouden!",
       extra: "Tip: Pomodoro + notifs uit = magie.",
       topics: ["Focus", "Growth"],
@@ -96,7 +85,7 @@ function seedFeedIfEmpty(): Post[] {
     {
       id: "p2",
       author: { name: "Liam", avatar: "🍊", role: "Ops tinkerer" },
-      createdAt: Date.now() - 1000 * 60 * 28,
+      createdAt: Date.now() - 28 * 60_000,
       text: "Eerste week met weekly themes. Helpt focus echt!",
       topics: ["Focus"],
       fruits: { "🍎": 5, "🍐": 2 },
@@ -105,7 +94,7 @@ function seedFeedIfEmpty(): Post[] {
     {
       id: "p3",
       author: { name: "Ava", avatar: "🍓", role: "Design sprinter" },
-      createdAt: Date.now() - 1000 * 60 * 50,
+      createdAt: Date.now() - 50 * 60_000,
       text: "Morgen 20-min ideation — wie haakt aan?",
       topics: ["Creativity", "Growth"],
       fruits: { "🍇": 4, "🍐": 6 },
@@ -126,7 +115,7 @@ function seedFeedIfEmpty(): Post[] {
   }
 }
 
-/* ------------------------------ Hooks ----------------------------------- */
+/* -------------------------------- Hooks --------------------------------- */
 function useChatSummaries() {
   const [chats, setChats] = useState<ChatSummary[]>([]);
   useEffect(() => {
@@ -149,12 +138,18 @@ function useChatSummaries() {
 function useFeed() {
   const [posts, setPosts] = useState<Post[]>([]);
   useEffect(() => setPosts(seedFeedIfEmpty()), []);
+
   const react = (id: string, emoji: string) =>
-    setPosts((prev) =>
-      prev.map((p) =>
-        p.id === id ? { ...p, fruits: { ...p.fruits, [emoji]: (p.fruits[emoji] || 0) + 1 } } : p
-      )
-    );
+    setPosts((prev) => {
+      const next = prev.map((p) =>
+        p.id === id
+          ? { ...p, fruits: { ...p.fruits, [emoji]: (p.fruits[emoji] || 0) + 1 } }
+          : p
+      );
+      localStorage.setItem(FEED_KEY, JSON.stringify(next));
+      return next;
+    });
+
   const addPost = (text: string, topics: string[]) =>
     setPosts((prev) => {
       const newPost: Post = {
@@ -170,10 +165,11 @@ function useFeed() {
       localStorage.setItem(FEED_KEY, JSON.stringify(next));
       return next;
     });
+
   return { posts, react, addPost };
 }
 
-/* ------------------------------ UI bits --------------------------------- */
+/* ------------------------------ UI-bits --------------------------------- */
 function Avatar({ label, ring = false }: { label: string; ring?: boolean }) {
   return (
     <div
@@ -217,7 +213,7 @@ function FruitButton({
       onClick={onClick}
       className="inline-flex items-center gap-1.5 rounded-full border border-[rgba(0,0,0,0.06)] bg-white/70 px-2.5 py-1 text-sm hover:brightness-95"
       type="button"
-      aria-label={`Give ${emoji}`}
+      aria-label={`Geef ${emoji}`}
     >
       <span aria-hidden>{emoji}</span>
       <span className="text-[rgba(0,0,0,0.75)]">{count}</span>
@@ -225,7 +221,7 @@ function FruitButton({
   );
 }
 
-/* ------------------------------ Page ------------------------------------ */
+/* -------------------------------- Page ---------------------------------- */
 export default function CommunityPage() {
   const chats = useChatSummaries();
   const { posts, react, addPost } = useFeed();
@@ -243,11 +239,12 @@ export default function CommunityPage() {
 
   function submitPost() {
     if (!composer.trim()) return;
-    // naive topic inference by emoji/keywords
+    // simpele topic-detectie
+    const t = composer.toLowerCase();
     const topics: string[] = [];
-    if (composer.toLowerCase().includes("focus")) topics.push("Focus");
-    if (composer.toLowerCase().includes("lead")) topics.push("Leadership");
-    if (composer.toLowerCase().includes("idea")) topics.push("Creativity");
+    if (t.includes("focus")) topics.push("Focus");
+    if (t.includes("lead")) topics.push("Leadership");
+    if (t.includes("idea") || t.includes("creat")) topics.push("Creativity");
     if (topics.length === 0) topics.push("Growth");
     addPost(composer.trim(), topics);
     setComposer("");
@@ -256,7 +253,7 @@ export default function CommunityPage() {
   return (
     <main className="min-h-screen fruit-wall text-[color:var(--leaf)]">
       <div className="max-w-md mx-auto px-5 py-6 space-y-6">
-        {/* Header */}
+        {/* Header + filters */}
         <section className="card sticky top-0 z-20 -mx-5 px-5 pt-4 pb-3 backdrop-blur bg-white/75 border-b border-[rgba(0,0,0,0.06)]">
           <div className="flex items-center justify-between">
             <h1 className="text-[1.6rem] font-extrabold">Community</h1>
@@ -266,10 +263,9 @@ export default function CommunityPage() {
             </div>
           </div>
           <p className="text-muted mt-1">
-            A playful place for peer growth — not résumés. 🍐
+            Een plek voor peer growth — geen cv’s, wel karakter. 🍐
           </p>
 
-          {/* Filters */}
           <div className="mt-3 flex items-center gap-2 overflow-auto no-scrollbar">
             {TOPICS.map((t) => (
               <button
@@ -281,10 +277,14 @@ export default function CommunityPage() {
                     : "bg-white/70 border border-[rgba(0,0,0,0.06)]"
                 }`}
               >
-                {t === "All" ? "All" : <span className="mr-1" aria-hidden>
-                  {t.includes("Lead") ? "🍊" : t.includes("Creat") ? "🍓" : t.includes("Focus") ? "🍎" : "🍐"}
-                </span>}
-                {t !== "All" && t}
+                {t === "All" ? "All" : (
+                  <>
+                    <span className="mr-1" aria-hidden>
+                      {t.includes("Lead") ? "🍊" : t.includes("Creat") ? "🍓" : t.includes("Focus") ? "🍎" : "🍐"}
+                    </span>
+                    {t}
+                  </>
+                )}
               </button>
             ))}
           </div>
@@ -298,12 +298,12 @@ export default function CommunityPage() {
               <textarea
                 value={composer}
                 onChange={(e) => setComposer(e.target.value)}
-                placeholder="Share a small win, a learning, or invite peers (keep it human & helpful)…"
+                placeholder="Deel een kleine winst, leerpunt of uitnodiging (kort, concreet & menselijk)…"
                 className="w-full resize-none rounded-xl border border-[rgba(0,0,0,0.06)] bg-white/70 p-3 text-sm outline-none focus:ring-2 focus:ring-[rgba(46,125,61,0.25)]"
                 rows={3}
               />
               <div className="mt-2 flex items-center justify-between">
-                <div className="text-sm text-muted">Tip: short, specific, and supportive.</div>
+                <div className="text-sm text-muted">Tip: 1 zin + 1 topic + 1 call to action.</div>
                 <button
                   onClick={submitPost}
                   className="rounded-xl bg-[#F8E1A6] px-4 py-1.5 font-semibold hover:brightness-95"
@@ -353,7 +353,7 @@ export default function CommunityPage() {
           </div>
         </section>
 
-        {/* Feed */}
+        {/* Community Feed */}
         <section className="card space-y-4">
           <h2 className="text-[1.15rem] font-extrabold">Community Feed</h2>
 
@@ -396,11 +396,11 @@ export default function CommunityPage() {
                           onClick={() => react(p.id, emoji)}
                         />
                       ))}
-                      {/* Quick add a new fruit reaction */}
+                      {/* Snel een peer geven */}
                       <button
                         onClick={() => react(p.id, "🍐")}
                         className="inline-flex items-center rounded-full border border-[rgba(0,0,0,0.06)] bg-white/70 px-2.5 py-1 text-sm hover:brightness-95"
-                        aria-label="Give a pear"
+                        aria-label="Geef een peer"
                       >
                         ➕🍐
                       </button>
@@ -431,7 +431,7 @@ export default function CommunityPage() {
             () =>
               chats.length === 0 ? (
                 <div className="rounded-xl border border-[rgba(0,0,0,0.06)] bg-white/60 p-4 text-sm text-muted">
-                  No conversations yet. Start a chat from a match and it’ll show up here.
+                  Nog geen gesprekken. Start een chat vanuit een match en je ziet ‘m hier.
                 </div>
               ) : (
                 <ul className="divide-y divide-[rgba(0,0,0,0.06)] rounded-xl border border-[rgba(0,0,0,0.06)] bg-white/60">
@@ -442,10 +442,7 @@ export default function CommunityPage() {
                         <div className="flex items-center justify-between">
                           <div className="font-semibold">{c.name}</div>
                           <div className="text-xs text-muted">
-                            {new Date(c.lastTs).toLocaleTimeString([], {
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            })}
+                            {new Date(c.lastTs).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                           </div>
                         </div>
                         <div className="text-sm text-ellipsis overflow-hidden whitespace-nowrap text-[rgba(0,0,0,0.75)]">
