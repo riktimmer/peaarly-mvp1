@@ -6,7 +6,10 @@ import { motion, useAnimationControls } from "framer-motion";
 import PeearLogoV2 from "./components/PeearLogoV2";
 
 /**
- * Peear Home – Social proof horizontal + dark-mode glow
+ * Peear Home – fruitige hero, social proof en live community-strip
+ * - Menu linkt naar /feed (404 fix)
+ * - Donkere modus glow
+ * - Kleine UX-scherpstellingen
  */
 
 const FRUIT = ["🍐", "🍊", "🍎", "🍇", "🍓", "🍋", "🍒", "🍍"];
@@ -68,7 +71,7 @@ export default function Home() {
     { id: "e3", avatar: "🍇", name: "Aisha", action: "shared a growth tip", time: "08:05" },
   ]);
 
-  // Pear breathing
+  // “Breathing” pear
   useEffect(() => {
     pearControls.start({
       y: [0, -6, 0],
@@ -77,13 +80,13 @@ export default function Home() {
     });
   }, [pearControls]);
 
-  // Random numbers
+  // Willekeurige aantallen bij load
   useEffect(() => {
     setPeersJoined(randInt(22, 28));
     setMatchesMade(randInt(80, 95));
   }, []);
 
-  // Community events
+  // Live community ticker
   useEffect(() => {
     const t = setInterval(() => {
       setEvents((prev) => {
@@ -151,12 +154,13 @@ export default function Home() {
                   { href: "/about", label: "About Peear" },
                   { href: "/drop/select", label: "Start Pear Drop" },
                   { href: "/fruitpick", label: "Start Fruit Pick" },
-                  { href: "/community", label: "Community Feed" },
+                  // 404 fix: stuur naar /feed
+                  { href: "/feed", label: "Community Feed" },
                 ].map((item) => (
                   <li key={item.href}>
                     <Link
                       href={item.href}
-                      className="block px-4 py-3 text-green-900 hover:bg-green-50 dark:text-violet-50 dark:hover:bg-white/10"
+                      className="block px-4 py-3 text-green-900 hover:bg-green-50 dark:text-violet-50 dark:hover:bg:white/10"
                       onClick={() => setMenuOpen(false)}
                     >
                       {item.label}
@@ -199,22 +203,21 @@ export default function Home() {
           Grow together. Stay curious. Be fruitful. 🍐
         </p>
 
-        {/* CTA buttons */}
+        {/* CTA’s */}
         <div className="flex w-full max-w-sm flex-col gap-4">
           <CTA href="/about" tone="green" label="About Peear" />
           <CTA href="/drop/select" tone="amber" label="Start Pear Drop" />
           <CTA href="/fruitpick" tone="orange" label="Start Fruit Pick" />
         </div>
 
-        {/* Social proof – new layout */}
+        {/* Social proof */}
         <div className="mt-8 w-full max-w-md mx-auto space-y-2">
-          {/* Top row */}
+          {/* Bovenste rij */}
           <div className="grid grid-cols-2 gap-2">
             <StatPill icon="🍉" label={`${peersJoined} peers joined today`} glow />
             <StatPill icon="🥝" label="Global community" glow />
           </div>
-
-          {/* Bottom row */}
+          {/* Onderste rij */}
           <div>
             <StatPill icon="🍌" label={`${matchesMade} fruitful matches today`} />
           </div>
@@ -278,10 +281,10 @@ export default function Home() {
           ))}
         </ul>
 
-        {/* Golden CTA */}
+        {/* Gouden CTA */}
         <div className="mx-auto mt-6 flex max-w-2xl justify-center">
           <Link
-            href="/community"
+            href="/feed"
             className="group relative inline-flex items-center gap-2 rounded-2xl border border-amber-500/40 bg-gradient-to-b from-amber-300 to-amber-400 px-6 py-3 font-extrabold text-amber-950 shadow-lg ring-1 ring-black/5 transition hover:brightness-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 dark:from-yellow-300 dark:to-amber-300"
           >
             <span className="text-lg">Join the Peear Community</span>
@@ -293,7 +296,7 @@ export default function Home() {
   );
 }
 
-/* Components */
+/* ----------------------------- Components ------------------------------- */
 function CTA({ href, label, tone }: { href: string; label: string; tone: "green" | "amber" | "orange" }) {
   const toneClasses = {
     green:
