@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 
-/* ---------- Types & storage ---------- */
+/* -------------------------------- Types ---------------------------------- */
 type ChatSummary = {
   id: string;
   name: string;
@@ -13,10 +13,37 @@ type ChatSummary = {
   unread: number;
 };
 
-const CHAT_LIST_KEY = "peaarly.chat.summaries";
+type Post = {
+  id: string;
+  author: { name: string; avatar: string; role?: string };
+  createdAt: number;
+  text: string;
+  extra?: string;
+  topics: string[];
+  fruits: Record<string, number>; // emoji -> count
+  comments: number;
+  reshared?: boolean;
+  image?: string; // optional preview image url (future)
+};
 
-/* Seed voor “Recent Chats” wanneer je nog niets hebt */
-function seedIfEmpty(): ChatSummary[] {
+/* ------------------------------- Storage keys ---------------------------- */
+const CHAT_LIST_KEY = "peaarly.chat.summaries";
+const FEED_KEY = "peaarly.community.feed.v2";
+
+/* ------------------------------ Utils ----------------------------------- */
+const timeAgo = (ts: number) => {
+  const s = Math.floor((Date.now() - ts) / 1000);
+  if (s < 60) return `${s}s`;
+  const m = Math.floor(s / 60);
+  if (m < 60) return `${m}m`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `${h}h`;
+  const d = Math.floor(h / 24);
+  return `${d}d`;
+};
+
+/* ----------------------- Seeders (only once per browser) ----------------- */
+function seedChatsIfEmpty(): ChatSummary[] {
   let list: ChatSummary[] = [];
   try {
     const raw = localStorage.getItem(CHAT_LIST_KEY);
@@ -50,24 +77,68 @@ function seedIfEmpty(): ChatSummary[] {
       ];
       localStorage.setItem(CHAT_LIST_KEY, JSON.stringify(list));
     }
-  } catch {
-    // ignore
-  }
+  } catch { /* ignore */ }
   return list;
 }
 
+function seedFeedIfEmpty(): Post[] {
+  const demo: Post[] = [
+    {
+      id: "p1",
+      author: { name: "Emily", avatar: "E", role: "Product learner" },
+      createdAt: Date.now() - 1000 * 60 * 6,
+      text: "Mini-stap gezet: 25m deep work op m’n slide deck. Ritme vasthouden!",
+      extra: "Tip: Pomodoro + notifs uit = magie.",
+      topics: ["Focus", "Growth"],
+      fruits: { "🍐": 8, "🍊": 3, "🍓": 2 },
+      comments: 3,
+    },
+    {
+      id: "p2",
+      author: { name: "Liam", avatar: "🍊", role: "Ops tinkerer" },
+      createdAt: Date.now() - 1000 * 60 * 28,
+      text: "Eerste week met weekly themes. Helpt focus echt!",
+      topics: ["Focus"],
+      fruits: { "🍎": 5, "🍐": 2 },
+      comments: 1,
+    },
+    {
+      id: "p3",
+      author: { name: "Ava", avatar: "🍓", role: "Design sprinter" },
+      createdAt: Date.now() - 1000 * 60 * 50,
+      text: "Morgen 20-min ideation — wie haakt aan?",
+      topics: ["Creativity", "Growth"],
+      fruits: { "🍇": 4, "🍐": 6 },
+      comments: 5,
+    },
+  ];
+
+  try {
+    const raw = localStorage.getItem(FEED_KEY);
+    const list = raw ? (JSON.parse(raw) as Post[]) : [];
+    if (!Array.isArray(list) || list.length === 0) {
+      localStorage.setItem(FEED_KEY, JSON.stringify(demo));
+      return demo;
+    }
+    return list;
+  } catch {
+    return demo;
+  }
+}
+
+/* ------------------------------ Hooks ----------------------------------- */
 function useChatSummaries() {
   const [chats, setChats] = useState<ChatSummary[]>([]);
   useEffect(() => {
     try {
-      const seeded = seedIfEmpty();
+      const seeded = seedChatsIfEmpty();
       const raw = localStorage.getItem(CHAT_LIST_KEY);
       const list = raw ? (JSON.parse(raw) as ChatSummary[]) : seeded;
-      if (Array.isArray(list)) {
-        setChats(list.slice().sort((a, b) => b.lastTs - a.lastTs).slice(0, 6));
-      } else {
-        setChats(seeded);
-      }
+      setChats(
+        Array.isArray(list)
+          ? list.slice().sort((a, b) => b.lastTs - a.lastTs).slice(0, 6)
+          : seeded
+      );
     } catch {
       setChats([]);
     }
@@ -75,17 +146,38 @@ function useChatSummaries() {
   return chats;
 }
 
-/* ---------- UI helpers ---------- */
-function Avatar({
-  label,
-  ring = false,
-}: {
-  label: string; // letter/emoji
-  ring?: boolean;
-}) {
+function useFeed() {
+  const [posts, setPosts] = useState<Post[]>([]);
+  useEffect(() => setPosts(seedFeedIfEmpty()), []);
+  const react = (id: string, emoji: string) =>
+    setPosts((prev) =>
+      prev.map((p) =>
+        p.id === id ? { ...p, fruits: { ...p.fruits, [emoji]: (p.fruits[emoji] || 0) + 1 } } : p
+      )
+    );
+  const addPost = (text: string, topics: string[]) =>
+    setPosts((prev) => {
+      const newPost: Post = {
+        id: `p${Date.now()}`,
+        author: { name: "You", avatar: "🍐", role: "Peear" },
+        createdAt: Date.now(),
+        text,
+        topics,
+        fruits: { "🍐": 1 },
+        comments: 0,
+      };
+      const next = [newPost, ...prev];
+      localStorage.setItem(FEED_KEY, JSON.stringify(next));
+      return next;
+    });
+  return { posts, react, addPost };
+}
+
+/* ------------------------------ UI bits --------------------------------- */
+function Avatar({ label, ring = false }: { label: string; ring?: boolean }) {
   return (
     <div
-      className={`w-12 h-12 rounded-full grid place-items-center font-bold bg-[#F5D48A] text-[color:var(--leaf)] ${
+      className={`w-11 h-11 rounded-full grid place-items-center font-bold bg-[#F5D48A] text-[color:var(--leaf)] ${
         ring ? "outline outline-2 outline-[rgba(46,125,61,0.25)]" : ""
       }`}
       aria-hidden
@@ -95,89 +187,132 @@ function Avatar({
   );
 }
 
-function TopicChip({ children }: { children: React.ReactNode }) {
+function TopicChip({ t }: { t: string }) {
+  const icon = t.includes("Lead")
+    ? "🍊"
+    : t.includes("Creat")
+    ? "🍓"
+    : t.includes("Focus")
+    ? "🍎"
+    : "🍐";
   return (
-    <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[rgba(46,125,61,0.08)] text-[color:var(--leaf)] font-semibold text-sm">
-      {children}
+    <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[rgba(46,125,61,0.08)] text-[color:var(--leaf)] font-semibold text-xs">
+      <span aria-hidden>{icon}</span>
+      {t}
     </span>
   );
 }
 
-function FruitBadge({ fruit }: { fruit: string }) {
+function FruitButton({
+  emoji,
+  count,
+  onClick,
+}: {
+  emoji: string;
+  count: number;
+  onClick: () => void;
+}) {
   return (
-    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-sm bg-white border border-[rgba(0,0,0,0.06)]">
-      <span aria-hidden>{fruit}</span>
-      <span className="text-[rgba(0,0,0,0.7)]">+1</span>
-    </span>
+    <button
+      onClick={onClick}
+      className="inline-flex items-center gap-1.5 rounded-full border border-[rgba(0,0,0,0.06)] bg-white/70 px-2.5 py-1 text-sm hover:brightness-95"
+      type="button"
+      aria-label={`Give ${emoji}`}
+    >
+      <span aria-hidden>{emoji}</span>
+      <span className="text-[rgba(0,0,0,0.75)]">{count}</span>
+    </button>
   );
 }
 
-/* Dummy feed data */
-type FeedItem = {
-  id: string;
-  author: { name: string; avatar: string };
-  text1: string;
-  text2?: string;
-  topics: string[];
-  reactions?: string[]; // fruit-emoji’s
-};
-const FEED: FeedItem[] = [
-  {
-    id: "f1",
-    author: { name: "Emily", avatar: "E" },
-    text1:
-      "Vandaag mini stap gezet: 25m deep work op m’n slide deck. Nu ritme vasthouden 🍐",
-    text2:
-      "Tip: Pomodoro + notifs uit = magie.",
-    topics: ["Leadership", "Balance"],
-    reactions: ["🍐", "🍊", "🍓"],
-  },
-  {
-    id: "f2",
-    author: { name: "Liam", avatar: "🍊" },
-    text1: "Eerste week met weekly themes. Helpt focus echt!",
-    topics: ["Focus"],
-    reactions: ["🍎"],
-  },
-  {
-    id: "f3",
-    author: { name: "Ava", avatar: "🍓" },
-    text1: "Morgen 20-min ideation—wie wil meedoen?",
-    topics: ["Creativity", "Growth"],
-    reactions: ["🍇", "🍐"],
-  },
-];
-
-/* My Activity (speels) */
-const MY_ACTIVITY = [
-  { icon: "💬", label: "Chats" },
-  { icon: "🍐", label: "Drops", count: 2 },
-  { icon: "🍊", label: "Oranges", count: 3 },
-  { icon: "🍓", label: "Strawbs", count: 1 },
-  { icon: "🌳", label: "Streak", count: 4 },
-];
-
-/* ---------- Page ---------- */
+/* ------------------------------ Page ------------------------------------ */
 export default function CommunityPage() {
   const chats = useChatSummaries();
+  const { posts, react, addPost } = useFeed();
+  const [composer, setComposer] = useState("");
+  const [activeFilter, setActiveFilter] = useState<string>("All");
+
   const now = useMemo(() => new Date(), []);
+
+  const visiblePosts =
+    activeFilter === "All"
+      ? posts
+      : posts.filter((p) => p.topics.some((t) => t.toLowerCase().includes(activeFilter.toLowerCase())));
+
+  const TOPICS = ["All", "Growth", "Creativity", "Focus", "Leadership", "Balance"];
+
+  function submitPost() {
+    if (!composer.trim()) return;
+    // naive topic inference by emoji/keywords
+    const topics: string[] = [];
+    if (composer.toLowerCase().includes("focus")) topics.push("Focus");
+    if (composer.toLowerCase().includes("lead")) topics.push("Leadership");
+    if (composer.toLowerCase().includes("idea")) topics.push("Creativity");
+    if (topics.length === 0) topics.push("Growth");
+    addPost(composer.trim(), topics);
+    setComposer("");
+  }
 
   return (
     <main className="min-h-screen fruit-wall text-[color:var(--leaf)]">
       <div className="max-w-md mx-auto px-5 py-6 space-y-6">
-
         {/* Header */}
-        <section className="card">
+        <section className="card sticky top-0 z-20 -mx-5 px-5 pt-4 pb-3 backdrop-blur bg-white/75 border-b border-[rgba(0,0,0,0.06)]">
           <div className="flex items-center justify-between">
-            <h1 className="text-[1.6rem] font-extrabold">Community Feed</h1>
+            <h1 className="text-[1.6rem] font-extrabold">Community</h1>
             <div className="flex items-center gap-3 text-xl">
-              <span aria-hidden>🔍</span>
-              <span aria-hidden>🔔</span>
+              <Link href="/" aria-label="Home">🏠</Link>
+              <Link href="/profile" aria-label="Profile">👤</Link>
             </div>
           </div>
           <p className="text-muted mt-1">
-            What’s happening across the grove 🍐—peers, topics & activity.
+            A playful place for peer growth — not résumés. 🍐
           </p>
+
+          {/* Filters */}
+          <div className="mt-3 flex items-center gap-2 overflow-auto no-scrollbar">
+            {TOPICS.map((t) => (
+              <button
+                key={t}
+                onClick={() => setActiveFilter(t)}
+                className={`px-3 py-1.5 rounded-full text-sm font-semibold whitespace-nowrap ${
+                  activeFilter === t
+                    ? "bg-[#F8E1A6] ring-1 ring-black/5"
+                    : "bg-white/70 border border-[rgba(0,0,0,0.06)]"
+                }`}
+              >
+                {t === "All" ? "All" : <span className="mr-1" aria-hidden>
+                  {t.includes("Lead") ? "🍊" : t.includes("Creat") ? "🍓" : t.includes("Focus") ? "🍎" : "🍐"}
+                </span>}
+                {t !== "All" && t}
+              </button>
+            ))}
+          </div>
+        </section>
+
+        {/* Composer */}
+        <section className="card">
+          <div className="flex gap-3">
+            <Avatar label="🍐" />
+            <div className="flex-1">
+              <textarea
+                value={composer}
+                onChange={(e) => setComposer(e.target.value)}
+                placeholder="Share a small win, a learning, or invite peers (keep it human & helpful)…"
+                className="w-full resize-none rounded-xl border border-[rgba(0,0,0,0.06)] bg-white/70 p-3 text-sm outline-none focus:ring-2 focus:ring-[rgba(46,125,61,0.25)]"
+                rows={3}
+              />
+              <div className="mt-2 flex items-center justify-between">
+                <div className="text-sm text-muted">Tip: short, specific, and supportive.</div>
+                <button
+                  onClick={submitPost}
+                  className="rounded-xl bg-[#F8E1A6] px-4 py-1.5 font-semibold hover:brightness-95"
+                >
+                  Post
+                </button>
+              </div>
+            </div>
+          </div>
         </section>
 
         {/* Active Peers */}
@@ -218,54 +353,72 @@ export default function CommunityPage() {
           </div>
         </section>
 
-        {/* Community posts */}
+        {/* Feed */}
         <section className="card space-y-4">
-          <h2 className="text-[1.15rem] font-extrabold">Community</h2>
+          <h2 className="text-[1.15rem] font-extrabold">Community Feed</h2>
 
-          {FEED.map((item, idx) => (
-            <article key={item.id} className="rounded-2xl bg-white/60 border border-[rgba(0,0,0,0.06)] p-3">
+          {visiblePosts.map((p) => (
+            <article
+              key={p.id}
+              className="rounded-2xl bg-white/70 border border-[rgba(0,0,0,0.06)] p-3 shadow-sm"
+            >
               <div className="flex gap-3">
-                <Avatar label={item.author.avatar} />
+                <Avatar label={p.author.avatar} />
                 <div className="flex-1 min-w-0">
-                  <div className="font-semibold">{item.author.name}</div>
-                  <div className="text-sm text-[rgba(0,0,0,0.75)] mt-1">
-                    <div>{item.text1}</div>
-                    {item.text2 && <div className="mt-0.5">{item.text2}</div>}
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <div className="font-semibold">{p.author.name}</div>
+                      {p.author.role && (
+                        <div className="text-xs text-muted -mt-0.5">{p.author.role}</div>
+                      )}
+                    </div>
+                    <div className="text-xs text-muted">{timeAgo(p.createdAt)}</div>
+                  </div>
+
+                  <div className="mt-2 text-[rgba(0,0,0,0.85)]">
+                    <p>{p.text}</p>
+                    {p.extra && <p className="mt-1">{p.extra}</p>}
                   </div>
 
                   <div className="mt-2 flex flex-wrap gap-2">
-                    {item.topics.map((t) => (
-                      <TopicChip key={t}>
-                        {/* klein fruitje prefix op random voor playful effect */}
-                        <span aria-hidden>
-                          {t.includes("Lead") ? "🍊" : t.includes("Creat") ? "🍓" : t.includes("Focus") ? "🍎" : "🍐"}
-                        </span>
-                        {t}
-                      </TopicChip>
+                    {p.topics.map((t) => (
+                      <TopicChip key={`${p.id}-${t}`} t={t} />
                     ))}
                   </div>
 
                   <div className="mt-3 flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      {item.reactions?.map((r, i) => (
-                        <FruitBadge key={`${item.id}-r-${i}`} fruit={r} />
+                      {Object.entries(p.fruits).map(([emoji, count]) => (
+                        <FruitButton
+                          key={`${p.id}-${emoji}`}
+                          emoji={emoji}
+                          count={count}
+                          onClick={() => react(p.id, emoji)}
+                        />
                       ))}
+                      {/* Quick add a new fruit reaction */}
+                      <button
+                        onClick={() => react(p.id, "🍐")}
+                        className="inline-flex items-center rounded-full border border-[rgba(0,0,0,0.06)] bg-white/70 px-2.5 py-1 text-sm hover:brightness-95"
+                        aria-label="Give a pear"
+                      >
+                        ➕🍐
+                      </button>
                     </div>
-                    <div className="flex items-center gap-3 text-[1.1rem] text-[rgba(0,0,0,0.55)]">
-                      <button aria-label="Like">♡</button>
-                      <button aria-label="Share">↗</button>
+
+                    <div className="flex items-center gap-3 text-[1.05rem] text-[rgba(0,0,0,0.6)]">
+                      <button aria-label="Comment">💬 {p.comments}</button>
+                      <button aria-label="Reshare">↗</button>
+                      <button aria-label="Save">⭐</button>
                     </div>
                   </div>
                 </div>
               </div>
-
-              {/* subtiele divider tussen posts */}
-              {idx !== FEED.length - 1 && <div className="divider mt-3" />}
             </article>
           ))}
         </section>
 
-        {/* Recent Chats (uit storage) */}
+        {/* Recent Chats */}
         <section className="card">
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-[1.15rem] font-extrabold">Recent Chats</h2>
@@ -289,7 +442,10 @@ export default function CommunityPage() {
                         <div className="flex items-center justify-between">
                           <div className="font-semibold">{c.name}</div>
                           <div className="text-xs text-muted">
-                            {new Date(c.lastTs).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                            {new Date(c.lastTs).toLocaleTimeString([], {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })}
                           </div>
                         </div>
                         <div className="text-sm text-ellipsis overflow-hidden whitespace-nowrap text-[rgba(0,0,0,0.75)]">
@@ -309,23 +465,6 @@ export default function CommunityPage() {
           )}
         </section>
 
-        {/* My Activity */}
-        <section className="card">
-          <h2 className="text-[1.15rem] font-extrabold mb-3">My Activity</h2>
-          <div className="flex items-center justify-between">
-            {MY_ACTIVITY.map((a) => (
-              <div key={a.label} className="grid place-items-center gap-1">
-                <div className="text-xl">{a.icon}</div>
-                {a.count ? (
-                  <div className="text-xs"><b>{a.count}</b></div>
-                ) : (
-                  <div className="text-xs text-muted">&nbsp;</div>
-                )}
-              </div>
-            ))}
-          </div>
-        </section>
-
         {/* Suggested Topics */}
         <section className="card">
           <h2 className="text-[1.15rem] font-extrabold mb-3">Suggested Topics</h2>
@@ -340,6 +479,7 @@ export default function CommunityPage() {
             ].map(({ t, icon }) => (
               <button
                 key={t}
+                onClick={() => setActiveFilter(t)}
                 className="rounded-2xl bg-[#F8E1A6] hover:brightness-95 transition p-3 text-center font-semibold"
                 type="button"
               >
@@ -350,7 +490,7 @@ export default function CommunityPage() {
           </div>
         </section>
 
-        {/* Bottom nav (speels) */}
+        {/* Bottom nav */}
         <nav className="sticky bottom-3 left-0 right-0 max-w-md mx-auto">
           <div className="rounded-2xl bg-white/70 backdrop-blur border border-[rgba(0,0,0,0.06)] p-3 flex items-center justify-between">
             <Link href="/" aria-label="Home">🏠</Link>
