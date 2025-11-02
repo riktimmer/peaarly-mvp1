@@ -154,13 +154,13 @@ export default function Home() {
                   { href: "/about", label: "About Peear" },
                   { href: "/drop/select", label: "Start Pear Drop" },
                   { href: "/fruitpick", label: "Start Fruit Pick" },
-                  // 404 fix: stuur naar /feed
+                  // ✅ aangepast van /community naar /feed
                   { href: "/feed", label: "Community Feed" },
                 ].map((item) => (
                   <li key={item.href}>
                     <Link
                       href={item.href}
-                      className="block px-4 py-3 text-green-900 hover:bg-green-50 dark:text-violet-50 dark:hover:bg:white/10"
+                      className="block px-4 py-3 text-green-900 hover:bg-green-50 dark:text-violet-50 dark:hover:bg-white/10"
                       onClick={() => setMenuOpen(false)}
                     >
                       {item.label}
@@ -212,12 +212,10 @@ export default function Home() {
 
         {/* Social proof */}
         <div className="mt-8 w-full max-w-md mx-auto space-y-2">
-          {/* Bovenste rij */}
           <div className="grid grid-cols-2 gap-2">
             <StatPill icon="🍉" label={`${peersJoined} peers joined today`} glow />
             <StatPill icon="🥝" label="Global community" glow />
           </div>
-          {/* Onderste rij */}
           <div>
             <StatPill icon="🍌" label={`${matchesMade} fruitful matches today`} />
           </div>
