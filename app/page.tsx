@@ -2,18 +2,23 @@
 
 import React, { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { motion, useAnimationControls } from "framer-motion";
+import { motion, useAnimationControls, AnimatePresence } from "framer-motion";
 import PeearLogoV2 from "./components/PeearLogoV2";
 
 /**
- * Peear Home – Business Coaching focus
- * - Korte subline
- * - "How it works" als 3 mini-cards
- * - Eén primaire CTA (Start Peear Drop)
+ * Peear Home – Business Coaching focus (compacte hero)
+ * - Roterende subline (fade)
+ * - 3 kleurrijke CTA-buttons (zonder emoji)
+ * - Geen losse gele CTA en geen live community updates
  * - Menu -> /feed (404 fix)
  */
 
 const FRUIT = ["🍐", "🍊", "🍎", "🍇", "🍓", "🍋", "🍒", "🍍"];
+const SUBLINES = [
+  "Real growth starts with real connection.",
+  "Grow your business career through peer-to-peer coaching.",
+  "Meet peers who challenge your thinking.",
+];
 
 const FruitSprite: React.FC<{ i: number }> = ({ i }) => {
   const size = useMemo(() => 16 + Math.round(Math.random() * 18), []);
@@ -36,26 +41,6 @@ const FruitSprite: React.FC<{ i: number }> = ({ i }) => {
   );
 };
 
-type CommunityEvent = { id: string; avatar: string; name: string; action: string; time: string };
-const NAMES = ["Lina", "Mateo", "Aisha", "Noah", "Kai", "Zoe", "Amir", "Mila", "Jules", "Aria"];
-const ACTIONS = [
-  "just joined",
-  "made a fruitful match",
-  "shared a growth tip",
-  "gave kudos",
-  "started a peer session",
-];
-const AVATARS = ["🍐", "🍊", "🍎", "🍇", "🍓", "🍋", "🍒", "🍍"];
-
-function randomEvent(): CommunityEvent {
-  const name = NAMES[Math.floor(Math.random() * NAMES.length)];
-  const action = ACTIONS[Math.floor(Math.random() * ACTIONS.length)];
-  const avatar = AVATARS[Math.floor(Math.random() * AVATARS.length)];
-  const ts = new Date();
-  const time = ts.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-  return { id: `${ts.getTime()}-${Math.random()}`, avatar, name, action, time };
-}
-
 function randInt(min: number, max: number) {
   return Math.floor(min + Math.random() * (max - min + 1));
 }
@@ -66,11 +51,7 @@ export default function Home() {
   const [pearTapped, setPearTapped] = useState(false);
   const [peersJoined, setPeersJoined] = useState<number>(25);
   const [matchesMade, setMatchesMade] = useState<number>(88);
-  const [events, setEvents] = useState<CommunityEvent[]>(() => [
-    { id: "e1", avatar: "🍐", name: "Lina", action: "just joined", time: "08:12" },
-    { id: "e2", avatar: "🍊", name: "Mateo", action: "made a fruitful match", time: "08:09" },
-    { id: "e3", avatar: "🍇", name: "Aisha", action: "shared a growth tip", time: "08:05" },
-  ]);
+  const [sublineIndex, setSublineIndex] = useState(0);
 
   // “Breathing” pear
   useEffect(() => {
@@ -81,20 +62,17 @@ export default function Home() {
     });
   }, [pearControls]);
 
-  // Willekeurige aantallen bij load
+  // Willekeurige aantallen bij load (social proof)
   useEffect(() => {
     setPeersJoined(randInt(22, 28));
     setMatchesMade(randInt(80, 95));
   }, []);
 
-  // Live community ticker
+  // Subline-rotatie (fade)
   useEffect(() => {
     const t = setInterval(() => {
-      setEvents((prev) => {
-        const next = [randomEvent(), ...prev];
-        return next.slice(0, 30);
-      });
-    }, 10000);
+      setSublineIndex((i) => (i + 1) % SUBLINES.length);
+    }, 3600); // ~3.6s per zin
     return () => clearInterval(t);
   }, []);
 
@@ -153,9 +131,9 @@ export default function Home() {
               <ul className="py-2 text-left">
                 {[
                   { href: "/about", label: "About Peear" },
-                  { href: "/drop/select", label: "Start Pear Drop" },
+                  { href: "/drop/select", label: "Start Peear Drop" },
                   { href: "/fruitpick", label: "Start Fruit Pick" },
-                  { href: "/feed", label: "Community Feed" }, // ✅ 404 fix
+                  { href: "/feed", label: "Community Feed" }, // 404 fix blijft
                 ].map((item) => (
                   <li key={item.href}>
                     <Link
@@ -200,45 +178,43 @@ export default function Home() {
           Peear
         </h1>
 
-        {/* NEW short subline */}
-        <p className="mb-8 max-w-xl text-lg leading-relaxed text-green-800 dark:text-fuchsia-100/90">
-          Real growth starts with real connection. Peear helps business professionals grow through
-          authentic peer-to-peer coaching.
-        </p>
-
-        {/* How it works – 3 mini-cards */}
-        <div className="grid w-full max-w-xl grid-cols-1 gap-3 text-left md:grid-cols-3">
-          <HowCard
-            href="/drop/select"
-            emoji="🎯"
-            title="Peear Drop"
-            line="Find peers based on your business goals."
-          />
-          <HowCard
-            href="/fruitpick"
-            emoji="🍊"
-            title="Fruit Pick"
-            line="Meet spontaneous matches and new perspectives."
-          />
-          <HowCard
-            href="/about"
-            emoji="🍐"
-            title="About Peear"
-            line="Learn how we spark real growth."
-          />
+        {/* Roterende subline (fade tussen korte zinnen) */}
+        <div className="mb-8 h-[64px] max-w-xl overflow-hidden">
+          <AnimatePresence mode="wait">
+            <motion.p
+              key={sublineIndex}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.4 }}
+              className="text-lg leading-relaxed text-green-800 dark:text-fuchsia-100/90"
+            >
+              {SUBLINES[sublineIndex]}
+            </motion.p>
+          </AnimatePresence>
         </div>
 
-        {/* Primary CTA – one button */}
-        <div className="mt-5 w-full max-w-sm">
-          <CTA href="/drop/select" tone="amber" label="Start Peear Drop" />
+        {/* 3 kleurrijke buttons (geen emoji) */}
+        <div className="flex w-full max-w-sm flex-col gap-4">
+          <CTA href="/drop/select" tone="amber" label="Peear Drop" />
+          <CTA href="/fruitpick" tone="orange" label="Fruit Pick" />
+          <CTA href="/about" tone="green" label="About Peear" />
         </div>
 
         {/* Social proof */}
-        <SocialProof peersJoined={peersJoined} matchesMade={matchesMade} />
+        <div className="mt-8 w-full max-w-md mx-auto space-y-2">
+          <div className="grid grid-cols-2 gap-2">
+            <StatPill icon="🍉" label={`${peersJoined} peers joined today`} glow />
+            <StatPill icon="🥝" label="Global community" glow />
+          </div>
+          <div>
+            <StatPill icon="🍌" label={`${matchesMade} fruitful matches today`} />
+          </div>
+        </div>
       </section>
 
       {/* Why join */}
-      <section className="mx-auto mt-16 w-full max-w-2xl">
+      <section className="mx-auto mt-16 w-full max-w-2xl pb-28">
         <h2 className="mb-5 text-center text-2xl font-bold text-green-900 dark:text-violet-50 md:text-3xl">
           Why join Peear?
         </h2>
@@ -255,86 +231,11 @@ export default function Home() {
           <SolidInfoCard title="Fun, fast & human" line="Playful formats keep learning alive." />
         </div>
       </section>
-
-      {/* Community timeline */}
-      <section className="mx-auto mt-16 w-full max-w-2xl pb-28">
-        <div className="sticky top-0 z-10 mb-3 -mx-6 border-b border-black/5 bg-white/70 px-6 py-3 backdrop-blur dark:border-white/10 dark:bg-[#0b0714]/80">
-          <div className="mx-auto flex max-w-2xl items-center justify-between">
-            <h3 className="text-left text-xl font-bold text-green-900 dark:text-violet-100">
-              Community
-            </h3>
-            <span className="text-sm text-green-900/70 dark:text-fuchsia-200/80">Live updates</span>
-          </div>
-        </div>
-
-        <ul className="space-y-3">
-          {events.map((ev) => (
-            <li
-              key={ev.id}
-              className="rounded-2xl border border-black/5 bg-white/80 p-4 text-left shadow-sm backdrop-blur dark:border-white/10 dark:bg-[#160a28]/60"
-            >
-              <div className="flex items-start gap-3">
-                <div className="grid h-10 w-10 place-items-center rounded-xl bg-emerald-100 text-xl shadow-sm dark:bg-fuchsia-500/20 dark:text-fuchsia-200">
-                  {ev.avatar}
-                </div>
-                <div className="flex-1">
-                  <div className="flex items-center justify-between">
-                    <p className="font-semibold text-green-900 dark:text-violet-100">{ev.name}</p>
-                    <span className="text-sm text-green-800/70 dark:text-fuchsia-200/70">
-                      {ev.time}
-                    </span>
-                  </div>
-                  <p className="text-green-900/90 dark:text-violet-50/90">{ev.action}</p>
-                </div>
-              </div>
-            </li>
-          ))}
-        </ul>
-
-        {/* Gouden CTA */}
-        <div className="mx-auto mt-6 flex max-w-2xl justify-center">
-          <Link
-            href="/feed"
-            className="group relative inline-flex items-center gap-2 rounded-2xl border border-amber-500/40 bg-gradient-to-b from-amber-300 to-amber-400 px-6 py-3 font-extrabold text-amber-950 shadow-lg ring-1 ring-black/5 transition hover:brightness-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 dark:from-yellow-300 dark:to-amber-300"
-          >
-            <span className="text-lg">Join the Peear Community</span>
-            <span className="text-xl">✨</span>
-          </Link>
-        </div>
-      </section>
     </main>
   );
 }
 
 /* ----------------------------- Components ------------------------------- */
-
-function HowCard({
-  href,
-  emoji,
-  title,
-  line,
-}: {
-  href: string;
-  emoji: string;
-  title: string;
-  line: string;
-}) {
-  return (
-    <Link href={href} className="group">
-      <motion.div
-        initial={{ opacity: 0, y: 6 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-80px" }}
-        whileHover={{ y: -2 }}
-        className="h-full rounded-2xl border border-black/5 bg-white/85 p-4 text-left shadow-sm backdrop-blur transition hover:shadow-md dark:border-white/10 dark:bg-[#121129]/70"
-      >
-        <div className="mb-2 text-2xl">{emoji}</div>
-        <h3 className="text-base font-bold text-green-900 dark:text-violet-50">{title}</h3>
-        <p className="mt-1 text-sm text-green-900/80 dark:text-violet-100/80">{line}</p>
-      </motion.div>
-    </Link>
-  );
-}
 
 function CTA({
   href,
@@ -364,20 +265,6 @@ function CTA({
         {label}
       </motion.div>
     </Link>
-  );
-}
-
-function SocialProof({ peersJoined, matchesMade }: { peersJoined: number; matchesMade: number }) {
-  return (
-    <div className="mt-8 w-full max-w-md mx-auto space-y-2">
-      <div className="grid grid-cols-2 gap-2">
-        <StatPill icon="🍉" label={`${peersJoined} peers joined today`} glow />
-        <StatPill icon="🥝" label="Global community" glow />
-      </div>
-      <div>
-        <StatPill icon="🍌" label={`${matchesMade} fruitful matches today`} />
-      </div>
-    </div>
   );
 }
 
