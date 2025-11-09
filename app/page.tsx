@@ -7,9 +7,9 @@ import PeearLogoV2 from "./components/PeearLogoV2";
 
 /**
  * Peear Home – Business Coaching focus (compacte hero)
- * - Roterende subline (fade)
- * - 3 kleurrijke CTA-buttons (zonder emoji)
- * - Geen losse gele CTA en geen live community updates
+ * - Roterende subline (4 zinnen, rustige fade)
+ * - 3 kleurrijke CTA-knoppen met header + kleine uitleg (geen emoji)
+ * - Geen losse extra CTA en geen live community updates
  * - Menu -> /feed (404 fix)
  */
 
@@ -17,7 +17,8 @@ const FRUIT = ["🍐", "🍊", "🍎", "🍇", "🍓", "🍋", "🍒", "🍍"];
 const SUBLINES = [
   "Real growth starts with real connection.",
   "Grow your business career through peer-to-peer coaching.",
-  "Meet peers who challenge your thinking.",
+  "Conversations that turn ideas into action.",
+  "Grow through reflection, not perfection.",
 ];
 
 const FruitSprite: React.FC<{ i: number }> = ({ i }) => {
@@ -68,11 +69,11 @@ export default function Home() {
     setMatchesMade(randInt(80, 95));
   }, []);
 
-  // Subline-rotatie (fade)
+  // Subline-rotatie (rustig)
   useEffect(() => {
     const t = setInterval(() => {
       setSublineIndex((i) => (i + 1) % SUBLINES.length);
-    }, 3600); // ~3.6s per zin
+    }, 5200); // ~5.2s per zin
     return () => clearInterval(t);
   }, []);
 
@@ -178,7 +179,7 @@ export default function Home() {
           Peear
         </h1>
 
-        {/* Roterende subline (fade tussen korte zinnen) */}
+        {/* Roterende subline (fade tussen 4 korte zinnen) */}
         <div className="mb-8 h-[64px] max-w-xl overflow-hidden">
           <AnimatePresence mode="wait">
             <motion.p
@@ -186,7 +187,7 @@ export default function Home() {
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.4 }}
+              transition={{ duration: 0.45 }}
               className="text-lg leading-relaxed text-green-800 dark:text-fuchsia-100/90"
             >
               {SUBLINES[sublineIndex]}
@@ -194,11 +195,26 @@ export default function Home() {
           </AnimatePresence>
         </div>
 
-        {/* 3 kleurrijke buttons (geen emoji) */}
-        <div className="flex w-full max-w-sm flex-col gap-4">
-          <CTA href="/drop/select" tone="amber" label="Peear Drop" />
-          <CTA href="/fruitpick" tone="orange" label="Fruit Pick" />
-          <CTA href="/about" tone="green" label="About Peear" />
+        {/* 3 kleurrijke CTA-knoppen met header + kleine uitleg (geen emoji) */}
+        <div className="flex w-full max-w-xl flex-col gap-3">
+          <CTAWithSub
+            href="/drop/select"
+            tone="amber"
+            title="Peear Drop"
+            line="Find peers based on your business goals."
+          />
+          <CTAWithSub
+            href="/fruitpick"
+            tone="orange"
+            title="Fruit Pick"
+            line="Meet spontaneous matches and new perspectives."
+          />
+          <CTAWithSub
+            href="/about"
+            tone="green"
+            title="About Peear"
+            line="Learn how we spark real growth."
+          />
         </div>
 
         {/* Social proof */}
@@ -237,14 +253,16 @@ export default function Home() {
 
 /* ----------------------------- Components ------------------------------- */
 
-function CTA({
+function CTAWithSub({
   href,
-  label,
   tone,
+  title,
+  line,
 }: {
   href: string;
-  label: string;
   tone: "green" | "amber" | "orange";
+  title: string;
+  line: string;
 }) {
   const toneClasses = {
     green:
@@ -260,9 +278,10 @@ function CTA({
       <motion.div
         whileHover={{ y: -2 }}
         whileTap={{ scale: 0.98 }}
-        className={`relative isolate w-full rounded-2xl bg-gradient-to-b ${toneClasses} px-6 py-3 text-center text-lg font-semibold tracking-tight shadow-lg ring-1 ring-black/5 transition md:text-xl`}
+        className={`relative isolate w-full rounded-2xl bg-gradient-to-b ${toneClasses} px-5 py-4 text-left shadow-lg ring-1 ring-black/5 transition`}
       >
-        {label}
+        <div className="text-base font-extrabold tracking-tight md:text-lg">{title}</div>
+        <div className="mt-0.5 text-sm opacity-90">{line}</div>
       </motion.div>
     </Link>
   );
