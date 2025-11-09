@@ -6,10 +6,11 @@ import { motion, useAnimationControls } from "framer-motion";
 import PeearLogoV2 from "./components/PeearLogoV2";
 
 /**
- * Peear Home – hero, social proof en live community-strip
- * - Menu linkt naar /feed (404 fix)
- * - Donkere modus glow
- * - Zakelijke subline + CTA-teksten (Business Coaching vibe)
+ * Peear Home – Business Coaching focus
+ * - Korte subline
+ * - "How it works" als 3 mini-cards
+ * - Eén primaire CTA (Start Peear Drop)
+ * - Menu -> /feed (404 fix)
  */
 
 const FRUIT = ["🍐", "🍊", "🍎", "🍇", "🍓", "🍋", "🍒", "🍍"];
@@ -154,8 +155,7 @@ export default function Home() {
                   { href: "/about", label: "About Peear" },
                   { href: "/drop/select", label: "Start Pear Drop" },
                   { href: "/fruitpick", label: "Start Fruit Pick" },
-                  // ✅ aangepast van /community naar /feed
-                  { href: "/feed", label: "Community Feed" },
+                  { href: "/feed", label: "Community Feed" }, // ✅ 404 fix
                 ].map((item) => (
                   <li key={item.href}>
                     <Link
@@ -200,38 +200,41 @@ export default function Home() {
           Peear
         </h1>
 
-        {/* NEW subline (business coaching) */}
+        {/* NEW short subline */}
         <p className="mb-8 max-w-xl text-lg leading-relaxed text-green-800 dark:text-fuchsia-100/90">
-          Peear connects business professionals who seek real growth through authentic connection.
-          Titles or empty success posts are excluded. Join a community where real conversations,
-          peer-to-peer coaching, and genuine stories spark a fruitful future.
+          Real growth starts with real connection. Peear helps business professionals grow through
+          authentic peer-to-peer coaching.
         </p>
 
-        {/* CTA’s — volgorde aangepast: 1) Drop (nieuw label) 2) Fruit Pick (nieuw label) 3) About (blijft) */}
-        <div className="flex w-full max-w-sm flex-col gap-4">
-          <CTA
+        {/* How it works – 3 mini-cards */}
+        <div className="grid w-full max-w-xl grid-cols-1 gap-3 text-left md:grid-cols-3">
+          <HowCard
             href="/drop/select"
-            tone="amber"
-            label="Find your perfect Peear based on your business goals. Start Peear Drop."
+            emoji="🎯"
+            title="Peear Drop"
+            line="Find peers based on your business goals."
           />
-          <CTA
+          <HowCard
             href="/fruitpick"
-            tone="orange"
-            label="Explore spontaneous matches and unexpected insights. Start Fruit Pick."
+            emoji="🍊"
+            title="Fruit Pick"
+            line="Meet spontaneous matches and new perspectives."
           />
-          <CTA href="/about" tone="green" label="About Peear" />
+          <HowCard
+            href="/about"
+            emoji="🍐"
+            title="About Peear"
+            line="Learn how we spark real growth."
+          />
+        </div>
+
+        {/* Primary CTA – one button */}
+        <div className="mt-5 w-full max-w-sm">
+          <CTA href="/drop/select" tone="amber" label="Start Peear Drop" />
         </div>
 
         {/* Social proof */}
-        <div className="mt-8 w-full max-w-md mx-auto space-y-2">
-          <div className="grid grid-cols-2 gap-2">
-            <StatPill icon="🍉" label={`${peersJoined} peers joined today`} glow />
-            <StatPill icon="🥝" label="Global community" glow />
-          </div>
-          <div>
-            <StatPill icon="🍌" label={`${matchesMade} fruitful matches today`} />
-          </div>
-        </div>
+        <SocialProof peersJoined={peersJoined} matchesMade={matchesMade} />
       </section>
 
       {/* Why join */}
@@ -249,10 +252,7 @@ export default function Home() {
             title="Character beats Credentials"
             line="Match on who you are, and can become. Resumes excluded."
           />
-          <SolidInfoCard
-            title="Fun, fast & human"
-            line="Playful formats keep learning alive."
-          />
+          <SolidInfoCard title="Fun, fast & human" line="Playful formats keep learning alive." />
         </div>
       </section>
 
@@ -284,7 +284,7 @@ export default function Home() {
                       {ev.time}
                     </span>
                   </div>
-                    <p className="text-green-900/90 dark:text-violet-50/90">{ev.action}</p>
+                  <p className="text-green-900/90 dark:text-violet-50/90">{ev.action}</p>
                 </div>
               </div>
             </li>
@@ -307,6 +307,35 @@ export default function Home() {
 }
 
 /* ----------------------------- Components ------------------------------- */
+
+function HowCard({
+  href,
+  emoji,
+  title,
+  line,
+}: {
+  href: string;
+  emoji: string;
+  title: string;
+  line: string;
+}) {
+  return (
+    <Link href={href} className="group">
+      <motion.div
+        initial={{ opacity: 0, y: 6 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-80px" }}
+        whileHover={{ y: -2 }}
+        className="h-full rounded-2xl border border-black/5 bg-white/85 p-4 text-left shadow-sm backdrop-blur transition hover:shadow-md dark:border-white/10 dark:bg-[#121129]/70"
+      >
+        <div className="mb-2 text-2xl">{emoji}</div>
+        <h3 className="text-base font-bold text-green-900 dark:text-violet-50">{title}</h3>
+        <p className="mt-1 text-sm text-green-900/80 dark:text-violet-100/80">{line}</p>
+      </motion.div>
+    </Link>
+  );
+}
+
 function CTA({
   href,
   label,
@@ -330,11 +359,25 @@ function CTA({
       <motion.div
         whileHover={{ y: -2 }}
         whileTap={{ scale: 0.98 }}
-        className={`relative isolate w-full rounded-2xl bg-gradient-to-b ${toneClasses} px-6 py-3 text-center text-lg font-semibold leading-snug tracking-tight shadow-lg ring-1 ring-black/5 transition md:text-xl`}
+        className={`relative isolate w-full rounded-2xl bg-gradient-to-b ${toneClasses} px-6 py-3 text-center text-lg font-semibold tracking-tight shadow-lg ring-1 ring-black/5 transition md:text-xl`}
       >
         {label}
       </motion.div>
     </Link>
+  );
+}
+
+function SocialProof({ peersJoined, matchesMade }: { peersJoined: number; matchesMade: number }) {
+  return (
+    <div className="mt-8 w-full max-w-md mx-auto space-y-2">
+      <div className="grid grid-cols-2 gap-2">
+        <StatPill icon="🍉" label={`${peersJoined} peers joined today`} glow />
+        <StatPill icon="🥝" label="Global community" glow />
+      </div>
+      <div>
+        <StatPill icon="🍌" label={`${matchesMade} fruitful matches today`} />
+      </div>
+    </div>
   );
 }
 
