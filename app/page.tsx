@@ -6,11 +6,11 @@ import { motion, useAnimationControls, AnimatePresence } from "framer-motion";
 import PeearLogoV2 from "./components/PeearLogoV2";
 
 /**
- * Peear Home – Business Coaching focus (compacte hero)
- * - Roterende subline (4 zinnen, rustige fade)
- * - 3 kleurrijke CTA-knoppen met header + kleine uitleg (geen emoji)
- * - Geen losse extra CTA en geen live community updates
- * - Menu -> /feed (404 fix)
+ * Peear Home – Business Coaching focus (met dot indicator)
+ * - 4 roterende subline-zinnen (rustige fade)
+ * - 3 kleurrijke CTA-knoppen met header + subtiele uitleg
+ * - Dot indicator onder subline
+ * - Geen losse CTA of live feed
  */
 
 const FRUIT = ["🍐", "🍊", "🍎", "🍇", "🍓", "🍋", "🍒", "🍍"];
@@ -179,8 +179,8 @@ export default function Home() {
           Peear
         </h1>
 
-        {/* Roterende subline (fade tussen 4 korte zinnen) */}
-        <div className="mb-8 h-[64px] max-w-xl overflow-hidden">
+        {/* Roterende subline + dot indicator */}
+        <div className="mb-5 h-[64px] max-w-xl overflow-hidden flex flex-col items-center">
           <AnimatePresence mode="wait">
             <motion.p
               key={sublineIndex}
@@ -193,9 +193,26 @@ export default function Home() {
               {SUBLINES[sublineIndex]}
             </motion.p>
           </AnimatePresence>
+
+          {/* Dot indicator */}
+          <div className="mt-3 flex gap-2">
+            {SUBLINES.map((_, i) => (
+              <motion.div
+                key={i}
+                animate={{
+                  scale: sublineIndex === i ? 1.3 : 1,
+                  opacity: sublineIndex === i ? 1 : 0.4,
+                }}
+                transition={{ duration: 0.3 }}
+                className={`h-2 w-2 rounded-full ${
+                  sublineIndex === i ? "bg-emerald-700 dark:bg-fuchsia-300" : "bg-emerald-300 dark:bg-fuchsia-700"
+                }`}
+              />
+            ))}
+          </div>
         </div>
 
-        {/* 3 kleurrijke CTA-knoppen met header + kleine uitleg (geen emoji) */}
+        {/* CTA-knoppen */}
         <div className="flex w-full max-w-xl flex-col gap-3">
           <CTAWithSub
             href="/drop/select"
@@ -207,7 +224,7 @@ export default function Home() {
             href="/fruitpick"
             tone="orange"
             title="Fruit Pick"
-            line="Meet spontaneous matches and new perspectives."
+            line="Meet spontaneous matches."
           />
           <CTAWithSub
             href="/about"
@@ -281,7 +298,7 @@ function CTAWithSub({
         className={`relative isolate w-full rounded-2xl bg-gradient-to-b ${toneClasses} px-5 py-4 text-left shadow-lg ring-1 ring-black/5 transition`}
       >
         <div className="text-base font-extrabold tracking-tight md:text-lg">{title}</div>
-        <div className="mt-0.5 text-sm opacity-90">{line}</div>
+        <div className="mt-0.5 text-xs opacity-80">{line}</div>
       </motion.div>
     </Link>
   );
