@@ -6,13 +6,12 @@ import { motion, useAnimationControls, AnimatePresence } from "framer-motion";
 import PeearLogoV2 from "./components/PeearLogoV2";
 
 /**
- * Peear Home – Business Coaching (v-next)
- * - (3) Pillars i.p.v. knoppen (editorial style)
- * - (4) Human quotes onder de pillars
- * - (5) Social proof = betekenisvol bewijs (geen fruit-stats)
- * - (6) Subtielere ambience + breathing pulse
- * - (7) Why join: intro + abstracte iconen
- * - Subline rotatie + dot-indicator behouden
+ * Peear Home – Business Coaching (refined)
+ * - Bovenaan 3 CTA-buttons + korte uitleg (zonder emoji)
+ * - Roterende subline + dot indicator
+ * - Testimonial + Metrics (duidelijk andere stijl dan buttons/why-join)
+ * - Why join Peear: terug naar oude copy (zonder icon/emoticon)
+ * - Subtiele ambience
  * - Menu -> /feed (404 fix)
  */
 
@@ -79,21 +78,11 @@ export default function Home() {
                  bg-[radial-gradient(120%_120%_at_50%_0%,#FAFAF2_0%,#FFF7E0_40%,#FFFDF5_100%)]
                  text-emerald-900 dark:bg-[#0b0714] dark:text-violet-50"
     >
-      {/* Hero breathing pulse */}
-      <motion.div
-        aria-hidden
-        className="pointer-events-none absolute left-1/2 top-32 -z-10 h-[540px] w-[540px] -translate-x-1/2 rounded-full bg-emerald-300/20 dark:bg-fuchsia-500/15 blur-3xl"
-        animate={{ scale: [1, 1.04, 1], opacity: [0.55, 0.7, 0.55] }}
-        transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-      />
-
-      {/* Dark glows */}
+      {/* Subtle ambience */}
       <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
         <div className="hidden dark:block absolute -top-28 -right-24 w-[620px] h-[620px] rounded-full bg-fuchsia-500/15 blur-[160px]" />
         <div className="hidden dark:block absolute bottom-[-120px] -left-24 w-[680px] h-[680px] rounded-full bg-indigo-500/20 blur-[180px]" />
       </div>
-
-      {/* Subtiele ambient fruit (minder, langzamer) */}
       <div className="pointer-events-none absolute inset-0 -z-10">
         {Array.from({ length: 10 }).map((_, i) => (
           <FruitSprite key={i} i={i} />
@@ -173,17 +162,12 @@ export default function Home() {
           </div>
         </motion.button>
 
-        {/* Kleine emotionele tagline boven 'Peear' (optioneel, compact) */}
-        <p className="mb-2 text-sm text-emerald-800/80 dark:text-fuchsia-100/70">
-          The human way to grow your business.
-        </p>
-
         <h1 className="mb-3 text-4xl font-extrabold tracking-tight text-green-900 dark:text-violet-100 md:text-5xl">
           Peear
         </h1>
 
         {/* Roterende subline + dot indicator */}
-        <div className="mb-5 h-[64px] max-w-xl overflow-hidden flex flex-col items-center">
+        <div className="mb-6 h-[64px] max-w-xl overflow-hidden flex flex-col items-center">
           <AnimatePresence mode="wait">
             <motion.p
               key={sublineIndex}
@@ -213,75 +197,80 @@ export default function Home() {
           </div>
         </div>
 
-        {/* (3) Pillars – editorial style */}
-        <div className="grid w-full max-w-xl grid-cols-1 gap-3 text-left md:grid-cols-3">
-          <Pillar
+        {/* BOVENAAN: 3 buttons + korte uitleg */}
+        <div className="grid w-full max-w-xl grid-cols-1 gap-3 md:grid-cols-3 text-left">
+          <CTAButtonWithSub
             href="/drop/select"
             tone="amber"
-            title="Drop your growth goal"
-            line="Find peers based on your business goals."
+            label="Start Peear Drop"
+            sub="Find peers based on business goals."
           />
-          <Pillar
+          <CTAButtonWithSub
             href="/fruitpick"
             tone="orange"
-            title="Discover unexpected peers"
-            line="Meet spontaneous matches."
+            label="Start Fruit Pick"
+            sub="Discover unexpected and new peers."
           />
-          <Pillar
+          <CTAButtonWithSub
             href="/about"
             tone="green"
-            title="Why real connection matters"
-            line="Learn how we spark real growth."
+            label="About Peear"
+            sub="Why real connection matters."
           />
         </div>
 
-        {/* (4) Moment of humanity – korte quotes */}
-        <section className="mx-auto mt-8 w-full max-w-xl">
-          <h3 className="mb-3 text-left text-sm font-semibold tracking-wide text-emerald-900/80 dark:text-violet-100/80">
-            What Peears are saying
-          </h3>
-          <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-            <QuoteCard
-              quote="I stopped networking — I started connecting."
-              author="Lara"
-              role="Business Coach"
-            />
-            <QuoteCard
-              quote="It’s like meeting your next mentor, by accident."
-              author="Noah"
-              role="Founder"
-            />
-          </div>
-        </section>
+        {/* HUMANITY + FACTS (duidelijk andere stijl) */}
+        <section className="mx-auto mt-10 w-full max-w-xl">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+            {/* Grote quote (contrasterende gradient card) */}
+            <motion.blockquote
+              initial={{ opacity: 0, y: 6 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-80px" }}
+              transition={{ duration: 0.45 }}
+              className="md:col-span-2 rounded-2xl bg-gradient-to-b from-white to-emerald-50/60 p-5 text-left ring-1 ring-emerald-900/10 dark:from-[#151228] dark:to-[#0f0c20] dark:ring-white/10"
+            >
+              <p className="text-base leading-relaxed text-emerald-950 dark:text-violet-50">
+                “I stopped networking — I started connecting.”
+              </p>
+              <footer className="mt-2 text-xs text-emerald-900/70 dark:text-violet-200/70">
+                — Lara, Business Coach
+              </footer>
+            </motion.blockquote>
 
-        {/* (5) Betekenisvolle social proof */}
-        <section className="mx-auto mt-8 w-full max-w-xl">
-          <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-            <ProofCard
-              title="Trusted by 1,200+ professionals"
-              line="Coaches, founders and operators across 20+ countries."
-            />
-            <ProofCard
-              title="80% continue beyond the first talk"
-              line="Matches that lead to real collaboration and momentum."
-            />
+            {/* Twee metrics in ghost/outlined stijl */}
+            <div className="grid grid-cols-1 gap-4">
+              <MetricCard
+                value="1,200+"
+                title="Trusted professionals"
+                desc="Coaches, founders and operators across 20+ countries."
+              />
+              <MetricCard
+                value="80%"
+                title="Continue beyond first talk"
+                desc="Matches that lead to real collaboration and momentum."
+              />
+            </div>
           </div>
         </section>
       </section>
 
-      {/* (7) Why join – intro + abstracte iconen */}
+      {/* Why join – TERUG NAAR OUDE TEKSTEN */}
       <section className="mx-auto mt-16 w-full max-w-2xl pb-28">
-        <p className="mb-2 text-sm text-emerald-900/80 dark:text-violet-100/80">
-          Real growth happens when peers coach peers. That’s why Peear is built around three principles:
-        </p>
         <h2 className="mb-5 text-center text-2xl font-bold text-green-900 dark:text-violet-50 md:text-3xl">
           Why join Peear?
         </h2>
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-          <PrincipleCard icon="🌿" title="People-based learning" line="Real growth starts with real people. Not with systems." />
-          <PrincipleCard icon="💬" title="Character > credentials" line="Match on who you are and can become." />
-          <PrincipleCard icon="⚡" title="Human energy" line="Playful formats keep learning alive." />
+          <SolidInfoCard
+            title="Social Skilling"
+            line="Real growth starts with real people. Not with systems."
+          />
+          <SolidInfoCard
+            title="Character beats Credentials"
+            line="Match on who you are, and can become. Resumes excluded."
+          />
+          <SolidInfoCard title="Fun, fast & human" line="Playful formats keep learning alive." />
         </div>
       </section>
     </main>
@@ -290,16 +279,16 @@ export default function Home() {
 
 /* ----------------------------- Components ------------------------------- */
 
-function Pillar({
+function CTAButtonWithSub({
   href,
   tone,
-  title,
-  line,
+  label,
+  sub,
 }: {
   href: string;
   tone: "green" | "amber" | "orange";
-  title: string;
-  line: string;
+  label: string;
+  sub: string;
 }) {
   const toneClasses = {
     green:
@@ -313,52 +302,46 @@ function Pillar({
   return (
     <Link href={href} className="group">
       <motion.div
-        initial={{ opacity: 0, y: 6 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-80px" }}
         whileHover={{ y: -2 }}
+        whileTap={{ scale: 0.985 }}
         className={`relative isolate h-full rounded-2xl bg-gradient-to-b ${toneClasses} px-5 py-4 text-left shadow-lg ring-1 ring-black/5 transition`}
       >
-        <div className="text-base font-extrabold tracking-tight md:text-lg">{title}</div>
-        <div className="mt-0.5 text-xs italic opacity-80">{line}</div>
+        <div className="text-base font-extrabold tracking-tight md:text-lg">{label}</div>
+        <div className="mt-1 text-xs opacity-85">{sub}</div>
       </motion.div>
     </Link>
   );
 }
 
-function QuoteCard({ quote, author, role }: { quote: string; author: string; role: string }) {
-  return (
-    <motion.blockquote
-      initial={{ opacity: 0, y: 6 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-80px" }}
-      transition={{ duration: 0.45 }}
-      className="rounded-2xl border border-black/5 bg-white/85 p-4 text-left shadow-sm backdrop-blur dark:border-white/10 dark:bg-[#121129]/70"
-    >
-      <p className="text-sm text-green-900/90 dark:text-violet-50/90">“{quote}”</p>
-      <footer className="mt-2 text-xs text-emerald-900/70 dark:text-violet-200/70">
-        — {author}, {role}
-      </footer>
-    </motion.blockquote>
-  );
-}
-
-function ProofCard({ title, line }: { title: string; line: string }) {
+function MetricCard({
+  value,
+  title,
+  desc,
+}: {
+  value: string;
+  title: string;
+  desc: string;
+}) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 6 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-80px" }}
       transition={{ duration: 0.45 }}
-      className="rounded-2xl border border-black/5 bg-white/85 p-4 text-left shadow-sm backdrop-blur dark:border-white/10 dark:bg-[#121129]/70"
+      className="rounded-2xl border border-emerald-900/10 bg-white/70 p-5 text-left shadow-sm backdrop-blur dark:border-white/10 dark:bg-[#121129]/60"
     >
-      <h4 className="text-base font-bold text-green-900 dark:text-violet-50">{title}</h4>
-      <p className="mt-1 text-xs text-green-900/80 dark:text-violet-100/80">{line}</p>
+      <div className="text-2xl font-extrabold tracking-tight text-emerald-900 dark:text-violet-50">
+        {value}
+      </div>
+      <div className="mt-1 text-sm font-semibold text-emerald-900/90 dark:text-violet-100/90">
+        {title}
+      </div>
+      <div className="mt-1 text-xs text-emerald-900/75 dark:text-violet-200/80">{desc}</div>
     </motion.div>
   );
 }
 
-function PrincipleCard({ icon, title, line }: { icon: string; title: string; line: string }) {
+function SolidInfoCard({ title, line }: { title: string; line: string }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 8 }}
@@ -367,7 +350,6 @@ function PrincipleCard({ icon, title, line }: { icon: string; title: string; lin
       transition={{ duration: 0.5 }}
       className="rounded-2xl border border-black/5 bg-white/85 p-4 text-left shadow-sm backdrop-blur hover:shadow-md dark:border-white/10 dark:bg-[#121129]/70"
     >
-      <div className="mb-1 text-xl">{icon}</div>
       <h3 className="text-lg font-bold text-green-900 dark:text-violet-50">{title}</h3>
       <p className="mt-1 text-sm text-green-900/80 dark:text-violet-100/80">{line}</p>
     </motion.div>
