@@ -6,10 +6,10 @@ import { motion, useAnimationControls } from "framer-motion";
 import PeearLogoV2 from "./components/PeearLogoV2";
 
 /**
- * Peear Home – fruitige hero, social proof en live community-strip
+ * Peear Home – hero, social proof en live community-strip
  * - Menu linkt naar /feed (404 fix)
  * - Donkere modus glow
- * - Kleine UX-scherpstellingen
+ * - Zakelijke subline + CTA-teksten (Business Coaching vibe)
  */
 
 const FRUIT = ["🍐", "🍊", "🍎", "🍇", "🍓", "🍋", "🍒", "🍍"];
@@ -199,15 +199,27 @@ export default function Home() {
         <h1 className="mb-3 text-4xl font-extrabold tracking-tight text-green-900 dark:text-violet-100 md:text-5xl">
           Peear
         </h1>
-        <p className="mb-8 max-w-md text-lg leading-relaxed text-green-800 dark:text-fuchsia-100/90">
-          Grow together. Stay curious. Be fruitful. 🍐
+
+        {/* NEW subline (business coaching) */}
+        <p className="mb-8 max-w-xl text-lg leading-relaxed text-green-800 dark:text-fuchsia-100/90">
+          Peear connects business professionals who seek real growth through authentic connection.
+          Titles or empty success posts are excluded. Join a community where real conversations,
+          peer-to-peer coaching, and genuine stories spark a fruitful future.
         </p>
 
-        {/* CTA’s */}
+        {/* CTA’s — volgorde aangepast: 1) Drop (nieuw label) 2) Fruit Pick (nieuw label) 3) About (blijft) */}
         <div className="flex w-full max-w-sm flex-col gap-4">
+          <CTA
+            href="/drop/select"
+            tone="amber"
+            label="Find your perfect Peear based on your business goals. Start Peear Drop."
+          />
+          <CTA
+            href="/fruitpick"
+            tone="orange"
+            label="Explore spontaneous matches and unexpected insights. Start Fruit Pick."
+          />
           <CTA href="/about" tone="green" label="About Peear" />
-          <CTA href="/drop/select" tone="amber" label="Start Pear Drop" />
-          <CTA href="/fruitpick" tone="orange" label="Start Fruit Pick" />
         </div>
 
         {/* Social proof */}
@@ -272,7 +284,7 @@ export default function Home() {
                       {ev.time}
                     </span>
                   </div>
-                  <p className="text-green-900/90 dark:text-violet-50/90">{ev.action}</p>
+                    <p className="text-green-900/90 dark:text-violet-50/90">{ev.action}</p>
                 </div>
               </div>
             </li>
@@ -295,7 +307,15 @@ export default function Home() {
 }
 
 /* ----------------------------- Components ------------------------------- */
-function CTA({ href, label, tone }: { href: string; label: string; tone: "green" | "amber" | "orange" }) {
+function CTA({
+  href,
+  label,
+  tone,
+}: {
+  href: string;
+  label: string;
+  tone: "green" | "amber" | "orange";
+}) {
   const toneClasses = {
     green:
       "from-emerald-700 to-emerald-800 text-white shadow-emerald-900/20 dark:from-emerald-400 dark:to-emerald-500 dark:text-[#07150f]",
@@ -310,7 +330,7 @@ function CTA({ href, label, tone }: { href: string; label: string; tone: "green"
       <motion.div
         whileHover={{ y: -2 }}
         whileTap={{ scale: 0.98 }}
-        className={`relative isolate w-full rounded-2xl bg-gradient-to-b ${toneClasses} px-6 py-3 text-center text-lg font-semibold tracking-tight shadow-lg ring-1 ring-black/5 transition md:text-xl`}
+        className={`relative isolate w-full rounded-2xl bg-gradient-to-b ${toneClasses} px-6 py-3 text-center text-lg font-semibold leading-snug tracking-tight shadow-lg ring-1 ring-black/5 transition md:text-xl`}
       >
         {label}
       </motion.div>
